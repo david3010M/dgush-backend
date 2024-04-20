@@ -1,0 +1,202 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API's D'Gush",
+        "description": "API's for D'Gush store",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000"
+        }
+    ],
+    "paths": {
+        "/api/grupomenu": {
+            "get": {
+                "tags": [
+                    "Grupo Menus"
+                ],
+                "summary": "Get all grupo menus",
+                "operationId": "fded6ebdc6e216d176ef3200c1d56f96",
+                "responses": {
+                    "200": {
+                        "description": "List of active Grupo Menus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "1"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Profile"
+                                                    },
+                                                    "order": {
+                                                        "type": "number",
+                                                        "example": "10"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    },
+                                                    "deleted_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:30:45.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Grupo Menus"
+                ],
+                "summary": "Create a new grupo menu",
+                "operationId": "08de0396b6499f27f598b2ee5863ec9c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "icon",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Profile"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    },
+                                    "order": {
+                                        "type": "number",
+                                        "example": "10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "New Grupo Menu created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Profile"
+                                        },
+                                        "order": {
+                                            "type": "number",
+                                            "example": "10"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "example": "2024-02-23T00:09:16.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "example": "2024-02-23T12:13:45.000000Z"
+                                        },
+                                        "deleted_at": {
+                                            "type": "string",
+                                            "example": "2024-02-23T12:30:45.000000Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/grupomenu/{id}": {
+            "get": {
+                "tags": [
+                    "Grupo Menus"
+                ],
+                "summary": "Show the specified grupo menu",
+                "operationId": "5461037dc438bd93e28eab40d8290f70",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Grupo Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Grupo Menu found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "number",
+                                            "example": "1"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Profile"
+                                        },
+                                        "order": {
+                                            "type": "number",
+                                            "example": "10"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "example": "2024-02-23T00:09:16.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "example": "2024-02-23T12:13:45.000000Z"
+                                        },
+                                        "deleted_at": {
+                                            "type": "string",
+                                            "example": "2024-02-23T12:30:45.000000Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
