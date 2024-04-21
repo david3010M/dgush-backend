@@ -2,15 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\GrupoMenu;
+use App\Models\GroupMenu;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\GrupoMenu>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\GroupMenu>
  */
-class GrupoMenuFactory extends Factory
+class GroupMenuFactory extends Factory
 {
-    protected $model = GrupoMenu::class;
+    protected $model = GroupMenu::class;
 
     /**
      * Define the model's default state.
@@ -20,8 +20,8 @@ class GrupoMenuFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
-            'icon' => $this->faker->word,
+            'name' => $this->faker->sentence(2),
+            'icon' => $this->faker->sentence(2),
             'order' => $this->faker->randomNumber(),
         ];
     }

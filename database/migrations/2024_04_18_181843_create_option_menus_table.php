@@ -4,16 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
+
     public function up(): void
     {
-        Schema::create('option_menus', function (Blueprint $table) {
+        Schema::create('optionmenu', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('route');
+            $table->integer('order');
+            $table->string('icon');
+            $table->foreignId('groupmenu_id')->constrained('groupmenu');
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 
@@ -22,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('option_menus');
+        Schema::dropIfExists('optionmenu');
     }
 };

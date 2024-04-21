@@ -11,16 +11,16 @@
         }
     ],
     "paths": {
-        "/api/grupomenu": {
+        "/api/Groupmenu": {
             "get": {
                 "tags": [
-                    "Grupo Menus"
+                    "Group Menus"
                 ],
-                "summary": "Get all grupo menus",
-                "operationId": "fded6ebdc6e216d176ef3200c1d56f96",
+                "summary": "Get all Group menus",
+                "operationId": "71154f7926792e52e9f6d170dff4a59f",
                 "responses": {
                     "200": {
-                        "description": "List of active Grupo Menus",
+                        "description": "List of active Group Menus",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -67,10 +67,10 @@
             },
             "post": {
                 "tags": [
-                    "Grupo Menus"
+                    "Group Menus"
                 ],
-                "summary": "Create a new grupo menu",
-                "operationId": "08de0396b6499f27f598b2ee5863ec9c",
+                "summary": "Create a new Group menu",
+                "operationId": "94a0f1b91d46b17605bbccf98f8daecf",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -102,7 +102,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "New Grupo Menu created",
+                        "description": "New Group Menu created",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -140,18 +140,18 @@
                 }
             }
         },
-        "/api/grupomenu/{id}": {
+        "/api/Groupmenu/{id}": {
             "get": {
                 "tags": [
-                    "Grupo Menus"
+                    "Group Menus"
                 ],
-                "summary": "Show the specified grupo menu",
-                "operationId": "5461037dc438bd93e28eab40d8290f70",
+                "summary": "Show the specified Group menu",
+                "operationId": "c33afb4ae13e4e123f7077b9d8deab0c",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of the Grupo Menu",
+                        "description": "ID of the Group Menu",
                         "required": true,
                         "schema": {
                             "type": "number"
@@ -160,7 +160,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Grupo Menu found",
+                        "description": "Group Menu found",
                         "content": {
                             "application/json": {
                                 "schema": {

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GrupoMenu;
+use App\Models\GroupMenu;
+use HttpException;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -14,16 +17,16 @@ use Illuminate\Http\Request;
  *
  * @OA\Server(url="http://127.0.0.1:8000")
  */
-class GrupoMenuController extends Controller
+class GroupMenuController extends Controller
 {
     /**
-     * Get all grupo menus
+     * Get all Group menus
      * @OA\Get (
-     *     path="/api/grupomenu",
-     *     tags={"Grupo Menus"},
+     *     path="/api/Groupmenu",
+     *     tags={"Group Menus"},
      *     @OA\Response(
      *         response=200,
-     *         description="List of active Grupo Menus",
+     *         description="List of active Group Menus",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 type="array",
@@ -68,7 +71,8 @@ class GrupoMenuController extends Controller
      */
     public function index()
     {
-        return GrupoMenu::all();
+//        return GroupMenu::paginate(5);
+        return GroupMenu::all();
     }
 
     public function create()
@@ -76,12 +80,11 @@ class GrupoMenuController extends Controller
 //
     }
 
-
     /**
-     * Create a new grupo menu
+     * Create a new Group menu
      * @OA\Post (
-     *     path="/api/grupomenu",
-     *     tags={"Grupo Menus"},
+     *     path="/api/Groupmenu",
+     *     tags={"Group Menus"},
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -105,7 +108,7 @@ class GrupoMenuController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="New Grupo Menu created",
+     *         description="New Group Menu created",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="id",
@@ -141,38 +144,36 @@ class GrupoMenuController extends Controller
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(Request $request): GroupMenu|JsonResponse
     {
-//        Validar los datos
+//        Validate data
         $request->validate([
-            'name' => 'required',
-            'icon' => 'required',
-            'order' => 'required',
+            'name' => 'required|string|unique:groupmenu',
+            'icon' => 'required|string',
+            'order' => 'required|integer',
         ]);
 
-//        Crear un Grupo Menu
-        return GrupoMenu::create($request->all());
-
+//        Create a new Group Menu
+        return GroupMenu::create($request->all());
     }
 
-
     /**
-     * Show the specified grupo menu
+     * Show the specified Group menu
      * @OA\Get (
-     *     path="/api/grupomenu/{id}",
-     *     tags={"Grupo Menus"},
+     *     path="/api/Groupmenu/{id}",
+     *     tags={"Group Menus"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the Grupo Menu",
+     *         description="ID of the Group Menu",
      *         @OA\Schema(
      *             type="number"
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Grupo Menu found",
+     *         description="Group Menu found",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="id",
@@ -208,16 +209,27 @@ class GrupoMenuController extends Controller
      *     )
      * )
      */
-    public function show(int $id)
+    public function show(int $id): GroupMenu|JsonResponse
     {
-        return GrupoMenu::find($id);
-    }
+//        Find the Group Menu
+        $groupMenu = GroupMenu::find($id);
 
+//        Error when not found
+        if (!$groupMenu) {
+            return response()->json(
+                ['message' => 'Group Menu not found'], 404
+            );
+        }
+
+//        Return the Group Menu
+//        return $groupMenu->load('optionMenus');
+        return $groupMenu;
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(GrupoMenu $grupoMenu)
+    public function edit(GroupMenu $groupMenu)
     {
 
     }
@@ -225,27 +237,49 @@ class GrupoMenuController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GrupoMenu $grupoMenu)
+    public function update(Request $request, int $id): GroupMenu|JsonResponse
     {
-//        Validar los datos
+//        Find the Group Menu
+        $groupMenu = GroupMenu::find($id);
+
+//        Error when not found
+        if (!$groupMenu) {
+            return response()->json(
+                ['message' => 'Group Menu not found'], 404
+            );
+        }
+
+//        Validate data
         $request->validate([
-            'name' => 'required',
-            'icon' => 'required',
-            'order' => 'required',
+            'name' => 'required|string|unique:groupmenu,name,' . $id . ',id',
+            'icon' => 'required|string',
+            'order' => 'required|integer',
         ]);
 
-//        Actualizar un Grupo Menu
-        $grupoMenu->update($request->all());
-        return $grupoMenu;
+//        Update the Group Menu
+        $groupMenu->update($request->all());
+        return $groupMenu;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(GrupoMenu $grupoMenu)
+    public function destroy(int $id): JsonResponse
     {
-//        Eliminar un Grupo Menu
-        $grupoMenu->delete();
-        return response()->json();
+//        Find the Group Menu
+        $groupMenu = GroupMenu::find($id);
+
+//        Error when not found
+        if (!$groupMenu) {
+            return response()->json(
+                ['message' => 'Group Menu not found'], 404
+            );
+        }
+
+//        Delete the Group Menu
+        $groupMenu->delete();
+        return response()->json(
+            ['message' => 'Option Menu deleted successfully']
+        );
     }
 }

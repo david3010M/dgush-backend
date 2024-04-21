@@ -11,6 +11,11 @@ class Access extends Model
 
     protected $table = 'access';
 
+    protected $fillable = [
+        'optionmenu_id',
+        'typeuser_id',
+    ];
+
     public function optionMenu()
     {
         return $this->belongsTo(OptionMenu::class, 'optionmenu_id');

@@ -11,8 +11,17 @@ class TypeUser extends Model
 
     protected $table = 'typeuser';
 
+    protected $fillable = [
+        'name',
+    ];
+
     public function access()
     {
         return $this->hasMany(Access::class, 'typeuser_id');
+    }
+
+    public function user()
+    {
+        return $this->hasMany(User::class, 'typeuser_id');
     }
 }

@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AccessController;
-use App\Http\Controllers\GrupoMenuController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\TypeUserController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,22 +20,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Rutas de autenticación
-//Route::post('/login', [LoginController::class, 'login']);
-//Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-//
-//Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-//Route::post('/register', [RegisterController::class, 'register']);
+// Rutas para el inicio de sesión y cierre de sesión
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-//Route::middleware(['auth'])->group(function () {
-Route::resource('grupomenu', GrupoMenuController::class);
-Route::resource('optionmenu', OptionMenuController::class);
-Route::resource('access', AccessController::class);
-Route::resource('typeuser', TypeUserController::class);
+// Rutas protegidas con Sanctum
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::resource('groupmenu', GroupMenuController::class);
+    Route::resource('optionmenu', OptionMenuController::class);
+    Route::resource('typeuser', TypeUserController::class);
+    Route::resource('user', UserController::class);
+    Route::resource('access', AccessController::class);
+});
+
 //});
 
 
