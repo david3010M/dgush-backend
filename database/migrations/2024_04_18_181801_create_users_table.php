@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->foreignId('typeuser_id')->constrained('typeuser');
             $table->rememberToken();
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

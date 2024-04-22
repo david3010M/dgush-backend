@@ -11,6 +11,372 @@
         }
     ],
     "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login user",
+                "description": "Authenticate user and generate access token",
+                "operationId": "c373bc4cffa4a56fc64e3979b8ee7b96",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "dgush@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147"
+                                        },
+                                        "user": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "11"
+                                                    },
+                                                    "names": {
+                                                        "type": "string",
+                                                        "example": "D Gush"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "dgush@gmail.com"
+                                                    },
+                                                    "typeuser_id": {
+                                                        "type": "number",
+                                                        "example": "2"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    },
+                                                    "deleted_at": {
+                                                        "type": "string",
+                                                        "example": "null"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "typeuser": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "6"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Admin"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    },
+                                                    "deleted_at": {
+                                                        "type": "string",
+                                                        "example": "null"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "tokenInfo": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "1"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "AuthToken"
+                                                    },
+                                                    "abilities": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "example": "*"
+                                                        }
+                                                    },
+                                                    "expires_at": {
+                                                        "type": "string",
+                                                        "example": "2024-04-22T15:07:59.000000Z"
+                                                    },
+                                                    "tokenable_id": {
+                                                        "type": "number",
+                                                        "example": "11"
+                                                    },
+                                                    "tokenable_type": {
+                                                        "type": "string",
+                                                        "example": "App\\\\Models\\\\User"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout user",
+                "description": "Log out user.",
+                "operationId": "4e7b33fd7773bae847a5407be5a90852",
+                "responses": {
+                    "200": {
+                        "description": "User logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/authenticate": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticate user",
+                "description": "Get user and access token",
+                "operationId": "4768285d6cd8eff30c82c4f6666dacb7",
+                "responses": {
+                    "200": {
+                        "description": "User logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147"
+                                        },
+                                        "user": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "11"
+                                                    },
+                                                    "names": {
+                                                        "type": "string",
+                                                        "example": "D Gush"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "dgush@gmail.com"
+                                                    },
+                                                    "typeuser_id": {
+                                                        "type": "number",
+                                                        "example": "2"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    },
+                                                    "deleted_at": {
+                                                        "type": "string",
+                                                        "example": "null"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "typeuser": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "6"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Admin"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    },
+                                                    "deleted_at": {
+                                                        "type": "string",
+                                                        "example": "null"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "tokenInfo": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "1"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "AuthToken"
+                                                    },
+                                                    "abilities": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "example": "*"
+                                                        }
+                                                    },
+                                                    "expires_at": {
+                                                        "type": "string",
+                                                        "example": "2024-04-22T15:07:59.000000Z"
+                                                    },
+                                                    "tokenable_id": {
+                                                        "type": "number",
+                                                        "example": "11"
+                                                    },
+                                                    "tokenable_type": {
+                                                        "type": "string",
+                                                        "example": "App\\\\Models\\\\User"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T00:09:16.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2024-02-23T12:13:45.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/Groupmenu": {
             "get": {
                 "tags": [
@@ -196,6 +562,43 @@
                         }
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "11"
+                    },
+                    "names": {
+                        "type": "string",
+                        "example": "D Gush"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "dgush@gmail.com"
+                    },
+                    "typeuser_id": {
+                        "type": "number",
+                        "example": "2"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-02-23T00:09:16.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "example": "2024-02-23T12:13:45.000000Z"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "example": "null"
+                    }
+                },
+                "type": "object"
             }
         }
     }

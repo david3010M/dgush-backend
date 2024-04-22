@@ -25,7 +25,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 // Rutas protegidas con Sanctum
@@ -37,7 +37,31 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('access', AccessController::class);
 });
 
-//});
+
+
+/**
+ * @OA\Schema(
+ *     schema="User",
+ *     type="object",
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         format="int64",
+ *         description="User unique ID"
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="User name"
+ *     ),
+ *     @OA\Property(
+ *         property="email",
+ *         type="string",
+ *         description="User email"
+ *     )
+ * )
+ */
+
 
 
 
