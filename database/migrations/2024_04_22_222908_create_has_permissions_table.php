@@ -10,13 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('groupmenu', function (Blueprint $table) {
+        Schema::create('has_permission', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('icon');
-            $table->integer('order')->unique();
+            $table->foreignId('typeuser_id')->constrained('typeuser');
+            $table->foreignId('permission_id')->constrained('permission');
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
         });
     }
 
@@ -25,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('groupmenu');
+        Schema::dropIfExists('has_permission');
     }
 };

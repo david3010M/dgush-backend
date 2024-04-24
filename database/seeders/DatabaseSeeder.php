@@ -19,20 +19,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-        GroupMenu::factory(10)->create();
-        TypeUser::factory(10)->create();
-        User::factory(10)->create();
-        OptionMenu::factory(10)->create();
-        Access::factory(10)->create();
-
-
-        User::factory()->create([
-            'names' => 'D Gush',
-            'email' => 'dgush@gmail.com',
-            'password' => Hash::make('12345678'),
-            'typeuser_id' => fake()->numberBetween(1, 10),
-            'remember_token' => Str::random(10),
-        ]);
+        $this->call(GroupMenuSeeder::class);
+        $this->call(TypeUserSeeder::class);
+        $this->call(PermissionSeeder::class);
+        $this->call(OptionMenuSeeder::class);
+        $this->call(HasPermissionSeeder::class);
+        $this->call(AccessSeeder::class);
+        $this->call(UserSeeder::class);
     }
 }

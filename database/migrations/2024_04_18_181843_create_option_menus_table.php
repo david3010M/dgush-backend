@@ -13,9 +13,9 @@ return new class extends Migration {
     {
         Schema::create('optionmenu', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('route');
-            $table->integer('order');
+            $table->string('name')->unique();
+            $table->string('route')->unique();
+            $table->integer('order')->unique();
             $table->string('icon');
             $table->foreignId('groupmenu_id')->constrained('groupmenu');
             $table->timestamps();

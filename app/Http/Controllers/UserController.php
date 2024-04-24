@@ -10,25 +10,11 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return User::all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // Validar los datos
@@ -58,9 +44,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id): User|JsonResponse
     {
 //        Find a user by ID
@@ -77,17 +60,6 @@ class UserController extends Controller
         return $user;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id): User|JsonResponse
     {
 //        Find a user by ID
@@ -108,6 +80,9 @@ class UserController extends Controller
             'typeuser_id' => 'required|integer'
         ]);
 
+        // Cifrar la contraseña
+        $hashedPassword = Hash::make($request->password);
+
 //        Validate typeuser_id
         if (!Typeuser::find($request->typeuser_id)) {
             return response()->json(
@@ -115,8 +90,13 @@ class UserController extends Controller
             );
         }
 
-//        Update the user
-        $user->update($request->all());
+//        Update with password hashed
+        $user->update([
+            'names' => $request->names,
+            'email' => $request->email,
+            'password' => $hashedPassword,
+            'typeuser_id' => $request->typeuser_id
+        ]);
 
 //        Return the user
         return $user;
@@ -134,6 +114,13 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(
                 ['message' => 'User not found'], 404
+            );
+        }
+
+//        If the user is an admin, return a 400 response
+        if ($user->typeuser_id === 1) {
+            return response()->json(
+                ['message' => 'You cannot delete the admin user'], 400
             );
         }
 

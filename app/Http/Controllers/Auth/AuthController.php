@@ -204,7 +204,7 @@ class AuthController extends Controller
             // Generar un token de acceso para el usuario
             $token = $user->createToken('AuthToken', expiresAt: now()->addMinutes(240));
 
-            $typeuser = $user->typeuser()->first();
+            $typeuser = $user->typeuser()->first()->load('access', 'hasPermission');
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
@@ -418,7 +418,7 @@ class AuthController extends Controller
         $token = $request->bearerToken();
 
         if ($user) {
-            $typeuser = $user->typeuser()->first();
+            $typeuser = $user->typeuser()->first()->load('access', 'hasPermission');
 
             return response()->json([
                 'access_token' => $token,

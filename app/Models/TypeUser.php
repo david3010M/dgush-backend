@@ -24,4 +24,9 @@ class TypeUser extends Model
     {
         return $this->hasMany(User::class, 'typeuser_id');
     }
+
+    public function hasPermission()
+    {
+        return $this->hasMany(HasPermission::class, 'typeuser_id');
+    }
 }

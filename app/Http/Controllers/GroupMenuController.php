@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
  */
 class GroupMenuController extends Controller
 {
+
+
     /**
      * Get all Group menus
      * @OA\Get (
@@ -73,11 +75,6 @@ class GroupMenuController extends Controller
     {
 //        return GroupMenu::paginate(5);
         return GroupMenu::all();
-    }
-
-    public function create()
-    {
-//
     }
 
     /**
@@ -150,7 +147,7 @@ class GroupMenuController extends Controller
         $request->validate([
             'name' => 'required|string|unique:groupmenu',
             'icon' => 'required|string',
-            'order' => 'required|integer',
+            'order' => 'required|integer|unique:groupmenu',
         ]);
 
 //        Create a new Group Menu
@@ -226,17 +223,7 @@ class GroupMenuController extends Controller
         return $groupMenu;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(GroupMenu $groupMenu)
-    {
 
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, int $id): GroupMenu|JsonResponse
     {
 //        Find the Group Menu
@@ -253,7 +240,7 @@ class GroupMenuController extends Controller
         $request->validate([
             'name' => 'required|string|unique:groupmenu,name,' . $id . ',id',
             'icon' => 'required|string',
-            'order' => 'required|integer',
+            'order' => 'required|integer|unique:groupmenu,order,' . $id . ',id',
         ]);
 
 //        Update the Group Menu
@@ -261,9 +248,6 @@ class GroupMenuController extends Controller
         return $groupMenu;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(int $id): JsonResponse
     {
 //        Find the Group Menu
