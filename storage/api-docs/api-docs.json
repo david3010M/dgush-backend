@@ -114,48 +114,13 @@
                                                 "type": "object"
                                             }
                                         },
-                                        "tokenInfo": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "number",
-                                                        "example": "1"
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "AuthToken"
-                                                    },
-                                                    "abilities": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "example": "*"
-                                                        }
-                                                    },
-                                                    "expires_at": {
-                                                        "type": "string",
-                                                        "example": "2024-04-22T15:07:59.000000Z"
-                                                    },
-                                                    "tokenable_id": {
-                                                        "type": "number",
-                                                        "example": "11"
-                                                    },
-                                                    "tokenable_type": {
-                                                        "type": "string",
-                                                        "example": "App\\\\Models\\\\User"
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T00:09:16.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T12:13:45.000000Z"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
+                                        "optionMenuAccess": {
+                                            "type": "string",
+                                            "example": "1, 2, 3, 4"
+                                        },
+                                        "permissions": {
+                                            "type": "string",
+                                            "example": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
                                         }
                                     },
                                     "type": "object"
@@ -171,7 +136,23 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthenticated."
+                                            "example": "Unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Credentials are invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials."
                                         }
                                     },
                                     "type": "object"
@@ -309,48 +290,13 @@
                                                 "type": "object"
                                             }
                                         },
-                                        "tokenInfo": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "number",
-                                                        "example": "1"
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "AuthToken"
-                                                    },
-                                                    "abilities": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "example": "*"
-                                                        }
-                                                    },
-                                                    "expires_at": {
-                                                        "type": "string",
-                                                        "example": "2024-04-22T15:07:59.000000Z"
-                                                    },
-                                                    "tokenable_id": {
-                                                        "type": "number",
-                                                        "example": "11"
-                                                    },
-                                                    "tokenable_type": {
-                                                        "type": "string",
-                                                        "example": "App\\\\Models\\\\User"
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T00:09:16.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T12:13:45.000000Z"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
+                                        "optionMenuAccess": {
+                                            "type": "string",
+                                            "example": "1, 2, 3, 4"
+                                        },
+                                        "permissions": {
+                                            "type": "string",
+                                            "example": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
                                         }
                                     },
                                     "type": "object"

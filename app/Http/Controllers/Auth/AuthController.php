@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\TypeUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -118,55 +120,15 @@ class AuthController extends Controller
      *                  )
      *              ),
      *              @OA\Property(
-     *                   property="tokenInfo",
-     *                   type="array",
-     *                   @OA\Items(
-     *                       type="object",
-     *                       @OA\Property(
-     *                           property="id",
-     *                           type="number",
-     *                           example="1"
-     *                       ),
-     *                       @OA\Property(
-     *                           property="name",
-     *                           type="string",
-     *                           example="AuthToken"
-     *                       ),
-     *                       @OA\Property(
-     *                           property="abilities",
-     *                           type="array",
-     *                           @OA\Items(
-     *                               type="object",
-     *                               example="*"
-     *                           )
-     *                       ),
-     *                       @OA\Property(
-     *                           property="expires_at",
-     *                           type="string",
-     *                           example="2024-04-22T15:07:59.000000Z",
-     *                       ),
-     *                       @OA\Property(
-     *                           property="tokenable_id",
-     *                           type="number",
-     *                           example="11",
-     *                       ),
-     *                       @OA\Property(
-     *                           property="tokenable_type",
-     *                           type="string",
-     *                           example="App\\Models\\User",
-     *                       ),
-     *                       @OA\Property(
-     *                           property="created_at",
-     *                           type="string",
-     *                           example="2024-02-23T00:09:16.000000Z"
-     *                       ),
-     *                       @OA\Property(
-     *                           property="updated_at",
-     *                           type="string",
-     *                           example="2024-02-23T12:13:45.000000Z"
-     *                       ),
-     *                   )
-     *               )
+     *                  property="optionMenuAccess",
+     *                  type="string",
+     *                  example="1, 2, 3, 4"
+     *              ),
+     *              @OA\Property(
+     *                  property="permissions",
+     *                  type="string",
+     *                  example="1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+     *              )
      *         )
      *     ),
      *      @OA\Response(
@@ -176,10 +138,21 @@ class AuthController extends Controller
      *               @OA\Property(
      *                   property="message",
      *                   type="string",
-     *                   example="Unauthenticated."
+     *                   example="Unauthorized."
      *              )
      *           )
-     *      )
+     *      ),
+     *       @OA\Response(
+     *           response=400,
+     *           description="Credentials are invalid",
+     *            @OA\JsonContent(
+     *                @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    example="Invalid credentials."
+     *               )
+     *            )
+     *       )
      * )
      */
     public function login(Request $request)
@@ -204,13 +177,34 @@ class AuthController extends Controller
             // Generar un token de acceso para el usuario
             $token = $user->createToken('AuthToken', expiresAt: now()->addMinutes(240));
 
-            $typeuser = $user->typeuser()->first()->load('access', 'hasPermission');
+//            TYPEUSER
+            $typeuser = $user->typeuser()->first();
+
+//            ACCESS IN A STRING FORMAT
+            $typeuserAccess = $typeuser->access()->get();
+            $access = '';
+            foreach ($typeuserAccess as $item) {
+                $access .= $item->id . ', ';
+            }
+//            DELETE THE LAST COMMA
+            $access = substr($access, 0, -2);
+
+//            PERMISSIONS IN A STRING FORMAT
+            $typeuserHasPermission = $typeuser->hasPermission()->get();
+            $permissions = '';
+            foreach ($typeuserHasPermission as $item) {
+                $permissions .= $item->id . ', ';
+            }
+//            DELETE THE LAST COMMA
+            $permissions = substr($permissions, 0, -2);
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
                 'user' => $user,
                 'typeuser' => $typeuser,
-                'tokenInfo' => $token->accessToken
+                'optionMenuAccess' => $access,
+                'permissions' => $permissions
+
             ]);
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -347,55 +341,15 @@ class AuthController extends Controller
      *                       )
      *                  )
      *              ),
-     *              @OA\Property(
-     *                   property="tokenInfo",
-     *                   type="array",
-     *                   @OA\Items(
-     *                       type="object",
-     *                       @OA\Property(
-     *                           property="id",
-     *                           type="number",
-     *                           example="1"
-     *                       ),
-     *                       @OA\Property(
-     *                           property="name",
-     *                           type="string",
-     *                           example="AuthToken"
-     *                       ),
-     *                       @OA\Property(
-     *                           property="abilities",
-     *                           type="array",
-     *                           @OA\Items(
-     *                               type="object",
-     *                               example="*"
-     *                           )
-     *                       ),
-     *                       @OA\Property(
-     *                           property="expires_at",
-     *                           type="string",
-     *                           example="2024-04-22T15:07:59.000000Z",
-     *                       ),
-     *                       @OA\Property(
-     *                           property="tokenable_id",
-     *                           type="number",
-     *                           example="11",
-     *                       ),
-     *                       @OA\Property(
-     *                           property="tokenable_type",
-     *                           type="string",
-     *                           example="App\\Models\\User",
-     *                       ),
-     *                       @OA\Property(
-     *                           property="created_at",
-     *                           type="string",
-     *                           example="2024-02-23T00:09:16.000000Z"
-     *                       ),
-     *                       @OA\Property(
-     *                           property="updated_at",
-     *                           type="string",
-     *                           example="2024-02-23T12:13:45.000000Z"
-     *                       ),
-     *                   )
+     *               @OA\Property(
+     *                   property="optionMenuAccess",
+     *                   type="string",
+     *                   example="1, 2, 3, 4"
+     *               ),
+     *               @OA\Property(
+     *                   property="permissions",
+     *                   type="string",
+     *                   example="1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
      *               )
      *         )
      *     ),
@@ -418,13 +372,33 @@ class AuthController extends Controller
         $token = $request->bearerToken();
 
         if ($user) {
-            $typeuser = $user->typeuser()->first()->load('access', 'hasPermission');
+            $typeuser = $user->typeuser()->first();
+
+//            ACCESS IN A JUST STRING TYPE WITH COMMA
+            $typeuserAccess = $typeuser->access()->get();
+            $access = '';
+            foreach ($typeuserAccess as $item) {
+                $access .= $item->id . ', ';
+            }
+//            DELETE THE LAST COMMA
+            $access = substr($access, 0, -2);
+
+//            PERMISSIONS IN A STRING FORMAT
+            $typeuserHasPermission = $typeuser->hasPermission()->get();
+            $permissions = '';
+            foreach ($typeuserHasPermission as $item) {
+                $permissions .= $item->id . ', ';
+            }
+//            DELETE THE LAST COMMA
+            $permissions = substr($permissions, 0, -2);
 
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
                 'typeuser' => $typeuser,
-                'tokenInfo' => $user->currentAccessToken()
+                'optionMenuAccess' => $access,
+                'permissions' => $permissions
+
             ]);
         } else {
             return response()->json(['message' => 'User not authenticated'], 401);

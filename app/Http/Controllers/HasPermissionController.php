@@ -26,8 +26,15 @@ class HasPermissionController extends Controller
             return $validation;
         }
 
-//        TYPEUSER ID
+//        TYPEUSER ID FROM REQUEST
         $typeuser_id = $request->input('typeuser_id');
+
+//        FIND TYPEUSER
+        $typeuser = TypeUser::find($typeuser_id);
+        if (!$typeuser) {
+            return response()->json(['message' => 'Typeuser not found'], 404);
+        }
+
 
 //        CREATE PERMISSION FROM A STRING OF PERMISSIONS WITH COMMA
         $permissions = explode(',', $request->input('permission_id'));
@@ -46,27 +53,30 @@ class HasPermissionController extends Controller
 
     public function show(int $id)
     {
-//        FIND PERMISSION
-        $hasPermission = HasPermission::find($id);
+//        FIND TYPEUSER
+        $typeuser = TypeUser::find($id);
 
-        if (!$hasPermission) {
-            return response()->json(['message' => 'HasPermission not found'], 404);
+//        ERROR MESSAGE
+        if (!$typeuser) {
+            return response()->json(['message' => 'Typeuser not found'], 404);
         }
 
-        return $hasPermission;
+//        FIND PERMISSIONS
+        $hasPermission = HasPermission::where('typeuser_id', $id)->get();
+
+//        RETURN PERMISSIONS BETWEEN COMMAS
+        $permissions = [];
+        foreach ($hasPermission as $permission) {
+            $permissions[] = $permission->permission_id;
+        }
+
+        $permissions = implode(', ', $permissions);
+
+        return response()->json(['permissions' => $permissions]);
     }
 
     public function update(Request $request, int $id)
     {
-////        FIND PERMISSION
-//        $hasPermission = HasPermission::find($id);
-//
-////        ERROR MESSAGE
-//        if (!$hasPermission) {
-//            return response()->json(['message' => 'HasPermission not found'], 404);
-//        }
-
-
 //        NOT UPDATE ADMIN PERMISSION
         if ($id === 1) {
             return response()->json(['message' => 'You cannot update the admin permission'], 400);

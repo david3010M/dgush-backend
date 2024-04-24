@@ -20,6 +20,7 @@ class TypeUser extends Model
         return $this->hasMany(Access::class, 'typeuser_id');
     }
 
+
     public function user()
     {
         return $this->hasMany(User::class, 'typeuser_id');
