@@ -5,6 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema(
+ *     schema="Access",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="optionmenu_id", type="integer", example="1"),
+ *     @OA\Property(property="typeuser_id", type="integer", example="1"),
+ *     @OA\Property(property="created_at", type="string", example="2021-08-25T20:00:00"),
+ *     @OA\Property(property="updated_at", type="string", example="2021-08-25T20:00:00"),
+ *     @OA\Property(property="deleted_at", type="string", example="2021-08-25T20:00:00"), *
+ * )
+ */
 class Access extends Model
 {
     use HasFactory;

@@ -12,7 +12,6 @@ class PermissionController extends Controller
      *
      * @OA\Get(
      *      path="/permissions",
-     *      operationId="getPermissionsList",
      *      tags={"Permissions"},
      *      summary="Get list of permissions",
      *      description="Returns list of permissions",
@@ -37,7 +36,6 @@ class PermissionController extends Controller
     /**
      * @OA\Get(
      *      path="/permissions/{id}",
-     *      operationId="getPermissionById",
      *      tags={"Permissions"},
      *      summary="Get permission information",
      *      description="Returns permission data",

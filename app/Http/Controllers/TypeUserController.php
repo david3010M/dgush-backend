@@ -14,7 +14,6 @@ class TypeUserController extends Controller
      *     path="/api/typeuser",
      *     tags={"Type User"},
      *     summary="List Type User",
-     *     operationId="index",
      *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
@@ -43,7 +42,6 @@ class TypeUserController extends Controller
      *     path="/api/typeuser",
      *     tags={"Type User"},
      *     summary="Create Type User",
-     *     operationId="store",
      *     security={{"sanctum":{}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -99,7 +97,6 @@ class TypeUserController extends Controller
      *     path="/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Show Type User",
-     *     operationId="show",
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="id",
@@ -160,7 +157,6 @@ class TypeUserController extends Controller
      *     path="/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Update Type User",
-     *     operationId="update",
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *     name="id",
@@ -246,7 +242,6 @@ class TypeUserController extends Controller
      *     path="/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Delete Type User",
-     *     operationId="destroy",
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="id",

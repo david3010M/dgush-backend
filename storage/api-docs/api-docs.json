@@ -11,6 +11,431 @@
         }
     ],
     "paths": {
+        "/api/access": {
+            "get": {
+                "tags": [
+                    "Access"
+                ],
+                "summary": "Get all accesses",
+                "operationId": "fe13c286e3dba76eebdca68e60c7ba23",
+                "responses": {
+                    "200": {
+                        "description": "Returns all accesses",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Access"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "TypeUser Accesses"
+                ],
+                "summary": "Add access to typeuser",
+                "operationId": "bf19bc99be88d59a76325a3f9b24157b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "optionmenu_id",
+                                    "typeuser_id"
+                                ],
+                                "properties": {
+                                    "optionmenu_id": {
+                                        "type": "string",
+                                        "example": "1,2,3"
+                                    },
+                                    "typeuser_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Optionmenus successfully added to the typeuser",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Optionmenus 1, 2, 3 successfully added to the typeuser"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The access already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The access already exists"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Typeuser or optionmenu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Typeuser not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The optionmenu_id cannot have a comma at the end",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The optionmenu_id cannot have a comma at the end"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/access/{id}": {
+            "get": {
+                "tags": [
+                    "TypeUser Accesses"
+                ],
+                "summary": "Get access",
+                "operationId": "78477fc83f307550d95b7c6261d8922e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Access ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the accesses of the typeuser",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "accesses": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Access"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Typeuser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Typeuser not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "TypeUser Accesses"
+                ],
+                "summary": "Update access",
+                "operationId": "c64ab078d34c5ab1a7de78dcb707fbb9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Access ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "optionmenu_id"
+                                ],
+                                "properties": {
+                                    "optionmenu_id": {
+                                        "type": "string",
+                                        "example": "1,2,3"
+                                    },
+                                    "typeuser_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Optionmenus successfully updated to the typeuser",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Optionmenus 1, 2, 3 successfully updated to the typeuser"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "You cannot update the admin access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You cannot update the admin access"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Optionmenu or typeuser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Optionmenu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The optionmenu_id cannot have a comma at the end",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The optionmenu_id cannot have a comma at the end"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Access"
+                ],
+                "summary": "Delete access",
+                "operationId": "3d865e61bb6b2a20ff7cb59a9bd5a339",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Access ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Access deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "You cannot delete the admin access",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You cannot delete the admin access"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Access not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
@@ -1598,7 +2023,7 @@
                 ],
                 "summary": "Get list of permissions",
                 "description": "Returns list of permissions",
-                "operationId": "getPermissionsList",
+                "operationId": "6bb707da42346cbe4cbe9660f90236d5",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -1631,7 +2056,7 @@
                 ],
                 "summary": "Get permission information",
                 "description": "Returns permission data",
-                "operationId": "getPermissionById",
+                "operationId": "611dd67d5d9923b7e324a577b4234956",
                 "parameters": [
                     {
                         "name": "id",
@@ -1700,7 +2125,7 @@
                     "Type User"
                 ],
                 "summary": "List Type User",
-                "operationId": "index",
+                "operationId": "849ca8a5118019fabc20de1810064f15",
                 "responses": {
                     "200": {
                         "description": "List of Type User",
@@ -1743,7 +2168,7 @@
                     "Type User"
                 ],
                 "summary": "Create Type User",
-                "operationId": "store",
+                "operationId": "5e438f37cd5e916af2478fa9dc566d25",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1832,7 +2257,7 @@
                     "Type User"
                 ],
                 "summary": "Show Type User",
-                "operationId": "show",
+                "operationId": "1feb5701e0680f24553cb7d9702b7fca",
                 "parameters": [
                     {
                         "name": "id",
@@ -1900,7 +2325,7 @@
                     "Type User"
                 ],
                 "summary": "Update Type User",
-                "operationId": "update",
+                "operationId": "2d62baac4ed11e3f1feb7fc6cc9e2c2a",
                 "parameters": [
                     {
                         "name": "id",
@@ -2016,7 +2441,7 @@
                     "Type User"
                 ],
                 "summary": "Delete Type User",
-                "operationId": "destroy",
+                "operationId": "cd3e4d577c1a3ec4c8e40d2ee0377ea1",
                 "parameters": [
                     {
                         "name": "id",
@@ -2598,6 +3023,35 @@
     },
     "components": {
         "schemas": {
+            "Access": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "optionmenu_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "typeuser_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2021-08-25T20:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "example": "2021-08-25T20:00:00"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "example": "2021-08-25T20:00:00"
+                    }
+                },
+                "type": "object"
+            },
             "GroupMenu": {
                 "title": "GroupMenu",
                 "properties": {
