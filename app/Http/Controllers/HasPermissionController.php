@@ -22,6 +22,13 @@ class HasPermissionController extends Controller
 //        VALIDATE DATA
         $validation = $this->validateHasPermission($request);
 
+//        VALIDATE THE TYPEUSER_ID AND PERMISSION_ID ARE UNIQUE BOTH
+        if (HasPermission::where('typeuser_id', $request->typeuser_id)
+            ->where('permission_id', $request->permission_id)
+            ->exists()) {
+            return response()->json(['message' => 'The permission already exists.'], 400);
+        }
+
         if ($validation->getStatusCode() !== 200) {
             return $validation;
         }
@@ -61,18 +68,10 @@ class HasPermissionController extends Controller
             return response()->json(['message' => 'Typeuser not found'], 404);
         }
 
-//        FIND PERMISSIONS
-        $hasPermission = HasPermission::where('typeuser_id', $id)->get();
-
-//        RETURN PERMISSIONS BETWEEN COMMAS
-        $permissions = [];
-        foreach ($hasPermission as $permission) {
-            $permissions[] = $permission->permission_id;
-        }
-
-        $permissions = implode(', ', $permissions);
-
-        return response()->json(['permissions' => $permissions]);
+//        RETURN PERMISSIONS
+        return response()->json(
+            ['permissions' => $typeuser->getHasPermission($id)]
+        );
     }
 
     public function update(Request $request, int $id)

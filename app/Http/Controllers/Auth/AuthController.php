@@ -181,29 +181,17 @@ class AuthController extends Controller
             $typeuser = $user->typeuser()->first();
 
 //            ACCESS IN A STRING FORMAT
-            $typeuserAccess = $typeuser->access()->get();
-            $access = '';
-            foreach ($typeuserAccess as $item) {
-                $access .= $item->id . ', ';
-            }
-//            DELETE THE LAST COMMA
-            $access = substr($access, 0, -2);
+            $typeuserAccess = $typeuser->getAccess($typeuser->id);
 
 //            PERMISSIONS IN A STRING FORMAT
-            $typeuserHasPermission = $typeuser->hasPermission()->get();
-            $permissions = '';
-            foreach ($typeuserHasPermission as $item) {
-                $permissions .= $item->id . ', ';
-            }
-//            DELETE THE LAST COMMA
-            $permissions = substr($permissions, 0, -2);
+            $typeuserHasPermission = $typeuser->getHasPermission($typeuser->id);
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
                 'user' => $user,
                 'typeuser' => $typeuser,
-                'optionMenuAccess' => $access,
-                'permissions' => $permissions
+                'optionMenuAccess' => $typeuserAccess,
+                'permissions' => $typeuserHasPermission
 
             ]);
         } else {
@@ -375,29 +363,17 @@ class AuthController extends Controller
             $typeuser = $user->typeuser()->first();
 
 //            ACCESS IN A JUST STRING TYPE WITH COMMA
-            $typeuserAccess = $typeuser->access()->get();
-            $access = '';
-            foreach ($typeuserAccess as $item) {
-                $access .= $item->id . ', ';
-            }
-//            DELETE THE LAST COMMA
-            $access = substr($access, 0, -2);
+            $typeuserAccess = $typeuser->getAccess($typeuser->id);
 
 //            PERMISSIONS IN A STRING FORMAT
-            $typeuserHasPermission = $typeuser->hasPermission()->get();
-            $permissions = '';
-            foreach ($typeuserHasPermission as $item) {
-                $permissions .= $item->id . ', ';
-            }
-//            DELETE THE LAST COMMA
-            $permissions = substr($permissions, 0, -2);
+            $typeuserHasPermission = $typeuser->getHasPermission($typeuser->id);
 
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
                 'typeuser' => $typeuser,
-                'optionMenuAccess' => $access,
-                'permissions' => $permissions
+                'optionMenuAccess' => $typeuserAccess,
+                'permissions' => $typeuserHasPermission
 
             ]);
         } else {
