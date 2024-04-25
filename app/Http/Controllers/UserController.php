@@ -23,7 +23,14 @@ class UserController extends Controller
      *              type="array",
      *              @OA\Items(ref="#/components/schemas/User")
      *              )
+     *          ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthenticated.")
      *          )
+     *      )
      * )
      *
      */

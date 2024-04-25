@@ -74,6 +74,20 @@ class TypeUserController extends Controller
             );
         }
 
+//        VALIDATE IF TYPEUSER HAS ANY ACCESSES ASSOCIATED
+        if ($typeUser->access->count() > 0) {
+            return response()->json(
+                ['message' => 'Type User has accesses associated'], 409
+            );
+        }
+
+//        VALIDATE IF TYPEUSER HAS ANY PERMISSIONS ASSOCIATED
+        if ($typeUser->hasPermission->count() > 0) {
+            return response()->json(
+                ['message' => 'Type User has permissions associated'], 409
+            );
+        }
+
 //        Delete Type User
         $typeUser->delete();
         return response()->json(

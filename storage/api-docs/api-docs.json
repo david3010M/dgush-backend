@@ -336,38 +336,23 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupMenu"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "number",
-                                                        "example": "1"
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "Profile"
-                                                    },
-                                                    "order": {
-                                                        "type": "number",
-                                                        "example": "10"
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T00:09:16.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T12:13:45.000000Z"
-                                                    },
-                                                    "deleted_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T12:30:45.000000Z"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
                                         }
                                     },
                                     "type": "object"
@@ -396,7 +381,7 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "Profile"
+                                        "example": "Admin"
                                     },
                                     "icon": {
                                         "type": "string",
@@ -404,7 +389,7 @@
                                     },
                                     "order": {
                                         "type": "number",
-                                        "example": "10"
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -418,30 +403,20 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "$ref": "#/components/schemas/GroupMenu"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
                                     "properties": {
-                                        "id": {
-                                            "type": "number",
-                                            "example": "1"
-                                        },
-                                        "name": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "Profile"
-                                        },
-                                        "order": {
-                                            "type": "number",
-                                            "example": "10"
-                                        },
-                                        "created_at": {
-                                            "type": "string",
-                                            "example": "2024-02-23T00:09:16.000000Z"
-                                        },
-                                        "updated_at": {
-                                            "type": "string",
-                                            "example": "2024-02-23T12:13:45.000000Z"
-                                        },
-                                        "deleted_at": {
-                                            "type": "string",
-                                            "example": "2024-02-23T12:30:45.000000Z"
+                                            "example": "Unauthenticated"
                                         }
                                     },
                                     "type": "object"
@@ -506,6 +481,213 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Group Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Group Menus"
+                ],
+                "summary": "Update the specified Group menu",
+                "operationId": "c640c7c651dfddfe92cf257f81ea0855",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Group Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "icon",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    },
+                                    "order": {
+                                        "type": "number",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Group Menu updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GroupMenu"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Group Menus"
+                ],
+                "summary": "Remove the specified Group menu",
+                "operationId": "eb6d59861fc291743d52d192a5818c4f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Group Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Group Menu deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Group Menu has option menus associated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu has option menus associated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -527,6 +709,22 @@
                                     "items": {
                                         "$ref": "#/components/schemas/User"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -990,6 +1188,40 @@
     },
     "components": {
         "schemas": {
+            "GroupMenu": {
+                "title": "GroupMenu",
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "icon": {
+                        "type": "string",
+                        "example": "fas fa-user"
+                    },
+                    "order": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-02-23T00:09:16.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "example": "2024-02-23T12:13:45.000000Z"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "example": "null"
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "properties": {
                     "id": {

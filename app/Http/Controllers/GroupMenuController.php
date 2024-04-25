@@ -20,7 +20,6 @@ use Illuminate\Http\Request;
 class GroupMenuController extends Controller
 {
 
-
     /**
      * Get all Group menus
      * @OA\Get (
@@ -30,42 +29,18 @@ class GroupMenuController extends Controller
      *         response=200,
      *         description="List of active Group Menus",
      *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/GroupMenu")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
      *             @OA\Property(
-     *                 type="array",
-     *                 property="data",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(
-     *                         property="id",
-     *                         type="number",
-     *                         example="1"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="name",
-     *                         type="string",
-     *                         example="Profile"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="order",
-     *                         type="number",
-     *                         example="10"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="created_at",
-     *                         type="string",
-     *                         example="2024-02-23T00:09:16.000000Z"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="updated_at",
-     *                         type="string",
-     *                         example="2024-02-23T12:13:45.000000Z"
-     *                     ),
-     *                      @OA\Property(
-     *                          property="deleted_at",
-     *                          type="string",
-     *                          example="2024-02-23T12:30:45.000000Z"
-     *                      )
-     *                 )
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthenticated"
      *             )
      *         )
      *     )
@@ -89,7 +64,7 @@ class GroupMenuController extends Controller
      *              @OA\Property(
      *                  property="name",
      *                  type="string",
-     *                  example="Profile"
+     *                  example="Admin"
      *              ),
      *              @OA\Property(
      *                  property="icon",
@@ -99,7 +74,7 @@ class GroupMenuController extends Controller
      *              @OA\Property(
      *                  property="order",
      *                  type="number",
-     *                  example="10"
+     *                  example="1"
      *              )
      *          )
      *     ),
@@ -107,38 +82,20 @@ class GroupMenuController extends Controller
      *         response=200,
      *         description="New Group Menu created",
      *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="id",
-     *                 type="number",
-     *                 example="1"
-     *             ),
-     *             @OA\Property(
-     *                 property="name",
-     *                 type="string",
-     *                 example="Profile"
-     *             ),
-     *             @OA\Property(
-     *                 property="order",
-     *                 type="number",
-     *                 example="10"
-     *             ),
-     *             @OA\Property(
-     *                 property="created_at",
-     *                 type="string",
-     *                 example="2024-02-23T00:09:16.000000Z"
-     *             ),
-     *             @OA\Property(
-     *                 property="updated_at",
-     *                 type="string",
-     *                 example="2024-02-23T12:13:45.000000Z"
-     *             ),
-     *             @OA\Property(
-     *                 property="deleted_at",
-     *                 type="string",
-     *                 example="2024-02-23T12:30:45.000000Z"
-     *             )
+     *             ref="#/components/schemas/GroupMenu"
      *         )
-     *     )
+     *     ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthorized",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="message",
+     *                  type="string",
+     *                  example="Unauthenticated"
+     *              )
+     *          )
+     *      )
      * )
      */
     public function store(Request $request): GroupMenu|JsonResponse
@@ -203,6 +160,28 @@ class GroupMenuController extends Controller
      *                 example="2024-02-23T12:30:45.000000Z"
      *             )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Group Menu not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Group Menu not found"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthenticated"
+     *             )
+     *         )
      *     )
      * )
      */
@@ -224,6 +203,72 @@ class GroupMenuController extends Controller
     }
 
 
+    /**
+     * Update the specified Group menu
+     * @OA\Put (
+     *     path="/api/Groupmenu/{id}",
+     *     tags={"Group Menus"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the Group Menu",
+     *         @OA\Schema(
+     *             type="number"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name", "icon", "order"},
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  example="Admin"
+     *              ),
+     *              @OA\Property(
+     *                  property="icon",
+     *                  type="string",
+     *                  example="fas fa-user"
+     *              ),
+     *              @OA\Property(
+     *                  property="order",
+     *                  type="number",
+     *                  example="1"
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Group Menu updated",
+     *         @OA\JsonContent(
+     *             ref="#/components/schemas/GroupMenu"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Group Menu not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Group Menu not found"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function update(Request $request, int $id): GroupMenu|JsonResponse
     {
 //        Find the Group Menu
@@ -248,6 +293,68 @@ class GroupMenuController extends Controller
         return $groupMenu;
     }
 
+
+    /**
+     * Remove the specified Group menu
+     * @OA\Delete (
+     *     path="/api/Groupmenu/{id}",
+     *     tags={"Group Menus"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the Group Menu",
+     *         @OA\Schema(
+     *             type="number"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Group Menu deleted",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Group Menu deleted successfully"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Group Menu not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Group Menu not found"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthenticated"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Group Menu has option menus associated",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Group Menu has option menus associated"
+     *             )
+     *         )
+     *     )
+     * )
+     *
+     */
     public function destroy(int $id): JsonResponse
     {
 //        Find the Group Menu
@@ -257,6 +364,13 @@ class GroupMenuController extends Controller
         if (!$groupMenu) {
             return response()->json(
                 ['message' => 'Group Menu not found'], 404
+            );
+        }
+
+//        VALIDATE IF GROUPMENU HAS ANY OPTIONMENUS ASSOCIATED
+        if ($groupMenu->optionMenus->count() > 0) {
+            return response()->json(
+                ['message' => 'Group Menu has option menus associated'], 409
             );
         }
 
