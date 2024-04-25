@@ -25,6 +25,7 @@ class GroupMenuController extends Controller
      * @OA\Get (
      *     path="/api/Groupmenu",
      *     tags={"Group Menus"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="List of active Group Menus",

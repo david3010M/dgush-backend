@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('typeuser_id')->constrained('typeuser');
             $table->foreignId('permission_id')->constrained('permission');
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

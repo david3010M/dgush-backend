@@ -12,11 +12,78 @@ use Illuminate\Http\Request;
 
 class HasPermissionController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/haspermission",
+     *     summary="Get all haspermission",
+     *     tags={"HasPermission"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get all haspermission",
+     *         @OA\JsonContent(
+     *              type="array",
+     *              @OA\Items(ref="#/components/schemas/HasPermission")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         return HasPermission::all();
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/haspermission",
+     *     summary="Store haspermission",
+     *     tags={"Permission TypeUser"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *              required={"permission_id", "typeuser_id"},
+     *              @OA\Property(property="permission_id", type="string", example="1,2,3"),
+     *              @OA\Property(property="typeuser_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Permissions successfully added to the typeuser",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Permissions 1, 2, 3 successfully added to the typeuser")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="The permission already exists",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The permission already exists.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Typeuser or Permission not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Typeuser not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
 //        VALIDATE DATA
@@ -58,6 +125,46 @@ class HasPermissionController extends Controller
         return response()->json(['message' => 'Permissions ' . $permissionsAdded . ' successfully added to the typeuser']);
     }
 
+
+    /**
+     * @OA\Get(
+     *     path="/api/haspermission/{id}",
+     *     summary="Get permission from a typeuser",
+     *     tags={"Permission TypeUser"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="HasPermission ID",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         ),
+     *         example=1
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get permission by typeuser",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Permissions 1, 2, 3 successfully added to the typeuser")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Typeuser or Permission not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Typeuser not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function show(int $id)
     {
 //        FIND TYPEUSER
@@ -74,6 +181,43 @@ class HasPermissionController extends Controller
         );
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/haspermission",
+     *     summary="Update haspermission",
+     *     tags={"Permission TypeUser"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *              required={"permission_id", "typeuser_id"},
+     *              @OA\Property(property="permission_id", type="string", example="1,2,3"),
+     *              @OA\Property(property="typeuser_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Permissions successfully updated to the typeuser",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Permissions 1, 2, 3 successfully updated to the typeuser")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Typeuser or Permission not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Typeuser not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function update(Request $request, int $id)
     {
 //        NOT UPDATE ADMIN PERMISSION
@@ -109,6 +253,45 @@ class HasPermissionController extends Controller
         return response()->json(['message' => 'Permissions ' . $permissionsAdded . ' successfully updated to the typeuser']);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/haspermission/{id}",
+     *     summary="Delete haspermission",
+     *     tags={"HasPermission"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="HasPermission ID",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         ),
+     *         example=1
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="HasPermission deleted",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="HasPermission deleted")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="You cannot delete the admin permission",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="You cannot delete the admin permission")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="HasPermission not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="HasPermission not found")
+     *         )
+     *     )
+     * )
+     */
     public function destroy(int $id)
     {
 //        FIND PERMISSION
