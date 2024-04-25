@@ -13,21 +13,6 @@ class PermissionController extends Controller
         return Permission::all();
     }
 
-//    public function store(Request $request)
-//    {
-////        VALIDATE DATA
-//        $request->validate([
-//            'name' => 'required|string|unique:permission',
-//            'route' => 'required|string|unique:permission',
-//        ]);
-//
-////        CREATE PERMISSION
-//        return Permission::create([
-//            'name' => $request->name,
-//            'route' => $request->route,
-//        ]);
-//    }
-
     public function show(int $id)
     {
 //        FIND PERMISSION

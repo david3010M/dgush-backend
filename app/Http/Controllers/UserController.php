@@ -89,7 +89,7 @@ class UserController extends Controller
      *      ),
      *      @OA\Response(
      *          response=404,
-     *          description="Typeuser or User not found",
+     *          description="Typeuser not found",
      *          @OA\JsonContent(
      *              @OA\Property(property="message", type="string", example="Typeuser not found")
      *          )
