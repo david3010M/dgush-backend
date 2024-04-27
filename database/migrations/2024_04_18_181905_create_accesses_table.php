@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('optionmenu_id')->constrained('optionmenu');
             $table->foreignId('typeuser_id')->constrained('typeuser');
+            $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
             $table->unique(['optionmenu_id', 'typeuser_id']);
         });
     }

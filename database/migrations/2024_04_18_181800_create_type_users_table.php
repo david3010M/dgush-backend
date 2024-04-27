@@ -13,8 +13,8 @@ return new class extends Migration {
         Schema::create('typeuser', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
         });
     }
 

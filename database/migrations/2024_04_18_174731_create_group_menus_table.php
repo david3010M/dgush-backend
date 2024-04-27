@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->string('name')->unique();
             $table->string('icon');
             $table->integer('order')->unique();
+            $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
         });
     }
 

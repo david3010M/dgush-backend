@@ -18,8 +18,8 @@ return new class extends Migration {
             $table->string('password');
             $table->foreignId('typeuser_id')->constrained('typeuser');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
         });
     }
 

@@ -10,10 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('has_permission', function (Blueprint $table) {
+        Schema::create('subcategory', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('typeuser_id')->constrained('typeuser');
-            $table->foreignId('permission_id')->constrained('permission');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -24,6 +22,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('has_permission');
+        Schema::dropIfExists('subcategories');
     }
 };

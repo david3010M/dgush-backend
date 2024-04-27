@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->string('name')->unique();
             $table->string('route')->unique();
+            $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
         });
     }
 

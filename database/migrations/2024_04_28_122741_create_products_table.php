@@ -10,10 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('has_permission', function (Blueprint $table) {
+        Schema::create('product', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('typeuser_id')->constrained('typeuser');
-            $table->foreignId('permission_id')->constrained('permission');
+            $table->string('name');
+            $table->text('description');
+            $table->string('detailweb');
+            $table->decimal('price1', 8, 2);
+            $table->decimal('price2', 8, 2);
+            $table->integer('score');
+//            $table->foreignId('subcategory_id')->constrained('subcategory');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -24,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('has_permission');
+        Schema::dropIfExists('product');
     }
 };
