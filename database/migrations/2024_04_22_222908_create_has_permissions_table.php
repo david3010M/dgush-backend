@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('typeuser_id')->constrained('typeuser');
             $table->foreignId('permission_id')->constrained('permission');
-            $table->softDeletes();
+//            $table->softDeletes();
             $table->timestamps();
         });
     }

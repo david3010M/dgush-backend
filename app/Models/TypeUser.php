@@ -11,42 +11,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @OA\Schema(
  *     schema="TypeUser",
  *     type="object",
- *     @OA\Property(
- *         property="id",
- *         type="number",
- *         example="1"
- *     ),
- *     @OA\Property(
- *         property="name",
- *         type="string",
- *         example="Admin"
- *     ),
- *     @OA\Property(
- *         property="created_at",
- *         type="string",
- *         example="2024-02-23T00:09:16.000000Z"
- *     ),
- *     @OA\Property(
- *         property="updated_at",
- *         type="string",
- *         example="2024-02-23T12:13:45.000000Z"
- *     ),
- *     @OA\Property(
- *         property="deleted_at",
- *         type="string",
- *         example="null",
- *     )
+ *     @OA\Property(property="id", type="number", example="1"),
+ *     @OA\Property(property="name", type="string", example="Admin")
  * )
  */
 class TypeUser extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
+//    use SoftDeletes;
 
     protected $table = 'typeuser';
 
     protected $fillable = [
         'name',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     public static function getAccess($id)

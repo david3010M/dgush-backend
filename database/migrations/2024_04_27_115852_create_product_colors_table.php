@@ -8,16 +8,13 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
-        Schema::create('optionmenu', function (Blueprint $table) {
+        Schema::create('product_color', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('route')->unique();
-            $table->integer('order')->unique();
-            $table->string('icon');
-            $table->foreignId('groupmenu_id')->constrained('groupmenu');
+            $table->foreignId('product_id')->constrained('product');
+            $table->foreignId('color_id')->constrained('color');
+//            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('optionmenu');
+        Schema::dropIfExists('product_color');
     }
 };

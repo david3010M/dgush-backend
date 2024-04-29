@@ -11,47 +11,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @OA\Schema (
  *     title="GroupMenu",
  *     type="object",
- *     @OA\Property(
- *         property="id",
- *         type="number",
- *         example="1"
- *     ),
- *     @OA\Property(
- *         property="name",
- *         type="string",
- *         example="Admin"
- *     ),
- *     @OA\Property(
- *         property="icon",
- *         type="string",
- *         example="fas fa-user"
- *     ),
- *     @OA\Property(
- *         property="order",
- *         type="number",
- *         example="1"
- *     ),
- *     @OA\Property(
- *         property="created_at",
- *         type="string",
- *         example="2024-02-23T00:09:16.000000Z"
- *     ),
- *     @OA\Property(
- *         property="updated_at",
- *         type="string",
- *         example="2024-02-23T12:13:45.000000Z"
- *     ),
- *     @OA\Property(
- *         property="deleted_at",
- *         type="string",
- *         example="null"
- *     )
+ *     @OA\Property(property="id", type="number", example="1"),
+ *     @OA\Property(property="name", type="string", example="Admin"),
+ *     @OA\Property(property="icon", type="string", example="fas fa-user"),
+ *     @OA\Property(property="order", type="number", example="1"),
  * )
  */
 class GroupMenu extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $table = 'groupmenu';
 
@@ -59,6 +27,11 @@ class GroupMenu extends Model
         'name',
         'icon',
         'order',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
     ];
 
     public function optionMenus(): HasMany

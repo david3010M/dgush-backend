@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('typeuser', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->softDeletes();
+//            $table->softDeletes();
             $table->timestamps();
         });
     }

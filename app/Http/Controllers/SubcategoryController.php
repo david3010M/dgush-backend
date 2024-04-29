@@ -2,64 +2,289 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
 class SubcategoryController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * SHOW ALL SUBCATEGORIES
+     * @OA\Get(
+     *     path="/api/subcategory",
+     *     summary="Get all subcategories",
+     *     tags={"Subcategory"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of all subcategories",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Subcategory")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *        )
+     *     )
+     * )
      */
     public function index()
     {
-        //
+        return Subcategory::all();
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * CREATE A NEW SUBCATEGORY
+     * @OA\Post(
+     *     path="/api/subcategory",
+     *     summary="Create a new subcategory",
+     *     tags={"Subcategory"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="Subcategory 1"),
+     *             @OA\Property(property="order", type="integer", example="1"),
+     *             @OA\Property(property="category_id", type="integer", example="1"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Subcategory created",
+     *         @OA\JsonContent(ref="#/components/schemas/Subcategory")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object", example={"name": {"The name field is required."}})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Category not found")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
-        //
+//        VALIDATE DATA
+        $request->validate([
+            'name' => 'required|string|unique:subcategory',
+            'order' => 'required|integer|unique:subcategory',
+            'category_id' => 'required|integer'
+        ]);
+
+//        VERIFY IF CATEGORY EXISTS
+        if (!Category::find($request->category_id)) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+//        CREATE NEW SUBCATEGORY
+        return Subcategory::create($request->all());
     }
 
     /**
-     * Display the specified resource.
+     * SHOW A SUBCATEGORY
+     * @OA\Get(
+     *     path="/api/subcategory/{id}",
+     *     summary="Get a subcategory",
+     *     tags={"Subcategory"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the subcategory",
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Subcategory found",
+     *         @OA\JsonContent(ref="#/components/schemas/Subcategory")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Subcategory not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Subcategory not found")
+     *         )
+     *     )
+     * )
      */
-    public function show(Subcategory $subcategory)
+    public function show(int $id)
     {
-        //
+        $subcategory = Subcategory::find($id);
+
+        if ($subcategory) {
+            return $subcategory;
+        } else {
+            return response()->json(['message' => 'Subcategory not found'], 404);
+        }
+    }
+
+
+    /**
+     * UPDATE A SUBCATEGORY
+     * @OA\Put(
+     *     path="/api/subcategory/{id}",
+     *     summary="Update a subcategory",
+     *     tags={"Subcategory"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the subcategory",
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="Subcategory 1"),
+     *             @OA\Property(property="order", type="integer", example="1"),
+     *             @OA\Property(property="category_id", type="integer", example="1"),
+     *          ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Subcategory updated",
+     *         @OA\JsonContent(ref="#/components/schemas/Subcategory")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object", example={"name": {"The name field is required."}})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Subcategory not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Subcategory not found")
+     *         )
+     *     )
+     * )
+     *
+     */
+    public function update(Request $request, int $id)
+    {
+        $subcategory = Subcategory::find($id);
+
+        if ($subcategory) {
+//            VALIDATE DATA
+            $request->validate([
+                'name' => 'required|string|unique:subcategory,name,' . $id,
+                'order' => 'required|integer|unique:subcategory,order,' . $id,
+                'category_id' => 'required|integer'
+            ]);
+
+//            VERIFY IF CATEGORY EXISTS
+            if (!Category::find($request->category_id)) {
+                return response()->json(['message' => 'Category not found'], 404);
+            }
+
+            $subcategory->update($request->all());
+            return $subcategory;
+        } else {
+            return response()->json(['message' => 'Subcategory not found'], 404);
+        }
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * DELETE A SUBCATEGORY
+     * @OA\Delete(
+     *     path="/api/subcategory/{id}",
+     *     summary="Delete a subcategory",
+     *     tags={"Subcategory"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Subcategory ID",
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Subcategory deleted",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Subcategory deleted")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Subcategory not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Subcategory not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Subcategory has products",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Subcategory has products")
+     *         )
+     *     )
+     * )
      */
-    public function edit(Subcategory $subcategory)
+    public function destroy(int $id)
     {
-        //
-    }
+        $subcategory = Subcategory::find($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Subcategory $subcategory)
-    {
-        //
-    }
+        if ($subcategory) {
+//            VERIFY IF SUBCATEGORY HAS PRODUCTS
+            if ($subcategory->products->count() > 0) {
+                return response()->json(['message' => 'Subcategory has products'], 409);
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Subcategory $subcategory)
-    {
-        //
+            $subcategory->delete();
+            return response()->json(['message' => 'Subcategory deleted'], 200);
+        } else {
+            return response()->json(['message' => 'Subcategory not found'], 404);
+        }
     }
 }

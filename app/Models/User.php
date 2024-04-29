@@ -14,49 +14,17 @@ use Laravel\Sanctum\HasApiTokens;
  * @OA\Schema(
  *    schema="User",
  *    type="object",
- *    @OA\Property(
- *      property="id",
- *      type="number",
- *      example="11"
- *    ),
- *    @OA\Property(
- *      property="names",
- *      type="string",
- *      example="D Gush"
- *    ),
- *    @OA\Property(
- *      property="email",
- *      type="string",
- *      example="dgush@gmail.com"
- *    ),
- *    @OA\Property(
- *      property="typeuser_id",
- *      type="number",
- *      example="2"
- *    ),
- *    @OA\Property(
- *      property="created_at",
- *      type="string",
- *      example="2024-02-23T00:09:16.000000Z"
- *    ),
- *    @OA\Property(
- *      property="updated_at",
- *      type="string",
- *      example="2024-02-23T12:13:45.000000Z"
- *    ),
- *    @OA\Property(
- *      property="deleted_at",
- *      type="string",
- *      example="null",
- *    )
+ *    @OA\Property(property="id", type="number", example="11"),
+ *    @OA\Property(property="names", type="string", example="D Gush"),
+ *    @OA\Property(property="email", type="string", example="dgush@gmail.com"),
+ *    @OA\Property(property="typeuser_id", type="number", example="2")
  * )
  */
 class User extends Authenticatable
 {
-
-
     use HasApiTokens, HasFactory, Notifiable;
-    use SoftDeletes;
+
+//    use SoftDeletes;
 
     protected $table = 'users';
 
@@ -81,7 +49,11 @@ class User extends Authenticatable
         'password',
         'login',
         'remember_token',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
+
 
     /**
      * The attributes that should be cast.

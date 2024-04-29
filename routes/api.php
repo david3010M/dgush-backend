@@ -2,10 +2,18 @@
 
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ColorController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\HasPermissionController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProductColorController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductSizeController;
+use App\Http\Controllers\SizeController;
+use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -22,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Rutas para el inicio de sesión y cierre de sesión
+// ROUTES FOR AUTHENTICATION
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -30,9 +38,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Rutas protegidas con Sanctum
+// ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(
     ['middleware' => ['auth:sanctum', 'checkAccess']], function () {
+//        GROUPMENU
     Route::resource('groupmenu', GroupMenuController::class)->only(
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
@@ -44,6 +53,7 @@ Route::group(
             'destroy' => 'groupmenu.destroy',
         ]
     );
+//        OPTIONMENU
     Route::resource('optionmenu', OptionMenuController::class)->only(
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
@@ -55,6 +65,7 @@ Route::group(
             'destroy' => 'optionmenu.destroy',
         ]
     );
+//    TYPEUSER
     Route::resource('typeuser', TypeUserController::class)->only(
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
@@ -66,6 +77,7 @@ Route::group(
             'destroy' => 'typeuser.destroy',
         ]
     );
+//    USER
     Route::resource('user', UserController::class)->only(
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
@@ -77,6 +89,7 @@ Route::group(
             'destroy' => 'user.destroy',
         ]
     );
+//    ACCESS
     Route::resource('access', AccessController::class)->only(
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
@@ -88,17 +101,16 @@ Route::group(
             'destroy' => 'access.destroy',
         ]
     );
+//    PERMISSION
     Route::resource('permission', PermissionController::class)->only(
         ['index', 'show']
     )->names(
         [
             'index' => 'permission.index',
-//            'store' => 'permission.store',
             'show' => 'permission.show',
-//            'update' => 'permission.update',
-//            'destroy' => 'permission.destroy',
         ]
     );
+//    HASPERMISSION
     Route::resource('haspermission', HasPermissionController::class)->only(
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
@@ -110,32 +122,110 @@ Route::group(
             'destroy' => 'haspermission.destroy',
         ]
     );
+//    PRODUCT
+    Route::resource('product', ProductController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'product.index',
+            'store' => 'product.store',
+            'show' => 'product.show',
+            'update' => 'product.update',
+            'destroy' => 'product.destroy',
+        ]
+    );
+
+//    CATEGORY
+    Route::resource('category', CategoryController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'category.index',
+            'store' => 'category.store',
+            'show' => 'category.show',
+            'update' => 'category.update',
+            'destroy' => 'category.destroy',
+        ]
+    );
+
+//    SUBCATEGORY
+    Route::resource('subcategory', SubcategoryController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'subcategory.index',
+            'store' => 'subcategory.store',
+            'show' => 'subcategory.show',
+            'update' => 'subcategory.update',
+            'destroy' => 'subcategory.destroy',
+        ]
+    );
+
+//    COLOR
+    Route::resource('color', ColorController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'color.index',
+            'store' => 'color.store',
+            'show' => 'color.show',
+            'update' => 'color.update',
+            'destroy' => 'color.destroy',
+        ]
+    );
+
+//    PRODUCT COLOR
+    Route::resource('productcolor', ProductColorController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'productcolor.index',
+            'store' => 'productcolor.store',
+            'show' => 'productcolor.show',
+            'update' => 'productcolor.update',
+            'destroy' => 'productcolor.destroy',
+        ]
+    );
+
+//    SIZE
+    Route::resource('size', SizeController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'size.index',
+            'store' => 'size.store',
+            'show' => 'size.show',
+            'update' => 'size.update',
+            'destroy' => 'size.destroy',
+        ]
+    );
+
+//    PRODUCT SIZE
+    Route::resource('productsize', ProductSizeController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'productsize.index',
+            'store' => 'productsize.store',
+            'show' => 'productsize.show',
+            'update' => 'productsize.update',
+            'destroy' => 'productsize.destroy',
+        ]
+    );
+
+//    COMMENT
+    Route::resource('comment', CommentController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'comment.index',
+            'store' => 'comment.store',
+            'show' => 'comment.show',
+            'update' => 'comment.update',
+            'destroy' => 'comment.destroy',
+        ]
+    );
 });
-
-
-
-/**
- * @OA\Schema(
- *     schema="User",
- *     type="object",
- *     @OA\Property(
- *         property="id",
- *         type="integer",
- *         format="int64",
- *         description="User unique ID"
- *     ),
- *     @OA\Property(
- *         property="name",
- *         type="string",
- *         description="User name"
- *     ),
- *     @OA\Property(
- *         property="email",
- *         type="string",
- *         description="User email"
- *     )
- * )
- */
 
 
 

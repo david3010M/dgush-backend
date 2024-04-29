@@ -14,22 +14,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="name", type="string", example="permission"),
  *     @OA\Property(property="route", type="string", example="permission"),
- *     @OA\Property(property="created_at", type="string", format="date-time", example="2021-09-01T00:00:00"),
- *     @OA\Property(property="updated_at", type="string", format="date-time", example="2021-09-01T00:00:00"),
- *     @OA\Property(property="deleted_at", type="string", format="date-time", example="2021-09-01T00:00:00"),
  * )
- *
  */
 class Permission extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
+//    use SoftDeletes;
 
     protected $table = 'permission';
 
     protected $fillable = [
         'name',
         'route',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     public function hasPermission()

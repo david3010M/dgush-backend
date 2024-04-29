@@ -6,27 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 /**
  * @OA\Schema (
- *     schema="ProductSize",
+ *     schema="ProductColor",
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="product_id", type="integer", example="1"),
- *     @OA\Property(property="size_id", type="integer", example="1")
+ *     @OA\Property(property="color_id", type="integer", example="1")
  * )
  */
-class ProductSize extends Model
+class ProductColor extends Model
 {
     use HasFactory;
 
 //    use SoftDeletes;
 
-    protected $table = 'product_size';
+    protected $table = 'product_color';
 
     protected $fillable = [
         'product_id',
-        'size_id',
+        'color_id',
     ];
 
     protected $hidden = [
@@ -34,4 +33,14 @@ class ProductSize extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
 }

@@ -8,37 +8,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @OA\Schema (
- *     schema="Size",
+ *     schema="Comment",
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
- *     @OA\Property(property="name", type="string", example="Small")
+ *     @OA\Property(property="user_id", type="integer", example="1"),
+ *     @OA\Property(property="post_id", type="integer", example="1"),
+ *     @OA\Property(property="comment", type="string", example="This is a comment")
  * )
  */
-class Size extends Model
+class Comment extends Model
 {
     use HasFactory;
 
 //    use SoftDeletes;
 
-    protected $table = 'size';
+    protected $table = 'comment';
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'user_id',
+        'post_id',
+        'comment',
+    ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class);
-    }
-
-    public function productSizes()
-    {
-        return $this->hasMany(ProductSize::class);
-    }
-
-
 }
