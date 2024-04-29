@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Access;
+use App\Models\Category;
 use App\Models\GroupMenu;
 use App\Models\OptionMenu;
 use App\Models\TypeUser;
@@ -26,5 +27,14 @@ class DatabaseSeeder extends Seeder
         $this->call(HasPermissionSeeder::class);
         $this->call(AccessSeeder::class);
         $this->call(UserSeeder::class);
+
+        $this->call(CategorySeeder::class);
+        $this->call(SubcategorySeeder::class);
+        $this->call(ColorSeeder::class);
+        $this->call(SizeSeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(ProductColorSeeder::class);
+        $this->call(ProductSizeSeeder::class);
+        $this->call(CommentSeeder::class);
     }
 }
