@@ -11,9 +11,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     schema="Comment",
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="description", type="string", example="This is a comment"),
+ *     @OA\Property(property="score", type="integer", example="5"),
  *     @OA\Property(property="user_id", type="integer", example="1"),
- *     @OA\Property(property="post_id", type="integer", example="1"),
- *     @OA\Property(property="comment", type="string", example="This is a comment")
+ *     @OA\Property(property="product_id", type="integer", example="1"),
  * )
  */
 class Comment extends Model
@@ -25,9 +26,10 @@ class Comment extends Model
     protected $table = 'comment';
 
     protected $fillable = [
+        'description',
+        'score',
         'user_id',
-        'post_id',
-        'comment',
+        'product_id',
     ];
 
     protected $hidden = [
