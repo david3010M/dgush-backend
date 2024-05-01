@@ -447,11 +447,11 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "example": "dgush@gmail.com"
+                                        "example": "example@gmail.com"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "example": "12345678"
+                                        "example": "abcd1234"
                                     }
                                 },
                                 "type": "object"
