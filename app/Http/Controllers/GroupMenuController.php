@@ -9,9 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
-// OA\Server(url="https://develop.garzasoft.com/dgush-backend")
-// OA\Server(url="http://127.0.0.1:8000")
-
 /**
  * @OA\Info(
  *             title="API's D'Gush",
@@ -20,7 +17,7 @@ use Illuminate\Http\Request;
  * )
  *
  * @OA\SecurityScheme(
- *      securityScheme="Bearer",
+ *      securityScheme="bearerAuth",
  *      in="header",
  *      name="Authorization",
  *      type="http",

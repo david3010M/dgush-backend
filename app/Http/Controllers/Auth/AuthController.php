@@ -206,6 +206,7 @@ class AuthController extends Controller
      *     path="/dgush-backend/public/api/logout",
      *     tags={"Authentication"},
      *     summary="Logout user",
+     *     security={{"bearerAuth":{}}},
      *      @OA\Response(
      *          response=200,
      *          description="User logged out",
@@ -246,6 +247,7 @@ class AuthController extends Controller
      *     path="/dgush-backend/public/api/authenticate",
      *     tags={"Authentication"},
      *     summary="Authenticate user",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="User logged in",

@@ -624,7 +624,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/dgush-backend/public/api/authenticate": {
@@ -740,7 +745,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/dgush-backend/public/api/category": {
@@ -6794,7 +6804,7 @@
             }
         },
         "securitySchemes": {
-            "Bearer": {
+            "bearerAuth": {
                 "type": "http",
                 "name": "Authorization",
                 "in": "header",
