@@ -16,7 +16,7 @@ class AuthController extends Controller
     /**
      * Authenticate user and generate access token
      * @OA\Post (
-     *     path="/api/login",
+     *     path="/dgush-backend/public/api/login",
      *     tags={"Authentication"},
      *     summary="Login user",
      *     @OA\RequestBody(
@@ -203,7 +203,7 @@ class AuthController extends Controller
     /**
      * Log out user.
      * @OA\Get (
-     *     path="/api/logout",
+     *     path="/dgush-backend/public/api/logout",
      *     tags={"Authentication"},
      *     summary="Logout user",
      *      @OA\Response(
@@ -243,7 +243,7 @@ class AuthController extends Controller
     /**
      * Get user and access token
      * @OA\Get (
-     *     path="/api/authenticate",
+     *     path="/dgush-backend/public/api/authenticate",
      *     tags={"Authentication"},
      *     summary="Authenticate user",
      *     @OA\Response(

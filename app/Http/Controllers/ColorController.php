@@ -10,7 +10,7 @@ class ColorController extends Controller
     /**
      * SHOW ALL COLORS
      * @OA\Get(
-     *      path="/api/color",
+     *      path="/dgush-backend/public/api/color",
      *      operationId="getColors",
      *      tags={"Color"},
      *      summary="Get list of all colors",
@@ -38,7 +38,7 @@ class ColorController extends Controller
     /**
      * CREATE A NEW COLOR
      * @OA\Post(
-     *      path="/api/color",
+     *      path="/dgush-backend/public/api/color",
      *      operationId="storeColor",
      *      tags={"Color"},
      *      summary="Store new color",
@@ -87,7 +87,7 @@ class ColorController extends Controller
     /**
      * SHOW A COLOR
      * @OA\Get(
-     *      path="/api/color/{id}",
+     *      path="/dgush-backend/public/api/color/{id}",
      *      operationId="getColor",
      *      tags={"Color"},
      *      summary="Get color by id",
@@ -137,7 +137,7 @@ class ColorController extends Controller
     /**
      * UPDATE A COLOR
      * @OA\Put(
-     *      path="/api/color/{id}",
+     *      path="/dgush-backend/public/api/color/{id}",
      *      operationId="updateColor",
      *      tags={"Color"},
      *      summary="Update color",
@@ -208,7 +208,7 @@ class ColorController extends Controller
     /**
      * DELETE A COLOR
      * @OA\Delete(
-     *      path="/api/color/{id}",
+     *      path="/dgush-backend/public/api/color/{id}",
      *      operationId="deleteColor",
      *      tags={"Color"},
      *      summary="Delete color",

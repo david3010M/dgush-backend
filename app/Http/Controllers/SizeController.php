@@ -10,7 +10,7 @@ class SizeController extends Controller
     /**
      * SHOW ALL SIZES
      * @OA\Get(
-     *     path="/api/size",
+     *     path="/dgush-backend/public/api/size",
      *     operationId="getSizes",
      *     tags={"Size"},
      *     summary="Get list of all sizes",
@@ -41,7 +41,7 @@ class SizeController extends Controller
     /**
      * CREATE A NEW SIZE
      * @OA\Post(
-     *     path="/api/size",
+     *     path="/dgush-backend/public/api/size",
      *     operationId="storeSize",
      *     tags={"Size"},
      *     summary="Store new size",
@@ -88,7 +88,7 @@ class SizeController extends Controller
     /**
      * SHOW A SIZE
      * @OA\Get(
-     *     path="/api/size/{id}",
+     *     path="/dgush-backend/public/api/size/{id}",
      *     operationId="getSize",
      *     tags={"Size"},
      *     summary="Get size by id",
@@ -138,7 +138,7 @@ class SizeController extends Controller
     /**
      * UPDATE A SIZE
      * @OA\Put(
-     *     path="/api/size/{id}",
+     *     path="/dgush-backend/public/api/size/{id}",
      *     operationId="updateSize",
      *     tags={"Size"},
      *     summary="Update size by id",
@@ -208,7 +208,7 @@ class SizeController extends Controller
     /**
      * DELETE A SIZE
      * @OA\Delete(
-     *     path="/api/size/{id}",
+     *     path="/dgush-backend/public/api/size/{id}",
      *     operationId="deleteSize",
      *     tags={"Size"},
      *     summary="Delete size by id",

@@ -12,7 +12,7 @@ class CommentController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/comment",
+     *     path="/dgush-backend/public/api/comment",
      *     tags={"Comment"},
      *     summary="Get all comments",
      *     security={{"bearerAuth": {}}},
@@ -43,7 +43,7 @@ class CommentController extends Controller
     /**
      * CREATE COMMENT
      * @OA\Post(
-     *     path="/comment",
+     *     path="/dgush-backend/public/api/comment",
      *     tags={"Comment"},
      *     summary="Create a comment",
      *     security={{"bearerAuth": {}}},
@@ -130,7 +130,7 @@ class CommentController extends Controller
     /**
      * SHOW COMMENT
      * @OA\Get(
-     *     path="/comment/{id}",
+     *     path="/dgush-backend/public/api/comment/{id}",
      *     tags={"Comment"},
      *     summary="Get a comment",
      *     security={{"bearerAuth": {}}},
@@ -176,7 +176,7 @@ class CommentController extends Controller
     /**
      * UPDATE COMMENT
      * @OA\Put(
-     *     path="/comment/{id}",
+     *     path="/dgush-backend/public/api/comment/{id}",
      *     tags={"Comment"},
      *     summary="Update a comment",
      *     security={{"bearerAuth": {}}},
@@ -283,7 +283,7 @@ class CommentController extends Controller
     /**
      * DELETE COMMENT
      * @OA\Delete(
-     *     path="/comment/{id}",
+     *     path="/dgush-backend/public/api/comment/{id}",
      *     tags={"Comment"},
      *     summary="Delete a comment",
      *     security={{"bearerAuth": {}}},

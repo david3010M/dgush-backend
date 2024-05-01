@@ -11,7 +11,7 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/typeuser",
+     *     path="/dgush-backend/public/api/typeuser",
      *     tags={"Type User"},
      *     summary="List Type User",
      *     security={{"bearerAuth": {}}},
@@ -39,7 +39,7 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/typeuser",
+     *     path="/dgush-backend/public/api/typeuser",
      *     tags={"Type User"},
      *     summary="Create Type User",
      *     security={{"bearerAuth": {}}},
@@ -94,7 +94,7 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/typeuser/{id}",
+     *     path="/dgush-backend/public/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Show Type User",
      *     security={{"bearerAuth": {}}},
@@ -154,7 +154,7 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/typeuser/{id}",
+     *     path="/dgush-backend/public/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Update Type User",
      *     security={{"bearerAuth": {}}},
@@ -239,7 +239,7 @@ class TypeUserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/typeuser/{id}",
+     *     path="/dgush-backend/public/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Delete Type User",
      *     security={{"bearerAuth": {}}},

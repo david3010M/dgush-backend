@@ -12,7 +12,7 @@ class ProductColorController extends Controller
     /**
      * SHOW ALL PRODUCT COLORS
      * @OA\Get(
-     *      path="/api/productcolor",
+     *      path="/dgush-backend/public/api/productcolor",
      *      operationId="index",
      *      tags={"Product Colors"},
      *      summary="Get all product colors",
@@ -43,7 +43,7 @@ class ProductColorController extends Controller
     /**
      * CREATE PRODUCT COLOR
      * @OA\Post(
-     *      path="/api/productcolor",
+     *      path="/dgush-backend/public/api/productcolor",
      *      operationId="store",
      *      tags={"Product Colors"},
      *      summary="Create product color",
@@ -132,7 +132,7 @@ class ProductColorController extends Controller
     /**
      * SHOW A PRODUCT COLOR
      * @OA\Get(
-     *      path="/api/productcolor/{id}",
+     *      path="/dgush-backend/public/api/productcolor/{id}",
      *      operationId="show",
      *      tags={"Product Colors"},
      *      summary="Get product color by id",
@@ -181,7 +181,7 @@ class ProductColorController extends Controller
     /**
      * UPDATE PRODUCT COLOR
      * @OA\Put(
-     *      path="/api/productcolor/{id}",
+     *      path="/dgush-backend/public/api/productcolor/{id}",
      *      operationId="update",
      *      tags={"Product Colors"},
      *      summary="Update product color",
@@ -283,7 +283,7 @@ class ProductColorController extends Controller
     /**
      * DELETE PRODUCT COLOR
      * @OA\Delete(
-     *      path="/api/productcolor/{id}",
+     *      path="/dgush-backend/public/api/productcolor/{id}",
      *      operationId="destroy",
      *      tags={"Product Colors"},
      *      summary="Delete product color",

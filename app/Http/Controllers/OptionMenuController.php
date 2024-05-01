@@ -12,7 +12,7 @@ class OptionMenuController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/optionmenu",
+     *     path="/dgush-backend/public/api/optionmenu",
      *     summary="Get all Option Menus",
      *     tags={"OptionMenu"},
      *     security={{"bearerAuth": {}}},
@@ -44,7 +44,7 @@ class OptionMenuController extends Controller
     /**
      * Create a new Option Menu
      * @OA\Post(
-     *     path="/api/optionmenu",
+     *     path="/dgush-backend/public/api/optionmenu",
      *     summary="Create a new Option Menu",
      *     tags={"OptionMenu"},
      *     security={{"bearerAuth": {}}},
@@ -139,7 +139,7 @@ class OptionMenuController extends Controller
     /**
      * Show option menu by id
      * @OA\Get(
-     *     path="/api/optionmenu/{id}",
+     *     path="/dgush-backend/public/api/optionmenu/{id}",
      *     summary="Get Option Menu by id",
      *     tags={"OptionMenu"},
      *     security={{"bearerAuth": {}}},
@@ -189,7 +189,7 @@ class OptionMenuController extends Controller
     /**
      * Update the Option Menu
      * @OA\Put(
-     *     path="/api/optionmenu/{id}",
+     *     path="/dgush-backend/public/api/optionmenu/{id}",
      *     summary="Update the Option Menu",
      *     tags={"OptionMenu"},
      *     security={{"bearerAuth": {}}},
@@ -306,7 +306,7 @@ class OptionMenuController extends Controller
     /**
      * Delete the Option Menu
      * @OA\Delete(
-     *     path="/api/optionmenu/{id}",
+     *     path="/dgush-backend/public/api/optionmenu/{id}",
      *     summary="Delete the Option Menu",
      *     tags={"OptionMenu"},
      *     security={{"bearerAuth": {}}},

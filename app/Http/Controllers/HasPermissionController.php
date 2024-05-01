@@ -14,7 +14,7 @@ class HasPermissionController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/haspermission",
+     *     path="/dgush-backend/public/api/haspermission",
      *     summary="Get all haspermission",
      *     tags={"HasPermission"},
      *     security={{"bearerAuth":{}}},
@@ -42,7 +42,7 @@ class HasPermissionController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/haspermission",
+     *     path="/dgush-backend/public/api/haspermission",
      *     summary="Store haspermission",
      *     tags={"Permission TypeUser"},
      *     security={{"bearerAuth":{}}},
@@ -128,7 +128,7 @@ class HasPermissionController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/haspermission/{id}",
+     *     path="/dgush-backend/public/api/haspermission/{id}",
      *     summary="Get permission from a typeuser",
      *     tags={"Permission TypeUser"},
      *     security={{"bearerAuth":{}}},
@@ -183,7 +183,7 @@ class HasPermissionController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/haspermission",
+     *     path="/dgush-backend/public/api/haspermission",
      *     summary="Update haspermission",
      *     tags={"Permission TypeUser"},
      *     security={{"bearerAuth":{}}},
@@ -255,7 +255,7 @@ class HasPermissionController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/haspermission/{id}",
+     *     path="/dgush-backend/public/api/haspermission/{id}",
      *     summary="Delete haspermission",
      *     tags={"HasPermission"},
      *     security={{"bearerAuth":{}}},

@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     /**
      * @OA\Get(
-     *      path="/api/user",
+     *      path="/dgush-backend/public/api/user",
      *      summary="Get all users",
      *      tags={"Users"},
      *      security={{"bearerAuth": {}}},
@@ -41,7 +41,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *      path="/api/user",
+     *      path="/dgush-backend/public/api/user",
      *      summary="Store a new user",
      *      tags={"Users"},
      *      security={{"bearerAuth": {}}},
@@ -128,7 +128,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/user/{id}",
+     *     path="/dgush-backend/public/api/user/{id}",
      *     summary="Get user by ID",
      *     tags={"Users"},
      *     security={{"bearerAuth": {}}},
@@ -182,7 +182,7 @@ class UserController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/user/{id}",
+     *     path="/dgush-backend/public/api/user/{id}",
      *     summary="Update user by ID",
      *     tags={"Users"},
      *     security={{"bearerAuth": {}}},
@@ -293,7 +293,7 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/user/{id}",
+     *     path="/dgush-backend/public/api/user/{id}",
      *     summary="Delete user by ID",
      *     tags={"Users"},
      *     security={{"bearerAuth": {}}},

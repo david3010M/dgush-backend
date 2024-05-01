@@ -12,7 +12,7 @@ class SubcategoryController extends Controller
     /**
      * SHOW ALL SUBCATEGORIES
      * @OA\Get(
-     *     path="/api/subcategory",
+     *     path="/dgush-backend/public/api/subcategory",
      *     summary="Get all subcategories",
      *     tags={"Subcategory"},
      *     security={{"bearerAuth": {}}},
@@ -41,7 +41,7 @@ class SubcategoryController extends Controller
     /**
      * CREATE A NEW SUBCATEGORY
      * @OA\Post(
-     *     path="/api/subcategory",
+     *     path="/dgush-backend/public/api/subcategory",
      *     summary="Create a new subcategory",
      *     tags={"Subcategory"},
      *     security={{"bearerAuth": {}}},
@@ -103,7 +103,7 @@ class SubcategoryController extends Controller
     /**
      * SHOW A SUBCATEGORY
      * @OA\Get(
-     *     path="/api/subcategory/{id}",
+     *     path="/dgush-backend/public/api/subcategory/{id}",
      *     summary="Get a subcategory",
      *     tags={"Subcategory"},
      *     security={{"bearerAuth": {}}},
@@ -153,7 +153,7 @@ class SubcategoryController extends Controller
     /**
      * UPDATE A SUBCATEGORY
      * @OA\Put(
-     *     path="/api/subcategory/{id}",
+     *     path="/dgush-backend/public/api/subcategory/{id}",
      *     summary="Update a subcategory",
      *     tags={"Subcategory"},
      *     security={{"bearerAuth": {}}},
@@ -225,7 +225,7 @@ class SubcategoryController extends Controller
     /**
      * DELETE A SUBCATEGORY
      * @OA\Delete(
-     *     path="/api/subcategory/{id}",
+     *     path="/dgush-backend/public/api/subcategory/{id}",
      *     summary="Delete a subcategory",
      *     tags={"Subcategory"},
      *     security={{"bearerAuth": {}}},

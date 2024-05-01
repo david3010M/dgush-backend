@@ -12,7 +12,7 @@ class ProductSizeController extends Controller
     /**
      * SHOW ALL PRODUCT SIZES
      * @OA\Get(
-     *     path="/api/productsize",
+     *     path="/dgush-backend/public/api/productsize",
      *     operationId="getProductSizes",
      *     tags={"Product Size"},
      *     summary="Get list of all product sizes",
@@ -43,7 +43,7 @@ class ProductSizeController extends Controller
     /**
      * CREATE A NEW PRODUCT SIZE
      * @OA\Post(
-     *     path="/api/productsize",
+     *     path="/dgush-backend/public/api/productsize",
      *     operationId="storeProductSize",
      *     tags={"Product Size"},
      *     summary="Store new product size",
@@ -132,7 +132,7 @@ class ProductSizeController extends Controller
     /**
      * SHOW A PRODUCT SIZE
      * @OA\Get(
-     *     path="/api/productsize/{id}",
+     *     path="/dgush-backend/public/api/productsize/{id}",
      *     operationId="showProductSize",
      *     tags={"Product Size"},
      *     summary="Get product size by id",
@@ -182,7 +182,7 @@ class ProductSizeController extends Controller
     /**
      * UPDATE A PRODUCT SIZE
      * @OA\Put(
-     *     path="/api/productsize/{id}",
+     *     path="/dgush-backend/public/api/productsize/{id}",
      *     operationId="updateProductSize",
      *     tags={"Product Size"},
      *     summary="Update product size by id",
@@ -287,7 +287,7 @@ class ProductSizeController extends Controller
     /**
      * DELETE A PRODUCT SIZE
      * @OA\Delete(
-     *     path="/api/productsize/{id}",
+     *     path="/dgush-backend/public/api/productsize/{id}",
      *     operationId="destroyProductSize",
      *     tags={"Product Size"},
      *     summary="Delete product size by id",

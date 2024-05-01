@@ -15,7 +15,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/access",
+     *     path="/dgush-backend/public/api/access",
      *     tags={"Access"},
      *     summary="Get all accesses",
      *     security={{"bearerAuth": {}}},
@@ -43,7 +43,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/access",
+     *     path="/dgush-backend/public/api/access",
      *     tags={"TypeUser Accesses"},
      *     summary="Add access to typeuser",
      *     security={{"bearerAuth": {}}},
@@ -136,7 +136,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/access/{id}",
+     *     path="/dgush-backend/public/api/access/{id}",
      *     tags={"TypeUser Accesses"},
      *     summary="Get access",
      *     security={{"bearerAuth": {}}},
@@ -191,7 +191,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/access/{id}",
+     *     path="/dgush-backend/public/api/access/{id}",
      *     tags={"TypeUser Accesses"},
      *     summary="Update access",
      *     security={{"bearerAuth": {}}},
@@ -280,7 +280,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/access/{id}",
+     *     path="/dgush-backend/public/api/access/{id}",
      *     tags={"Access"},
      *     summary="Delete access",
      *     security={{"bearerAuth": {}}},

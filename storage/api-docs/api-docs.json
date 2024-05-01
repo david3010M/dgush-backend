@@ -5,19 +5,14 @@
         "description": "API's for D'Gush store",
         "version": "1.0"
     },
-    "servers": [
-        {
-            "url": "https://develop.garzasoft.com/dgush-backend/public"
-        }
-    ],
     "paths": {
-        "/api/access": {
+        "/dgush-backend/public/api/access": {
             "get": {
                 "tags": [
                     "Access"
                 ],
                 "summary": "Get all accesses",
-                "operationId": "fe13c286e3dba76eebdca68e60c7ba23",
+                "operationId": "77b3ad8200560de1e87e70e9d169798d",
                 "responses": {
                     "200": {
                         "description": "Returns all accesses",
@@ -60,7 +55,7 @@
                     "TypeUser Accesses"
                 ],
                 "summary": "Add access to typeuser",
-                "operationId": "bf19bc99be88d59a76325a3f9b24157b",
+                "operationId": "2d257cfdc707b93c75d52dcc2ac12d6f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -174,13 +169,13 @@
                 ]
             }
         },
-        "/api/access/{id}": {
+        "/dgush-backend/public/api/access/{id}": {
             "get": {
                 "tags": [
                     "TypeUser Accesses"
                 ],
                 "summary": "Get access",
-                "operationId": "78477fc83f307550d95b7c6261d8922e",
+                "operationId": "cd00615f544e989d82ac844ca07d862f",
                 "parameters": [
                     {
                         "name": "id",
@@ -255,7 +250,7 @@
                     "TypeUser Accesses"
                 ],
                 "summary": "Update access",
-                "operationId": "c64ab078d34c5ab1a7de78dcb707fbb9",
+                "operationId": "df7e3d95da02062c8905da87104782ae",
                 "parameters": [
                     {
                         "name": "id",
@@ -367,7 +362,7 @@
                     "Access"
                 ],
                 "summary": "Delete access",
-                "operationId": "3d865e61bb6b2a20ff7cb59a9bd5a339",
+                "operationId": "67e33067cf67ca35d93b54225dae0af0",
                 "parameters": [
                     {
                         "name": "id",
@@ -436,14 +431,14 @@
                 ]
             }
         },
-        "/api/login": {
+        "/dgush-backend/public/api/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Login user",
                 "description": "Authenticate user and generate access token",
-                "operationId": "c373bc4cffa4a56fc64e3979b8ee7b96",
+                "operationId": "4d17a133234e18b9ca431ad860118ac8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -588,14 +583,14 @@
                 }
             }
         },
-        "/api/logout": {
+        "/dgush-backend/public/api/logout": {
             "get": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Logout user",
                 "description": "Log out user.",
-                "operationId": "4e7b33fd7773bae847a5407be5a90852",
+                "operationId": "5a210e49e0c1b976aa42c88342940ee6",
                 "responses": {
                     "200": {
                         "description": "User logged out",
@@ -632,14 +627,14 @@
                 }
             }
         },
-        "/api/authenticate": {
+        "/dgush-backend/public/api/authenticate": {
             "get": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Authenticate user",
                 "description": "Get user and access token",
-                "operationId": "4768285d6cd8eff30c82c4f6666dacb7",
+                "operationId": "b1c7cb1830a3eaba1e14b5c4cf1d0e5f",
                 "responses": {
                     "200": {
                         "description": "User logged in",
@@ -748,14 +743,14 @@
                 }
             }
         },
-        "/api/category": {
+        "/dgush-backend/public/api/category": {
             "get": {
                 "tags": [
                     "Category"
                 ],
                 "summary": "Show all categories",
                 "description": "SHOW ALL CATEGORIES",
-                "operationId": "327644f4d836240fa297b2822ab6ca92",
+                "operationId": "c8db5bbb7ca12b09e9f7239b599946c4",
                 "responses": {
                     "200": {
                         "description": "Show all categories",
@@ -803,7 +798,7 @@
                 ],
                 "summary": "Create a new category",
                 "description": "CREATE A NEW CATEGORY",
-                "operationId": "de40ad04180a48262a05cf249f785ab3",
+                "operationId": "494cad06213a4e525b802b4eb56ab514",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -883,14 +878,14 @@
                 ]
             }
         },
-        "/api/category/{id}": {
+        "/dgush-backend/public/api/category/{id}": {
             "get": {
                 "tags": [
                     "Category"
                 ],
                 "summary": "Show a category",
                 "description": "SHOW A CATEGORY",
-                "operationId": "25690688339275caf7ded3e8702e7670",
+                "operationId": "30e888b457d1bf73120144bc5b578d07",
                 "parameters": [
                     {
                         "name": "id",
@@ -963,7 +958,7 @@
                 ],
                 "summary": "Update a category",
                 "description": "UPDATE A CATEGORY",
-                "operationId": "9be67b4880d28356ade2ebc0b425415e",
+                "operationId": "d729c7c18c7c02680bcee065a7491ed9",
                 "parameters": [
                     {
                         "name": "id",
@@ -1076,7 +1071,7 @@
                 ],
                 "summary": "Delete a category",
                 "description": "DELETE A CATEGORY",
-                "operationId": "534a636fb456263f752f0983f8097fb5",
+                "operationId": "42a13e97b91b83514896dc45bc87ef85",
                 "parameters": [
                     {
                         "name": "id",
@@ -1146,7 +1141,7 @@
                 ]
             }
         },
-        "/api/color": {
+        "/dgush-backend/public/api/color": {
             "get": {
                 "tags": [
                     "Color"
@@ -1268,7 +1263,7 @@
                 ]
             }
         },
-        "/api/color/{id}": {
+        "/dgush-backend/public/api/color/{id}": {
             "get": {
                 "tags": [
                     "Color"
@@ -1544,13 +1539,13 @@
                 ]
             }
         },
-        "/comment": {
+        "/dgush-backend/public/api/comment": {
             "get": {
                 "tags": [
                     "Comment"
                 ],
                 "summary": "Get all comments",
-                "operationId": "83258345214062a95aa0216fe8a2d300",
+                "operationId": "e0b13abf70aa67d23b1d26ff5ce3c68a",
                 "responses": {
                     "200": {
                         "description": "List of comments",
@@ -1594,7 +1589,7 @@
                 ],
                 "summary": "Create a comment",
                 "description": "CREATE COMMENT",
-                "operationId": "f28ab30de53ecdefbaf800cd2b6d3596",
+                "operationId": "ed4db8f8a9130c3e297ab434ccf4ccec",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1712,14 +1707,14 @@
                 ]
             }
         },
-        "/comment/{id}": {
+        "/dgush-backend/public/api/comment/{id}": {
             "get": {
                 "tags": [
                     "Comment"
                 ],
                 "summary": "Get a comment",
                 "description": "SHOW COMMENT",
-                "operationId": "e5e56e5380a46388699da303647612b0",
+                "operationId": "e94bd692ff51a7ef26688c2e3d4904ab",
                 "parameters": [
                     {
                         "name": "id",
@@ -1787,7 +1782,7 @@
                 ],
                 "summary": "Update a comment",
                 "description": "UPDATE COMMENT",
-                "operationId": "2e652c5196aa18be33cb741347426919",
+                "operationId": "68de3c07cecfdf2f3ae061e26b506f61",
                 "parameters": [
                     {
                         "name": "id",
@@ -1929,7 +1924,7 @@
                 ],
                 "summary": "Delete a comment",
                 "description": "DELETE COMMENT",
-                "operationId": "10cacb41c44a2354bd097c30dcb09d0c",
+                "operationId": "43545893215471d1ebbc83b60b279664",
                 "parameters": [
                     {
                         "name": "id",
@@ -1998,13 +1993,13 @@
                 ]
             }
         },
-        "/api/Groupmenu": {
+        "/dgush-backend/public/api/groupmenu": {
             "get": {
                 "tags": [
                     "Group Menus"
                 ],
                 "summary": "Get all Group menus",
-                "operationId": "71154f7926792e52e9f6d170dff4a59f",
+                "operationId": "9667debd528e794669c7dc2904bfb633",
                 "responses": {
                     "200": {
                         "description": "List of active Group Menus",
@@ -2047,7 +2042,7 @@
                     "Group Menus"
                 ],
                 "summary": "Create a new Group menu",
-                "operationId": "94a0f1b91d46b17605bbccf98f8daecf",
+                "operationId": "40faafa3d5f8ea61481d345cd13fea45",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2112,13 +2107,13 @@
                 ]
             }
         },
-        "/api/Groupmenu/{id}": {
+        "/dgush-backend/public/api/groupmenu/{id}": {
             "get": {
                 "tags": [
                     "Group Menus"
                 ],
                 "summary": "Show the specified Group menu",
-                "operationId": "c33afb4ae13e4e123f7077b9d8deab0c",
+                "operationId": "6211043943ca89183db31572181c456e",
                 "parameters": [
                     {
                         "name": "id",
@@ -2211,7 +2206,7 @@
                     "Group Menus"
                 ],
                 "summary": "Update the specified Group menu",
-                "operationId": "c640c7c651dfddfe92cf257f81ea0855",
+                "operationId": "ea90886f73f0bf7fb7c128e572b21781",
                 "parameters": [
                     {
                         "name": "id",
@@ -2307,7 +2302,7 @@
                     "Group Menus"
                 ],
                 "summary": "Remove the specified Group menu",
-                "operationId": "eb6d59861fc291743d52d192a5818c4f",
+                "operationId": "7a8c151713fee89744e2370c5bda56b6",
                 "parameters": [
                     {
                         "name": "id",
@@ -2392,13 +2387,13 @@
                 ]
             }
         },
-        "/api/haspermission": {
+        "/dgush-backend/public/api/haspermission": {
             "get": {
                 "tags": [
                     "HasPermission"
                 ],
                 "summary": "Get all haspermission",
-                "operationId": "6255afdcb4f984689256feff7bf19a37",
+                "operationId": "0149ab555fe2e1970342393c638cf7a7",
                 "responses": {
                     "200": {
                         "description": "Get all haspermission",
@@ -2441,7 +2436,7 @@
                     "Permission TypeUser"
                 ],
                 "summary": "Update haspermission",
-                "operationId": "6244a7dd631c5aee62923d88f4f322f4",
+                "operationId": "7089fe711f7083d38e88b16849d0b7aa",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2527,7 +2522,7 @@
                     "Permission TypeUser"
                 ],
                 "summary": "Store haspermission",
-                "operationId": "cdf2a1bd3b2a210b6d8f785858a66576",
+                "operationId": "80adc68c54f68dda52fdc135ac1b011d",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2625,13 +2620,13 @@
                 ]
             }
         },
-        "/api/haspermission/{id}": {
+        "/dgush-backend/public/api/haspermission/{id}": {
             "get": {
                 "tags": [
                     "Permission TypeUser"
                 ],
                 "summary": "Get permission from a typeuser",
-                "operationId": "d7e7687fc4afb53cef6d9f08063a45b9",
+                "operationId": "70288bfa9dd095c22a8be8a11c442712",
                 "parameters": [
                     {
                         "name": "id",
@@ -2705,7 +2700,7 @@
                     "HasPermission"
                 ],
                 "summary": "Delete haspermission",
-                "operationId": "1dd3d020ca5bac5989de6d1150b7636a",
+                "operationId": "e6e3a3bc34778b5cccb701796f98a360",
                 "parameters": [
                     {
                         "name": "id",
@@ -2775,13 +2770,13 @@
                 ]
             }
         },
-        "/api/optionmenu": {
+        "/dgush-backend/public/api/optionmenu": {
             "get": {
                 "tags": [
                     "OptionMenu"
                 ],
                 "summary": "Get all Option Menus",
-                "operationId": "438689ca2234af7b6f64e81aaf0f82a1",
+                "operationId": "a732937c188ba51c52134539203f3ad2",
                 "responses": {
                     "200": {
                         "description": "Option Menus",
@@ -2825,7 +2820,7 @@
                 ],
                 "summary": "Create a new Option Menu",
                 "description": "Create a new Option Menu",
-                "operationId": "73a3eb1f83eecbc9f4e307a4cdef10c4",
+                "operationId": "1b44ba7856358ae3422a0fa580965250",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2967,14 +2962,14 @@
                 ]
             }
         },
-        "/api/optionmenu/{id}": {
+        "/dgush-backend/public/api/optionmenu/{id}": {
             "get": {
                 "tags": [
                     "OptionMenu"
                 ],
                 "summary": "Get Option Menu by id",
                 "description": "Show option menu by id",
-                "operationId": "228d0698231c62e1f33d0f71d46b711a",
+                "operationId": "7c3310d842edfe164c15755f621cfa54",
                 "parameters": [
                     {
                         "name": "id",
@@ -3042,7 +3037,7 @@
                 ],
                 "summary": "Update the Option Menu",
                 "description": "Update the Option Menu",
-                "operationId": "9d4eedd6ab90fc2f8632f4f9d0aeb5fd",
+                "operationId": "c6c35fb8a10e15c0cb98c46306649760",
                 "parameters": [
                     {
                         "name": "id",
@@ -3201,7 +3196,7 @@
                 ],
                 "summary": "Delete the Option Menu",
                 "description": "Delete the Option Menu",
-                "operationId": "ef67963948e9c242e428914ad6ebbb2d",
+                "operationId": "5c66fcae19af03d8f615a9b4e7b0d74f",
                 "parameters": [
                     {
                         "name": "id",
@@ -3286,14 +3281,14 @@
                 ]
             }
         },
-        "/permissions": {
+        "/dgush-backend/public/api/permissions": {
             "get": {
                 "tags": [
                     "Permissions"
                 ],
                 "summary": "Get list of permissions",
                 "description": "Returns list of permissions",
-                "operationId": "6bb707da42346cbe4cbe9660f90236d5",
+                "operationId": "9947d873e2338009bbb0530111156104",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -3319,14 +3314,14 @@
                 ]
             }
         },
-        "/permissions/{id}": {
+        "/dgush-backend/public/api/permissions/{id}": {
             "get": {
                 "tags": [
                     "Permissions"
                 ],
                 "summary": "Get permission information",
                 "description": "Returns permission data",
-                "operationId": "611dd67d5d9923b7e324a577b4234956",
+                "operationId": "faf969d3cf926f295c01cb4c466f65cc",
                 "parameters": [
                     {
                         "name": "id",
@@ -3389,7 +3384,7 @@
                 ]
             }
         },
-        "/api/productcolor": {
+        "/dgush-backend/public/api/productcolor": {
             "get": {
                 "tags": [
                     "Product Colors"
@@ -3556,7 +3551,7 @@
                 ]
             }
         },
-        "/api/productcolor/{id}": {
+        "/dgush-backend/public/api/productcolor/{id}": {
             "get": {
                 "tags": [
                     "Product Colors"
@@ -3832,14 +3827,14 @@
                 ]
             }
         },
-        "/api/product": {
+        "/dgush-backend/public/api/product": {
             "get": {
                 "tags": [
                     "Product"
                 ],
                 "summary": "Show all products",
                 "description": "SHOW ALL PRODUCTS",
-                "operationId": "5cc57bec35d0f2045983cc8dcd00eccd",
+                "operationId": "a3d9c4fc9174ac2dce46f31a6151d248",
                 "responses": {
                     "200": {
                         "description": "Show all products",
@@ -3867,7 +3862,7 @@
                 ],
                 "summary": "Create product",
                 "description": "CREATE PRODUCT",
-                "operationId": "1d0b0d8724685b7b8f9d87f403bfc4df",
+                "operationId": "67c992113fd5cb61dc279e8722b88f80",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3992,14 +3987,14 @@
                 ]
             }
         },
-        "/api/product/{id}": {
+        "/dgush-backend/public/api/product/{id}": {
             "get": {
                 "tags": [
                     "Product"
                 ],
                 "summary": "Show product",
                 "description": "SHOW PRODUCT",
-                "operationId": "2768d88590e39a7ded1d0032e64dded7",
+                "operationId": "7cefbeb06c9130218918020ade7c6733",
                 "parameters": [
                     {
                         "name": "id",
@@ -4088,7 +4083,7 @@
                 ],
                 "summary": "Update product",
                 "description": "UPDATE PRODUCT",
-                "operationId": "d3467c795490afbb49680821c9bd6b0d",
+                "operationId": "ed18a08d6b9452007841ad3210065591",
                 "parameters": [
                     {
                         "name": "id",
@@ -4229,7 +4224,7 @@
                 ],
                 "summary": "Delete product",
                 "description": "DELETE PRODUCT",
-                "operationId": "c830155516bad1f72b0081160edeb2ac",
+                "operationId": "9e5a87230e5a810264ec7a0605b90e43",
                 "parameters": [
                     {
                         "name": "id",
@@ -4314,7 +4309,7 @@
                 ]
             }
         },
-        "/api/productsize": {
+        "/dgush-backend/public/api/productsize": {
             "get": {
                 "tags": [
                     "Product Size"
@@ -4481,7 +4476,7 @@
                 ]
             }
         },
-        "/api/productsize/{id}": {
+        "/dgush-backend/public/api/productsize/{id}": {
             "get": {
                 "tags": [
                     "Product Size"
@@ -4760,7 +4755,7 @@
                 ]
             }
         },
-        "/api/size": {
+        "/dgush-backend/public/api/size": {
             "get": {
                 "tags": [
                     "Size"
@@ -4890,7 +4885,7 @@
                 ]
             }
         },
-        "/api/size/{id}": {
+        "/dgush-backend/public/api/size/{id}": {
             "get": {
                 "tags": [
                     "Size"
@@ -5164,14 +5159,14 @@
                 ]
             }
         },
-        "/api/subcategory": {
+        "/dgush-backend/public/api/subcategory": {
             "get": {
                 "tags": [
                     "Subcategory"
                 ],
                 "summary": "Get all subcategories",
                 "description": "SHOW ALL SUBCATEGORIES",
-                "operationId": "d0ef34a3d183131dac2ccc3fee2f3764",
+                "operationId": "2d337a1c92342d48baa4d719bb185eab",
                 "responses": {
                     "200": {
                         "description": "List of all subcategories",
@@ -5215,7 +5210,7 @@
                 ],
                 "summary": "Create a new subcategory",
                 "description": "CREATE A NEW SUBCATEGORY",
-                "operationId": "0b77d9c7d1c76b7bd5fb6f6d94bdd94e",
+                "operationId": "f7f59c0bfd71698f2f386d4f988601d1",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5315,14 +5310,14 @@
                 ]
             }
         },
-        "/api/subcategory/{id}": {
+        "/dgush-backend/public/api/subcategory/{id}": {
             "get": {
                 "tags": [
                     "Subcategory"
                 ],
                 "summary": "Get a subcategory",
                 "description": "SHOW A SUBCATEGORY",
-                "operationId": "06653546c6a25efefe7d2bdcfc813606",
+                "operationId": "04e5502e8f901fb3ffdb84b15106fbdb",
                 "parameters": [
                     {
                         "name": "id",
@@ -5391,7 +5386,7 @@
                 ],
                 "summary": "Update a subcategory",
                 "description": "UPDATE A SUBCATEGORY",
-                "operationId": "79b491fe0b903767f66257da636daa10",
+                "operationId": "143dd234414740348e75d3d69a5fbfb6",
                 "parameters": [
                     {
                         "name": "id",
@@ -5492,7 +5487,7 @@
                 ],
                 "summary": "Delete a subcategory",
                 "description": "DELETE A SUBCATEGORY",
-                "operationId": "86e8237bae1ff5d55df21e12e496619c",
+                "operationId": "93d8b1566ef3248963b3ff74cd54c07a",
                 "parameters": [
                     {
                         "name": "id",
@@ -5578,13 +5573,13 @@
                 ]
             }
         },
-        "/api/typeuser": {
+        "/dgush-backend/public/api/typeuser": {
             "get": {
                 "tags": [
                     "Type User"
                 ],
                 "summary": "List Type User",
-                "operationId": "849ca8a5118019fabc20de1810064f15",
+                "operationId": "e1ef9f7eb85d8b6f64a83a859e6ec02c",
                 "responses": {
                     "200": {
                         "description": "List of Type User",
@@ -5627,7 +5622,7 @@
                     "Type User"
                 ],
                 "summary": "Create Type User",
-                "operationId": "5e438f37cd5e916af2478fa9dc566d25",
+                "operationId": "0707356db2eee5db83d90d257451affc",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5710,13 +5705,13 @@
                 ]
             }
         },
-        "/api/typeuser/{id}": {
+        "/dgush-backend/public/api/typeuser/{id}": {
             "get": {
                 "tags": [
                     "Type User"
                 ],
                 "summary": "Show Type User",
-                "operationId": "1feb5701e0680f24553cb7d9702b7fca",
+                "operationId": "39fb06522d2f05360df19df159f552f3",
                 "parameters": [
                     {
                         "name": "id",
@@ -5784,7 +5779,7 @@
                     "Type User"
                 ],
                 "summary": "Update Type User",
-                "operationId": "2d62baac4ed11e3f1feb7fc6cc9e2c2a",
+                "operationId": "9f9e3cc70b3a38e9bf00df04f516aad4",
                 "parameters": [
                     {
                         "name": "id",
@@ -5900,7 +5895,7 @@
                     "Type User"
                 ],
                 "summary": "Delete Type User",
-                "operationId": "cd3e4d577c1a3ec4c8e40d2ee0377ea1",
+                "operationId": "2644f4afc129ce25cbda28edabfd67b3",
                 "parameters": [
                     {
                         "name": "id",
@@ -5986,13 +5981,13 @@
                 ]
             }
         },
-        "/api/user": {
+        "/dgush-backend/public/api/user": {
             "get": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Get all users",
-                "operationId": "971db9bc974c0e607288cfe7ecc10096",
+                "operationId": "bb7312ee8e0ae732c99d92e4a2fb4ed2",
                 "responses": {
                     "200": {
                         "description": "List of users",
@@ -6035,7 +6030,7 @@
                     "Users"
                 ],
                 "summary": "Store a new user",
-                "operationId": "089999749fbdec98922de2f74ba8d540",
+                "operationId": "1a77fce669ca953fa2b1dfbd04af1d6d",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -6174,13 +6169,13 @@
                 ]
             }
         },
-        "/api/user/{id}": {
+        "/dgush-backend/public/api/user/{id}": {
             "get": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Get user by ID",
-                "operationId": "d8f696420bea235f4916124c9ba1c507",
+                "operationId": "6dcd9cfd233e59693adca6665ee9c26f",
                 "parameters": [
                     {
                         "name": "id",
@@ -6248,7 +6243,7 @@
                     "Users"
                 ],
                 "summary": "Update user by ID",
-                "operationId": "5e09c26a0abb2b1bf040badb2d9c69ba",
+                "operationId": "edcf7eeedf43fbfdfa9cb0093993939f",
                 "parameters": [
                     {
                         "name": "id",
@@ -6403,7 +6398,7 @@
                     "Users"
                 ],
                 "summary": "Delete user by ID",
-                "operationId": "f8d7aea516ee464d0afee90f3a1a1722",
+                "operationId": "feae2622a8906d1bfd0af548fe197375",
                 "parameters": [
                     {
                         "name": "id",

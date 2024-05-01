@@ -12,7 +12,7 @@ class ProductController extends Controller
     /**
      * SHOW ALL PRODUCTS
      * @OA\Get(
-     *     path="/api/product",
+     *     path="/dgush-backend/public/api/product",
      *     tags={"Product"},
      *     summary="Show all products",
      *     security={{"bearerAuth": {}}},
@@ -42,7 +42,7 @@ class ProductController extends Controller
     /**
      * CREATE PRODUCT
      * @OA\Post(
-     *     path="/api/product",
+     *     path="/dgush-backend/public/api/product",
      *     tags={"Product"},
      *     summary="Create product",
      *     security={{"bearerAuth": {}}},
@@ -118,7 +118,7 @@ class ProductController extends Controller
     /**
      * SHOW PRODUCT
      * @OA\Get(
-     *     path="/api/product/{id}",
+     *     path="/dgush-backend/public/api/product/{id}",
      *     tags={"Product"},
      *     summary="Show product",
      *     security={{"bearerAuth": {}}},
@@ -179,7 +179,7 @@ class ProductController extends Controller
     /**
      * UPDATE PRODUCT
      * @OA\Put(
-     *     path="/api/product/{id}",
+     *     path="/dgush-backend/public/api/product/{id}",
      *     tags={"Product"},
      *     summary="Update product",
      *     security={{"bearerAuth": {}}},
@@ -270,7 +270,7 @@ class ProductController extends Controller
     /**
      * DELETE PRODUCT
      * @OA\Delete(
-     *     path="/api/product/{id}",
+     *     path="/dgush-backend/public/api/product/{id}",
      *     tags={"Product"},
      *     summary="Delete product",
      *     security={{"bearerAuth": {}}},

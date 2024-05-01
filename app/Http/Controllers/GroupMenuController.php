@@ -34,7 +34,7 @@ class GroupMenuController extends Controller
     /**
      * Get all Group menus
      * @OA\Get (
-     *     path="/api/Groupmenu",
+     *     path="/dgush-backend/public/api/groupmenu",
      *     tags={"Group Menus"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
@@ -67,7 +67,7 @@ class GroupMenuController extends Controller
     /**
      * Create a new Group menu
      * @OA\Post (
-     *     path="/api/Groupmenu",
+     *     path="/dgush-backend/public/api/groupmenu",
      *     tags={"Group Menus"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -127,7 +127,7 @@ class GroupMenuController extends Controller
     /**
      * Show the specified Group menu
      * @OA\Get (
-     *     path="/api/Groupmenu/{id}",
+     *     path="/dgush-backend/public/api/groupmenu/{id}",
      *     tags={"Group Menus"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -220,7 +220,7 @@ class GroupMenuController extends Controller
     /**
      * Update the specified Group menu
      * @OA\Put (
-     *     path="/api/Groupmenu/{id}",
+     *     path="/dgush-backend/public/api/groupmenu/{id}",
      *     tags={"Group Menus"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -312,7 +312,7 @@ class GroupMenuController extends Controller
     /**
      * Remove the specified Group menu
      * @OA\Delete (
-     *     path="/api/Groupmenu/{id}",
+     *     path="/dgush-backend/public/api/groupmenu/{id}",
      *     tags={"Group Menus"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(

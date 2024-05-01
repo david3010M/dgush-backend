@@ -10,7 +10,7 @@ class CategoryController extends Controller
     /**
      * SHOW ALL CATEGORIES
      * @OA\Get(
-     *     path="/api/category",
+     *     path="/dgush-backend/public/api/category",
      *     tags={"Category"},
      *     summary="Show all categories",
      *     security={{"bearerAuth": {}}},
@@ -37,7 +37,7 @@ class CategoryController extends Controller
     /**
      * CREATE A NEW CATEGORY
      * @OA\Post(
-     *     path="/api/category",
+     *     path="/dgush-backend/public/api/category",
      *     tags={"Category"},
      *     summary="Create a new category",
      *     security={{"bearerAuth": {}}},
@@ -84,7 +84,7 @@ class CategoryController extends Controller
     /**
      * SHOW A CATEGORY
      * @OA\Get(
-     *     path="/api/category/{id}",
+     *     path="/dgush-backend/public/api/category/{id}",
      *     tags={"Category"},
      *     summary="Show a category",
      *     security={{"bearerAuth": {}}},
@@ -131,7 +131,7 @@ class CategoryController extends Controller
     /**
      * UPDATE A CATEGORY
      * @OA\Put(
-     *     path="/api/category/{id}",
+     *     path="/dgush-backend/public/api/category/{id}",
      *     tags={"Category"},
      *     summary="Update a category",
      *     security={{"bearerAuth": {}}},
@@ -202,7 +202,7 @@ class CategoryController extends Controller
     /**
      * DELETE A CATEGORY
      * @OA\Delete(
-     *     path="/api/category/{id}",
+     *     path="/dgush-backend/public/api/category/{id}",
      *     tags={"Category"},
      *     summary="Delete a category",
      *     security={{"bearerAuth": {}}},
