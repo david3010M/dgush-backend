@@ -20,7 +20,7 @@ class Subcategory extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'subcategory';
 

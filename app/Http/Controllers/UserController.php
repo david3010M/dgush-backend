@@ -44,6 +44,7 @@ class UserController extends Controller
      *      path="/api/user",
      *      summary="Store a new user",
      *      tags={"Users"},
+     *      security={{"bearerAuth": {}}},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -295,6 +296,7 @@ class UserController extends Controller
      *     path="/api/user/{id}",
      *     summary="Delete user by ID",
      *     tags={"Users"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *          name="id",
      *          in="path",

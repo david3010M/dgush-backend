@@ -19,7 +19,7 @@ class HasPermission extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'has_permission';
 

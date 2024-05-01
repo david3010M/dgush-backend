@@ -8,6 +8,10 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+
+// OA\Server(url="https://develop.garzasoft.com/dgush-backend")
+// OA\Server(url="http://127.0.0.1:8000")
+
 /**
  * @OA\Info(
  *             title="API's D'Gush",
@@ -15,7 +19,16 @@ use Illuminate\Http\Request;
  *             description="API's for D'Gush store",
  * )
  *
- * @OA\Server(url="http://127.0.0.1:8000")
+ * @OA\Server(url="http://127.0.0.1:8000/public")
+ *
+ * @OA\SecurityScheme(
+ *      securityScheme="Bearer",
+ *      in="header",
+ *      name="Authorization",
+ *      type="http",
+ *      scheme="bearer",
+ *      bearerFormat="JWT",
+ *  )
  */
 class GroupMenuController extends Controller
 {
@@ -58,6 +71,7 @@ class GroupMenuController extends Controller
      * @OA\Post (
      *     path="/api/Groupmenu",
      *     tags={"Group Menus"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -117,6 +131,7 @@ class GroupMenuController extends Controller
      * @OA\Get (
      *     path="/api/Groupmenu/{id}",
      *     tags={"Group Menus"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -209,6 +224,7 @@ class GroupMenuController extends Controller
      * @OA\Put (
      *     path="/api/Groupmenu/{id}",
      *     tags={"Group Menus"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -300,6 +316,7 @@ class GroupMenuController extends Controller
      * @OA\Delete (
      *     path="/api/Groupmenu/{id}",
      *     tags={"Group Menus"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -369,7 +386,7 @@ class GroupMenuController extends Controller
         }
 
 //        VALIDATE IF GROUPMENU HAS ANY OPTIONMENUS ASSOCIATED
-        if ($groupMenu->optionMenus->count() > 0) {
+        if ($groupMenu->optionMenus()->count() > 0) {
             return response()->json(
                 ['message' => 'Group Menu has option menus associated'], 409
             );

@@ -19,7 +19,7 @@ class ProductColor extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'product_color';
 

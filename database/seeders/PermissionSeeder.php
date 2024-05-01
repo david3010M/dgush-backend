@@ -226,6 +226,11 @@ class PermissionSeeder extends Seeder
             'route' => 'product.destroy',
         ]);
 
+        Permission::create([
+            'name' => 'Todos Productos',
+            'route' => 'product.all',
+        ]);
+
 //        CATEGORY
 
         Permission::create([

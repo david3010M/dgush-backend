@@ -16,6 +16,7 @@ class ProductSeeder extends Seeder
      * price1
      * price2
      * score
+     * image,
      * subcategory_id 1-10
      */
     protected $model = Product::class;
@@ -29,6 +30,7 @@ class ProductSeeder extends Seeder
             'price1' => 100,
             'price2' => 90,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f',
             'subcategory_id' => 1,
         ]);
 
@@ -39,6 +41,7 @@ class ProductSeeder extends Seeder
             'price1' => 200,
             'price2' => 180,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1612722432474-b971cdcea546',
             'subcategory_id' => 2,
         ]);
 
@@ -49,6 +52,7 @@ class ProductSeeder extends Seeder
             'price1' => 150,
             'price2' => 135,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1595777457583-95e059d581b8',
             'subcategory_id' => 3,
         ]);
 
@@ -59,6 +63,7 @@ class ProductSeeder extends Seeder
             'price1' => 250,
             'price2' => 225,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1612872217406-ed2471abf0a0',
             'subcategory_id' => 4,
         ]);
 
@@ -69,6 +74,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 5,
         ]);
 
@@ -79,6 +85,7 @@ class ProductSeeder extends Seeder
             'price1' => 100,
             'price2' => 90,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1608234807905-4466023792f5',
             'subcategory_id' => 6,
         ]);
 
@@ -89,6 +96,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2',
             'subcategory_id' => 7,
         ]);
 
@@ -99,6 +107,7 @@ class ProductSeeder extends Seeder
             'price1' => 125,
             'price2' => 112.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa',
             'subcategory_id' => 8,
         ]);
 
@@ -109,6 +118,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1',
             'subcategory_id' => 9,
         ]);
 
@@ -119,6 +129,7 @@ class ProductSeeder extends Seeder
             'price1' => 100,
             'price2' => 90,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1699205016746-8aa2e6e48453',
             'subcategory_id' => 10,
         ]);
 
@@ -129,6 +140,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => '',
             'subcategory_id' => 5,
         ]);
 
@@ -139,6 +151,7 @@ class ProductSeeder extends Seeder
             'price1' => 125,
             'price2' => 112.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1699205016746-8aa2e6e48453',
             'subcategory_id' => 6,
         ]);
 
@@ -149,6 +162,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1592301933927-35b597393c0a',
             'subcategory_id' => 6,
         ]);
 
@@ -159,6 +173,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1592301933927-35b597393c0a',
             'subcategory_id' => 7,
         ]);
 
@@ -169,6 +184,7 @@ class ProductSeeder extends Seeder
             'price1' => 25,
             'price2' => 22.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1592301933927-35b597393c0a',
             'subcategory_id' => 8,
         ]);
 
@@ -179,6 +195,7 @@ class ProductSeeder extends Seeder
             'price1' => 100,
             'price2' => 90,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1592301933927-35b597393c0a',
             'subcategory_id' => 9,
         ]);
 
@@ -189,6 +206,7 @@ class ProductSeeder extends Seeder
             'price1' => 25,
             'price2' => 22.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1657823501874-58b8d8a0fb23',
             'subcategory_id' => 10,
         ]);
 
@@ -199,6 +217,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1657823501874-58b8d8a0fb23',
             'subcategory_id' => 1,
         ]);
 
@@ -209,6 +228,7 @@ class ProductSeeder extends Seeder
             'price1' => 25,
             'price2' => 22.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1657823501874-58b8d8a0fb23',
             'subcategory_id' => 2,
         ]);
 
@@ -219,6 +239,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1657823501874-58b8d8a0fb23',
             'subcategory_id' => 3,
         ]);
 
@@ -229,6 +250,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 4,
         ]);
 
@@ -239,6 +261,7 @@ class ProductSeeder extends Seeder
             'price1' => 100,
             'price2' => 90,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 5,
         ]);
 
@@ -249,6 +272,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 6,
         ]);
 
@@ -259,6 +283,7 @@ class ProductSeeder extends Seeder
             'price1' => 125,
             'price2' => 112.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 7,
         ]);
 
@@ -269,6 +294,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 8,
         ]);
 
@@ -279,6 +305,7 @@ class ProductSeeder extends Seeder
             'price1' => 100,
             'price2' => 90,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 9,
         ]);
 
@@ -289,6 +316,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 10,
         ]);
 
@@ -299,6 +327,7 @@ class ProductSeeder extends Seeder
             'price1' => 125,
             'price2' => 112.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 1,
         ]);
 
@@ -309,6 +338,7 @@ class ProductSeeder extends Seeder
             'price1' => 50,
             'price2' => 45,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 2,
         ]);
 
@@ -319,6 +349,7 @@ class ProductSeeder extends Seeder
             'price1' => 75,
             'price2' => 67.5,
             'score' => 5,
+            'image' => 'https://images.unsplash.com/photo-1549062572-544a64fb0c56',
             'subcategory_id' => 3,
         ]);
 

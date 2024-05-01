@@ -15,6 +15,7 @@ class CommentController extends Controller
      *     path="/comment",
      *     tags={"Comment"},
      *     summary="Get all comments",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="List of comments",
@@ -45,6 +46,7 @@ class CommentController extends Controller
      *     path="/comment",
      *     tags={"Comment"},
      *     summary="Create a comment",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -131,6 +133,7 @@ class CommentController extends Controller
      *     path="/comment/{id}",
      *     tags={"Comment"},
      *     summary="Get a comment",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -176,6 +179,7 @@ class CommentController extends Controller
      *     path="/comment/{id}",
      *     tags={"Comment"},
      *     summary="Update a comment",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -282,6 +286,7 @@ class CommentController extends Controller
      *     path="/comment/{id}",
      *     tags={"Comment"},
      *     summary="Delete a comment",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

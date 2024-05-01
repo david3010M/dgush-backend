@@ -361,7 +361,7 @@ class OptionMenuController extends Controller
         }
 
 //        VALIDATE IF OPTIONMENU HAS ACCESSES
-        if ($optionMenu->accesses->count() > 0) {
+        if ($optionMenu->accesses()->count() > 0) {
             return response()->json(
                 ['message' => 'Option Menu has accesses associated'], 409
             );

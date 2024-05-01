@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->integer('score');
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('product_id')->constrained('product');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

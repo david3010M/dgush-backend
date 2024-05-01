@@ -24,7 +24,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'users';
 

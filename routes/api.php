@@ -37,6 +37,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+// PUBLIC ROUTES
+Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
+Route::get('/category/{id}', [CategoryController::class, 'show'])->name('category.show');
+Route::get('/subcategory', [SubcategoryController::class, 'index'])->name('subcategory.index');
+Route::get('/subcategory/{id}', [SubcategoryController::class, 'show'])->name('subcategory.show');
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(
@@ -124,25 +131,23 @@ Route::group(
     );
 //    PRODUCT
     Route::resource('product', ProductController::class)->only(
-        ['index', 'show', 'store', 'update', 'destroy']
+        ['store', 'update', 'destroy']
     )->names(
         [
-            'index' => 'product.index',
             'store' => 'product.store',
-            'show' => 'product.show',
             'update' => 'product.update',
             'destroy' => 'product.destroy',
         ]
     );
 
+    Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
+
 //    CATEGORY
     Route::resource('category', CategoryController::class)->only(
-        ['index', 'show', 'store', 'update', 'destroy']
+        ['store', 'update', 'destroy']
     )->names(
         [
-            'index' => 'category.index',
             'store' => 'category.store',
-            'show' => 'category.show',
             'update' => 'category.update',
             'destroy' => 'category.destroy',
         ]
@@ -150,12 +155,10 @@ Route::group(
 
 //    SUBCATEGORY
     Route::resource('subcategory', SubcategoryController::class)->only(
-        ['index', 'show', 'store', 'update', 'destroy']
+        ['store', 'update', 'destroy']
     )->names(
         [
-            'index' => 'subcategory.index',
             'store' => 'subcategory.store',
-            'show' => 'subcategory.show',
             'update' => 'subcategory.update',
             'destroy' => 'subcategory.destroy',
         ]

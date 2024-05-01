@@ -15,6 +15,7 @@ class SubcategoryController extends Controller
      *     path="/api/subcategory",
      *     summary="Get all subcategories",
      *     tags={"Subcategory"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="List of all subcategories",
@@ -43,6 +44,7 @@ class SubcategoryController extends Controller
      *     path="/api/subcategory",
      *     summary="Create a new subcategory",
      *     tags={"Subcategory"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -104,6 +106,7 @@ class SubcategoryController extends Controller
      *     path="/api/subcategory/{id}",
      *     summary="Get a subcategory",
      *     tags={"Subcategory"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -137,7 +140,7 @@ class SubcategoryController extends Controller
      */
     public function show(int $id)
     {
-        $subcategory = Subcategory::find($id);
+        $subcategory = Subcategory::find($id)->load('products');
 
         if ($subcategory) {
             return $subcategory;
@@ -153,6 +156,7 @@ class SubcategoryController extends Controller
      *     path="/api/subcategory/{id}",
      *     summary="Update a subcategory",
      *     tags={"Subcategory"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -175,13 +179,6 @@ class SubcategoryController extends Controller
      *         response=200,
      *         description="Subcategory updated",
      *         @OA\JsonContent(ref="#/components/schemas/Subcategory")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
      *     ),
      *     @OA\Response(
      *         response=422,
@@ -231,6 +228,7 @@ class SubcategoryController extends Controller
      *     path="/api/subcategory/{id}",
      *     summary="Delete a subcategory",
      *     tags={"Subcategory"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -277,7 +275,7 @@ class SubcategoryController extends Controller
 
         if ($subcategory) {
 //            VERIFY IF SUBCATEGORY HAS PRODUCTS
-            if ($subcategory->products->count() > 0) {
+            if ($subcategory->products()->count() > 0) {
                 return response()->json(['message' => 'Subcategory has products'], 409);
             }
 

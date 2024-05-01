@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name')->unique();
             $table->string('route')->unique();
-//            $table->softDeletes();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

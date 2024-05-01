@@ -21,7 +21,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'comment';
 

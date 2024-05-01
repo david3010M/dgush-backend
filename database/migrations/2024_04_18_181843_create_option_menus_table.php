@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->integer('order')->unique();
             $table->string('icon');
             $table->foreignId('groupmenu_id')->constrained('groupmenu');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

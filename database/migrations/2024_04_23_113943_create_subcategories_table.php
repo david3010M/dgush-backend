@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->integer('order');
             $table->foreignId('category_id')->constrained('category');
-//            $table->softDeletes();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -14,7 +14,7 @@ class TypeUserController extends Controller
      *     path="/api/typeuser",
      *     tags={"Type User"},
      *     summary="List Type User",
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="List of Type User",
@@ -42,7 +42,7 @@ class TypeUserController extends Controller
      *     path="/api/typeuser",
      *     tags={"Type User"},
      *     summary="Create Type User",
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -97,7 +97,7 @@ class TypeUserController extends Controller
      *     path="/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Show Type User",
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -157,7 +157,7 @@ class TypeUserController extends Controller
      *     path="/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Update Type User",
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *     name="id",
      *     in="path",
@@ -242,7 +242,7 @@ class TypeUserController extends Controller
      *     path="/api/typeuser/{id}",
      *     tags={"Type User"},
      *     summary="Delete Type User",
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -297,14 +297,14 @@ class TypeUserController extends Controller
         }
 
 //        VALIDATE IF TYPEUSER HAS ANY ACCESSES ASSOCIATED
-        if ($typeUser->access->count() > 0) {
+        if ($typeUser->access()->count() > 0) {
             return response()->json(
                 ['message' => 'Type User has accesses associated'], 409
             );
         }
 
 //        VALIDATE IF TYPEUSER HAS ANY PERMISSIONS ASSOCIATED
-        if ($typeUser->hasPermission->count() > 0) {
+        if ($typeUser->hasPermission()->count() > 0) {
             return response()->json(
                 ['message' => 'Type User has permissions associated'], 409
             );

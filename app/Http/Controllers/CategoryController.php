@@ -13,26 +13,25 @@ class CategoryController extends Controller
      *     path="/api/category",
      *     tags={"Category"},
      *     summary="Show all categories",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Show all categories",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Category")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *             @OA\Items(
+     *                  @OA\Property(property="id", type="integer", example="1"),
+     *                  @OA\Property(property="name", type="string", example="Category 1"),
+     *                  @OA\Property(property="order", type="integer", example="1"),
+     *                  @OA\Property(property="subcategories", type="array", @OA\Items(ref="#/components/schemas/Subcategory"))
+     *             )
      *         )
      *     )
      * )
      */
     public function index()
     {
-        return Category::all();
+        return Category::all()->load('subcategories');
     }
 
     /**
@@ -41,6 +40,7 @@ class CategoryController extends Controller
      *     path="/api/category",
      *     tags={"Category"},
      *     summary="Create a new category",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -87,6 +87,7 @@ class CategoryController extends Controller
      *     path="/api/category/{id}",
      *     tags={"Category"},
      *     summary="Show a category",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -100,13 +101,11 @@ class CategoryController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Show a category",
-     *         @OA\JsonContent(ref="#/components/schemas/Category")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *              @OA\Property(property="id", type="integer", example="1"),
+     *              @OA\Property(property="name", type="string", example="Category 1"),
+     *              @OA\Property(property="order", type="integer", example="1"),
+     *              @OA\Property(property="subcategories", type="array", @OA\Items(ref="#/components/schemas/Subcategory"))
      *         )
      *     ),
      *     @OA\Response(
@@ -135,6 +134,7 @@ class CategoryController extends Controller
      *     path="/api/category/{id}",
      *     tags={"Category"},
      *     summary="Update a category",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -205,6 +205,7 @@ class CategoryController extends Controller
      *     path="/api/category/{id}",
      *     tags={"Category"},
      *     summary="Delete a category",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -247,7 +248,7 @@ class CategoryController extends Controller
         }
 
 //        VALIDATE IF CATEGORY HAS SUBCATEGORIES
-        if ($category->subcategories->count() > 0) {
+        if ($category->subcategories()->count() > 0) {
             return response()->json(['message' => 'Category has subcategories'], 409);
         }
 

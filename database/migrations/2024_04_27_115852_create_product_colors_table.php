@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('product_color', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('product');
+            $table->foreignId('product_id')->constrained('product')->onDelete('cascade');
             $table->foreignId('color_id')->constrained('color');
-//            $table->softDeletes();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

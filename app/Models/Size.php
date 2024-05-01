@@ -18,7 +18,7 @@ class Size extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'size';
 

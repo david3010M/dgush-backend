@@ -15,6 +15,7 @@ class ProductController extends Controller
      *     path="/api/product",
      *     tags={"Product"},
      *     summary="Show all products",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Show all products",
@@ -22,13 +23,6 @@ class ProductController extends Controller
      *             type="array",
      *             @OA\Items(ref="#/components/schemas/Product")
      *        )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
      *     )
      * )
      */
@@ -38,12 +32,20 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    public function getAllProducts()
+    {
+//        ALL PRODUCTS WITH TRASHED
+        $allProducts = Product::withTrashed()->get();
+        return response()->json($allProducts);
+    }
+
     /**
      * CREATE PRODUCT
      * @OA\Post(
      *     path="/api/product",
      *     tags={"Product"},
      *     summary="Create product",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -119,6 +121,7 @@ class ProductController extends Controller
      *     path="/api/product/{id}",
      *     tags={"Product"},
      *     summary="Show product",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -133,16 +136,13 @@ class ProductController extends Controller
      *         description="Show product",
      *         @OA\JsonContent(
      *             @OA\Property(property="product", ref="#/components/schemas/Product"),
-     *             @OA\Property(property="colors", type="array", @OA\Items(ref="#/components/schemas/ProductColor")),
-     *             @OA\Property(property="sizes", type="array", @OA\Items(ref="#/components/schemas/ProductSize")),
+     *             @OA\Property(property="colors", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example="1"),
+     *                 @OA\Property(property="name", type="string", example="Red"),
+     *                 @OA\Property(property="hex", type="string", example="#FF0000")
+     *             )),
+     *             @OA\Property(property="sizes", type="array", @OA\Items(ref="#/components/schemas/Size")),
      *             @OA\Property(property="comments", type="array", @OA\Items(ref="#/components/schemas/Comment")),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
      *     @OA\Response(
@@ -182,6 +182,7 @@ class ProductController extends Controller
      *     path="/api/product/{id}",
      *     tags={"Product"},
      *     summary="Update product",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -272,6 +273,7 @@ class ProductController extends Controller
      *     path="/api/product/{id}",
      *     tags={"Product"},
      *     summary="Delete product",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -317,19 +319,19 @@ class ProductController extends Controller
         $product = Product::find($id);
         if ($product) {
 //            VALIDATE PRODUCT NOT HAS COMMENTS
-            if ($product->comments->count() > 0) {
+            if ($product->comments()->count() > 0) {
                 return response()->json(['message' => 'Product has comments'], 409);
             }
 
 //            VALIDATE PRODUCT NOT HAS PRODUCT SIZE
-            if ($product->productSize->count() > 0) {
-                return response()->json(['message' => 'Product has product size'], 409);
-            }
+//            if ($product->productSize()->count() > 0) {
+//                return response()->json(['message' => 'Product has product size'], 409);
+//            }
 
 //            VALIDATE PRODUCT NOT HAS PRODUCT COLOR
-            if ($product->productColor->count() > 0) {
-                return response()->json(['message' => 'Product has product color'], 409);
-            }
+//            if ($product->productColor()->count() > 0) {
+//                return response()->json(['message' => 'Product has product color'], 409);
+//            }
 
 //            DELETE PRODUCT
             $product->delete();

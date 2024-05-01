@@ -17,6 +17,7 @@ class ProductColorController extends Controller
      *      tags={"Product Colors"},
      *      summary="Get all product colors",
      *      description="Returns all product colors",
+     *      security={{"bearerAuth": {}}},
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -47,6 +48,7 @@ class ProductColorController extends Controller
      *      tags={"Product Colors"},
      *      summary="Create product color",
      *      description="Create a new product color",
+     *      security={{"bearerAuth": {}}},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -135,6 +137,7 @@ class ProductColorController extends Controller
      *      tags={"Product Colors"},
      *      summary="Get product color by id",
      *      description="Returns product color by id",
+     *      security={{"bearerAuth": {}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Product color id",
@@ -183,6 +186,7 @@ class ProductColorController extends Controller
      *      tags={"Product Colors"},
      *      summary="Update product color",
      *      description="Update product color",
+     *      security={{"bearerAuth": {}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Product color id",
@@ -284,6 +288,7 @@ class ProductColorController extends Controller
      *      tags={"Product Colors"},
      *      summary="Delete product color",
      *      description="Delete product color",
+     *      security={{"bearerAuth": {}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Product color id",

@@ -19,7 +19,7 @@ class Access extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'access';
 

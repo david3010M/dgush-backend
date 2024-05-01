@@ -20,7 +20,7 @@ class ProductSize extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'product_size';
 

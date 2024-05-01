@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="price1", type="number", example="100.00"),
  *     @OA\Property(property="price2", type="number", example="90.00"),
  *     @OA\Property(property="score", type="integer", example="5"),
+ *     @OA\Property(property="image", type="string", example="image.jpg"),
  *     @OA\Property(property="subcategory_id", type="integer", example="1"),
  * )
  */
@@ -24,7 +25,7 @@ class Product extends Model
 {
     use HasFactory;
 
-//    use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'product';
 
@@ -35,6 +36,7 @@ class Product extends Model
         'price1',
         'price2',
         'score',
+        'image',
         'subcategory_id'
     ];
 
@@ -56,7 +58,7 @@ class Product extends Model
     {
         return Color::join('product_color', 'color.id', '=', 'product_color.color_id')
             ->where('product_color.product_id', $id)
-            ->select('color.id', 'color.name')
+            ->select('color.id', 'color.name', 'color.hex')
             ->get();
     }
 

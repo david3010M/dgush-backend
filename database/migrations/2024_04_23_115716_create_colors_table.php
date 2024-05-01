@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('hex');
-//            $table->softDeletes();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
