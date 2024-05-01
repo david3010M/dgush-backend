@@ -19,8 +19,6 @@ use Illuminate\Http\Request;
  *             description="API's for D'Gush store",
  * )
  *
- * @OA\Server(url="https://develop.garzasoft.com/dgush-backend/public")
- *
  * @OA\SecurityScheme(
  *      securityScheme="Bearer",
  *      in="header",
