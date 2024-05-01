@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
  *             description="API's for D'Gush store",
  * )
  *
- * @OA\Server(url="http://127.0.0.1:8000/public")
+ * @OA\Server(url="https://develop.garzasoft.com/dgush-backend/public")
  *
  * @OA\SecurityScheme(
  *      securityScheme="Bearer",

@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000/public"
+            "url": "https://develop.garzasoft.com/dgush-backend/public"
         }
     ],
     "paths": {
@@ -6683,6 +6683,10 @@
                     "score": {
                         "type": "integer",
                         "example": "5"
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "image.jpg"
                     },
                     "subcategory_id": {
                         "type": "integer",
