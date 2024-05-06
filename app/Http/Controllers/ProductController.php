@@ -99,6 +99,8 @@ class ProductController extends Controller
                 'price1' => 'required|numeric',
                 'price2' => 'required|numeric',
                 'score' => 'required|integer',
+                'image' => 'required|string',
+                'status' => 'string|in:onsale,new',
                 'subcategory_id' => 'required|integer',
             ]
         );

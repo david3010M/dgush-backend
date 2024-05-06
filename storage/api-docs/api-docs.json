@@ -753,6 +753,125 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register user",
+                "description": "Register a new user",
+                "operationId": "a52feff2fd0ba6c0f64284314cbb36a1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "D Gush"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "dgush123@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "abcd1234"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147"
+                                        },
+                                        "user": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "11"
+                                                    },
+                                                    "names": {
+                                                        "type": "string",
+                                                        "example": "D Gush"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "dgush123@gmail.com"
+                                                    },
+                                                    "typeuser_id": {
+                                                        "type": "number",
+                                                        "example": "2"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "typeuser": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number",
+                                                        "example": "2"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "User"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "optionMenuAccess": {
+                                            "type": "string",
+                                            "example": "1, 2, 3, 4"
+                                        },
+                                        "permissions": {
+                                            "type": "string",
+                                            "example": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "The email has already been taken."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dgush-backend/public/api/category": {
             "get": {
                 "tags": [
@@ -3291,14 +3410,14 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/permissions": {
+        "/dgush-backend/public/api/permission": {
             "get": {
                 "tags": [
                     "Permissions"
                 ],
                 "summary": "Get list of permissions",
                 "description": "Returns list of permissions",
-                "operationId": "9947d873e2338009bbb0530111156104",
+                "operationId": "df6a3d032051f50edcf7033755f7f47c",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -3324,14 +3443,14 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/permissions/{id}": {
+        "/dgush-backend/public/api/permission/{id}": {
             "get": {
                 "tags": [
                     "Permissions"
                 ],
                 "summary": "Get permission information",
                 "description": "Returns permission data",
-                "operationId": "faf969d3cf926f295c01cb4c466f65cc",
+                "operationId": "5cef7a50ccbbdf8a919345848b1a5d51",
                 "parameters": [
                     {
                         "name": "id",
@@ -6692,6 +6811,10 @@
                     "image": {
                         "type": "string",
                         "example": "image.jpg"
+                    },
+                    "status": {
+                        "type": "'onsale'|'new'",
+                        "example": "onsale"
                     },
                     "subcategory_id": {
                         "type": "integer",

@@ -11,7 +11,7 @@ class PermissionController extends Controller
     /**
      *
      * @OA\Get(
-     *      path="/dgush-backend/public/api/permissions",
+     *      path="/dgush-backend/public/api/permission",
      *      tags={"Permissions"},
      *      summary="Get list of permissions",
      *      description="Returns list of permissions",
@@ -35,7 +35,7 @@ class PermissionController extends Controller
 
     /**
      * @OA\Get(
-     *      path="/dgush-backend/public/api/permissions/{id}",
+     *      path="/dgush-backend/public/api/permission/{id}",
      *      tags={"Permissions"},
      *      summary="Get permission information",
      *      description="Returns permission data",

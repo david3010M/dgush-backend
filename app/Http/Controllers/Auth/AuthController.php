@@ -385,7 +385,111 @@ class AuthController extends Controller
 
 
     /**
-     * Método para registrar un nuevo usuario.
+     * Register a new user
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/register",
+     *     tags={"Authentication"},
+     *     summary="Register user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 example="D Gush"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 type="string",
+     *                 example="dgush123@gmail.com"
+     *             ),
+     *             @OA\Property(
+     *                 property="password",
+     *                 type="string",
+     *                 example="abcd1234"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User registered",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="access_token",
+     *                 type="string",
+     *                 example="10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147",
+     *             ),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(
+     *                         property="id",
+     *                         type="number",
+     *                         example="11"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="names",
+     *                         type="string",
+     *                         example="D Gush"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="dgush123@gmail.com"
+     *                     ),
+     *                     @OA\Property(
+     *                          property="typeuser_id",
+     *                          type="number",
+     *                          example="2"
+     *                     )
+     *                )
+     *             ),
+     *             @OA\Property(
+     *                  property="typeuser",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="number",
+     *                          example="2"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="name",
+     *                          type="string",
+     *                          example="User"
+     *                      )
+     *                  )
+     *              ),
+     *              @OA\Property(
+     *                  property="optionMenuAccess",
+     *                  type="string",
+     *                  example="1, 2, 3, 4"
+     *              ),
+     *              @OA\Property(
+     *                  property="permissions",
+     *                  type="string",
+     *                  example="1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+     *              )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid data",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="string",
+     *                     example="The email has already been taken."
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function register(Request $request)
     {
@@ -403,15 +507,31 @@ class AuthController extends Controller
 
         // Crear un nuevo usuario
         $user = User::create([
-            'name' => $request->name,
+            'names' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'typeuser_id' => 2,
         ]);
+
+        $typeuser = TypeUser::find(2);
+
+        $optionMenuAccess = $typeuser->getAccess($typeuser->id);
+
+        $permissions = $typeuser->getHasPermission($typeuser->id);
 
         // Generar un token de acceso para el nuevo usuario
         $token = $user->createToken('AuthToken')->plainTextToken;
 
+
         // Devolver el usuario completo junto con el token en la respuesta
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        return response()->json(
+            [
+                'access_token' => $token,
+                'user' => $user,
+                'typeuser' => $typeuser,
+                'optionMenuAccess' => $optionMenuAccess,
+                'permissions' => $permissions
+            ]
+        );
     }
 }

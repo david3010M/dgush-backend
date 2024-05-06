@@ -21,5 +21,27 @@ class HasPermissionSeeder extends Seeder
             ]);
         });
 
+//        USER PERMISSION
+        $userPermissions = [
+            36, 37, 42, 43, 47, 48
+        ];
+        foreach ($userPermissions as $userPermission) {
+            HasPermission::create([
+                'permission_id' => $userPermission,
+                'typeuser_id' => 2,
+            ]);
+        }
+
+//        GUEST PERMISSION
+        $guestPermissions = [
+            36, 37, 42, 43, 47, 48
+        ];
+        foreach ($guestPermissions as $guestPermission) {
+            HasPermission::create([
+                'permission_id' => $guestPermission,
+                'typeuser_id' => 3,
+            ]);
+        }
+
     }
 }

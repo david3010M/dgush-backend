@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="price2", type="number", example="90.00"),
  *     @OA\Property(property="score", type="integer", example="5"),
  *     @OA\Property(property="image", type="string", example="image.jpg"),
+ *     @OA\Property(property="status", type="'onsale'|'new'", example="onsale"),
  *     @OA\Property(property="subcategory_id", type="integer", example="1"),
  * )
  */
@@ -37,6 +38,7 @@ class Product extends Model
         'price2',
         'score',
         'image',
+        'status',
         'subcategory_id'
     ];
 
