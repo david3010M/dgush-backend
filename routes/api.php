@@ -34,12 +34,17 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
+Route::post('/product/image/{id}', [ProductController::class, 'uploadImages'])->name('product.images');
+Route::get('/images', [ProductController::class, 'listImages'])->name('images.all');
+Route::post('/deleteImage', [ProductController::class, 'deleteImage'])->name('images.delete');
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 // PUBLIC ROUTES
 Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+Route::get('/product/search', [ProductController::class, 'search'])->name('product.search');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
 Route::get('/category/{id}', [CategoryController::class, 'show'])->name('category.show');
@@ -142,6 +147,8 @@ Route::group(
     );
 
     Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
+    Route::put('/product/setColors/{id}', [ProductController::class, 'setColors'])->name('product.colors');
+    Route::put('/product/setSizes/{id}', [ProductController::class, 'setSizes'])->name('product.sizes');
 
 //    CATEGORY
     Route::resource('category', CategoryController::class)->only(

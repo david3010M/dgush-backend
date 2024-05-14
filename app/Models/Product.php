@@ -46,14 +46,46 @@ class Product extends Model
         'created_at',
         'updated_at',
         'deleted_at',
+        'pivot'
     ];
 
-    public static function search($search)
+    public static function search($search, $category, $subcategory, $price, $colors, $sizes, $sort, $direction)
     {
-        return empty($search) ? static::query()
-            : static::where('name', 'like', '%' . $search . '%')
-                ->orWhere('description', 'like', '%' . $search . '%')
-                ->orWhere('detailweb', 'like', '%' . $search . '%');
+        $colors = explode(',', $colors);
+        $sizes = explode(',', $sizes);
+
+        $query = Product::query();
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        if ($category) {
+            $query->whereHas('subcategory', function ($q) use ($category) {
+                $q->where('category_id', $category);
+            });
+        }
+
+        if ($subcategory) {
+            $query->where('subcategory_id', $subcategory);
+        }
+
+        if ($price !== null && $price > 0) {
+            $query->where('price1', '<=', $price);
+        }
+
+        if ($colors[0] != null) {
+            $query->whereHas('productColors', function ($q) use ($colors) {
+                $q->whereIn('color_id', $colors);
+            });
+        }
+
+        if ($sizes[0] != null) {
+            $query->whereHas('productSizes', function ($q) use ($sizes) {
+                $q->whereIn('size_id', $sizes);
+            });
+        }
+
+        return $query->orderBy($sort, $direction)->simplePaginate(12);
     }
 
     public static function getColors($id)
@@ -77,18 +109,23 @@ class Product extends Model
         return $this->belongsTo(Subcategory::class);
     }
 
-    public function productColor()
+    public function productColors()
     {
-        return $this->hasMany(ProductColor::class);
+        return $this->belongsToMany(Color::class, 'product_color', 'product_id', 'color_id');
     }
 
-    public function productSize()
+    public function productSizes()
     {
-        return $this->hasMany(ProductSize::class);
+        return $this->belongsToMany(Size::class, 'product_size', 'product_id', 'size_id');
     }
 
     public function comments()
     {
-        return $this->hasMany(Comment::class)->get();
+        return $this->hasMany(Comment::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Image::class);
     }
 }

@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->decimal('price1', 8, 2);
             $table->decimal('price2', 8, 2);
             $table->integer('score');
-            $table->string('image');
             $table->string('status')->values(['onsale', 'new', ''])->default('');
             $table->foreignId('subcategory_id')->constrained('subcategory');
             $table->softDeletes();

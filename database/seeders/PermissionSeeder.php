@@ -231,6 +231,22 @@ class PermissionSeeder extends Seeder
             'route' => 'product.all',
         ]);
 
+        Permission::create([
+            'name' => 'Buscar Productos',
+            'route' => 'product.search',
+        ]);
+
+        Permission::create([
+            'name' => 'Set Colores de Producto',
+            'route' => 'product.colors',
+        ]);
+
+        Permission::create([
+            'name' => 'Set Tallas de Producto',
+            'route' => 'product.sizes',
+        ]);
+
+
 //        CATEGORY
 
         Permission::create([
