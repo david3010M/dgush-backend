@@ -277,7 +277,6 @@ class ProductController extends Controller
                 'price1' => 'required|numeric',
                 'price2' => 'required|numeric',
                 'score' => 'required|integer',
-                'image' => 'required|string',
                 'status' => 'string|in:onsale,new',
                 'subcategory_id' => 'required|integer',
             ]
@@ -342,7 +341,7 @@ class ProductController extends Controller
 //            GET COMMENTS
             $colors = $product->getColors($id);
             $sizes = $product->getSizes($id);
-            $comments = $product->comments();
+            $comments = $product->comments($id);
             $images = $product->images($id);
             return response()->json([
                 'product' => $product,

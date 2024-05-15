@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Product;
 use App\Models\ProductColor;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -12,94 +13,15 @@ class ProductColorSeeder extends Seeder
 
     public function run(): void
     {
-        ProductColor::create([
-            'product_id' => 1,
-            'color_id' => 1,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 1,
-            'color_id' => 2,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 1,
-            'color_id' => 3,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 2,
-            'color_id' => 4,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 2,
-            'color_id' => 5,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 2,
-            'color_id' => 6,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 3,
-            'color_id' => 1,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 3,
-            'color_id' => 2,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 3,
-            'color_id' => 3,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 4,
-            'color_id' => 4,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 4,
-            'color_id' => 5,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 4,
-            'color_id' => 6,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 5,
-            'color_id' => 1,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 5,
-            'color_id' => 2,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 5,
-            'color_id' => 3,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 6,
-            'color_id' => 4,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 6,
-            'color_id' => 5,
-        ]);
-
-        ProductColor::create([
-            'product_id' => 6,
-            'color_id' => 6,
-        ]);
+//        CREATE PRODUCT COLOR FROM A RANDOM NUMBER SINCE 4 TO 7 AS MAXIMUM
+        Product::all()->each(function (Product $product) {
+            $random = rand(4, 7);
+            for ($i = 1; $i <= $random; $i++) {
+                ProductColor::create([
+                    'product_id' => $product->id,
+                    'color_id' => $i,
+                ]);
+            }
+        });
     }
 }

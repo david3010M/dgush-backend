@@ -21,8 +21,8 @@ class CommentSeeder extends Seeder
     {
         for ($i = 1; $i <= 30; $i++) {
             Comment::create([
-                'description' => 'Comentario de prueba para el producto ' . $i,
-                'score' => 5,
+                'description' => 'This is a comment for product ' . $i,
+                'score' => random_int(1, 5),
                 'user_id' => 1,
                 'product_id' => $i,
             ]);

@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @OA\Schema (
@@ -49,6 +52,31 @@ class Product extends Model
         'pivot'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            $model->validate();
+        });
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function validate()
+    {
+        $validator = Validator::make($this->attributes, [
+            'status' => [
+                Rule::in(['onsale', 'new', ''])
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+    }
+
     public static function search($search, $category, $subcategory, $price, $colors, $sizes, $sort, $direction)
     {
         $colors = explode(',', $colors);
@@ -85,8 +113,11 @@ class Product extends Model
             });
         }
 
-//        ADD IMAGES FROM TABLE IMAGE
-        $query->with('images');
+//        ADD COLUMN IMAGE WITCH IS THE FIRST IMAGE OF THE PRODUCT IN TABLE IMAGE
+        $query->addSelect(['image' => Image::select('url')
+            ->whereColumn('product_id', 'product.id')
+            ->orderBy('id')
+            ->limit(1)]);
 
         return $query->orderBy($sort, $direction)->simplePaginate(12);
     }
@@ -122,13 +153,18 @@ class Product extends Model
         return $this->belongsToMany(Size::class, 'product_size', 'product_id', 'size_id');
     }
 
-    public function comments()
+    public function comments($id)
     {
-        return $this->hasMany(Comment::class);
+        return Comment::where('product_id', $id)->orderBy('score', 'desc')->get();
     }
 
     public function images($id)
     {
         return Image::where('product_id', $id)->get();
+    }
+
+    public function image()
+    {
+        return $this->belongsToMany(Image::class, 'product_image', 'product_id', 'image_id')->gir;
     }
 }
