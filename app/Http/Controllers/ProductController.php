@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
 use App\Models\Subcategory;
@@ -127,9 +128,7 @@ class ProductController extends Controller
             ]
         );
 
-        $imageName = basename($request->fileName);
-
-        Storage::disk('spaces')->delete($imageName);
+        Storage::disk('spaces')->delete($request->fileName);
 
         return response()->json(['message' => 'Imagen eliminada correctamente']);
     }
@@ -144,19 +143,42 @@ class ProductController extends Controller
             ]
         );
 
+
 //        FIND PRODUCT
         $product = Product::find($id);
 
         if ($product) {
             $images = $request->file('images');
-            $urls = [];
+            $imagesResponse = [];
+
+//            VALIDATE IMAGE NAME MUST BE UNIQUE IN TABLE IMAGE WITH THE SAME PRODUCT_ID
+
             foreach ($images as $image) {
-                $fileName = time() . '_' . $image->getClientOriginalName();
-                Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
-                $imageUrl = Storage::disk('spaces')->url($id . '/' . $fileName);
-                $urls[] = $imageUrl;
+                $imageValidate = Image::where('name', $image->getClientOriginalName())
+                    ->where('product_id', $id)
+                    ->first();
+                if ($imageValidate) {
+                    return response()->json(['message' => 'Image is already uploaded'], 409);
+                }
             }
-            return response()->json($urls);
+
+            foreach ($images as $image) {
+//                UPLOAD IMAGE
+                $fileName = $id . '/' . $image->getClientOriginalName();
+                Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+//                GET IMAGE URLs
+                $imageUrl = Storage::disk('spaces')->url($fileName);
+
+                $image = Image::create([
+                    'name' => $fileName,
+                    'url' => $imageUrl,
+                    'product_id' => $id
+                ]);
+
+                $imagesResponse[] = $image;
+            }
+            return response()->json($imagesResponse);
         } else {
             return response()->json(['message' => 'Product not found'], 404);
         }
@@ -321,12 +343,13 @@ class ProductController extends Controller
             $colors = $product->getColors($id);
             $sizes = $product->getSizes($id);
             $comments = $product->comments();
+            $images = $product->images($id);
             return response()->json([
                 'product' => $product,
                 'colors' => $colors,
                 'sizes' => $sizes,
-                'comments' => $comments
-
+                'comments' => $comments,
+                'images' => $images
             ]);
         } else {
 //            PRODUCT NOT FOUND

@@ -36,5 +36,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductColorSeeder::class);
         $this->call(ProductSizeSeeder::class);
         $this->call(CommentSeeder::class);
+        $this->call(ImageSeeder::class);
     }
 }

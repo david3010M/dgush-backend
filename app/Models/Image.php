@@ -14,7 +14,14 @@ class Image extends Model
     protected $table = 'image';
 
     protected $fillable = [
+        'name',
         'url',
+        'product_id'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
     ];
 
     public function product()

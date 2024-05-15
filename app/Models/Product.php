@@ -85,6 +85,9 @@ class Product extends Model
             });
         }
 
+//        ADD IMAGES FROM TABLE IMAGE
+        $query->with('images');
+
         return $query->orderBy($sort, $direction)->simplePaginate(12);
     }
 
@@ -124,8 +127,8 @@ class Product extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function images()
+    public function images($id)
     {
-        return $this->hasMany(Image::class);
+        return Image::where('product_id', $id)->get();
     }
 }
