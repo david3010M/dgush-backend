@@ -3962,74 +3962,87 @@
                     "Product"
                 ],
                 "summary": "Show all products",
-                "description": "SHOW ALL PRODUCTS",
+                "description": "SHOW ALL PRODUCTS WITH PAGINATION OF 12",
                 "operationId": "a3d9c4fc9174ac2dce46f31a6151d248",
                 "parameters": [
                     {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Page number",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
                         "name": "search",
                         "in": "query",
-                        "description": "Search by name",
+                        "description": "Search product",
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "category",
+                        "name": "status",
                         "in": "query",
-                        "description": "Filter by category",
+                        "description": "Status product",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
+                            "type": "string",
+                            "enum": [
+                                "onsale",
+                                "new"
+                            ]
                         }
                     },
                     {
-                        "name": "subcategory",
+                        "name": "score",
                         "in": "query",
-                        "description": "Filter by subcategory",
+                        "description": "Score product",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "subcategories",
+                        "in": "query",
+                        "description": "Subcategories product",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     {
                         "name": "price",
                         "in": "query",
-                        "description": "Filter by price",
+                        "description": "Price product",
                         "schema": {
-                            "type": "number",
-                            "format": "float"
+                            "type": "string"
                         }
                     },
                     {
                         "name": "colors",
                         "in": "query",
-                        "description": "Filter by colors",
+                        "description": "Colors product",
                         "schema": {
-                            "type": "string",
-                            "format": "string",
-                            "example": "1,5,8"
+                            "type": "string"
                         }
                     },
                     {
                         "name": "sizes",
                         "in": "query",
-                        "description": "Filter by size",
+                        "description": "Sizes product",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sort product",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Direction product",
                         "schema": {
                             "type": "string",
-                            "format": "string",
-                            "example": "1,2,3"
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
                         }
                     }
                 ],
@@ -4039,10 +4052,47 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Product"
-                                    }
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Product"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "https://develop.garzasoft.com/dgush-backend/public/api/product?page=1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "next_page_url": {
+                                            "type": "string",
+                                            "example": "https://develop.garzasoft.com/dgush-backend/public/api/product?page=2"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "https://develop.garzasoft.com/dgush-backend/public/api/product"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": "12"
+                                        },
+                                        "prev_page_url": {
+                                            "type": "string",
+                                            "example": "null"
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": "10"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -7159,10 +7209,6 @@
                         "type": "integer",
                         "example": "5"
                     },
-                    "image": {
-                        "type": "string",
-                        "example": "image.jpg"
-                    },
                     "status": {
                         "type": "'onsale'|'new'",
                         "example": "onsale"
@@ -7170,6 +7216,10 @@
                     "subcategory_id": {
                         "type": "integer",
                         "example": "1"
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "image.jpg"
                     }
                 },
                 "type": "object"

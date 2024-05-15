@@ -38,6 +38,17 @@ class Comment extends Model
         'deleted_at',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($model) {
+            Product::find($model->product_id)->update([
+                'score' => round(Comment::where('product_id', $model->product_id)->avg('score'), 1),
+            ]);
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

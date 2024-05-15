@@ -14,81 +14,79 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     /**
-     * SHOW ALL PRODUCTS
+     * SHOW ALL PRODUCTS WITH PAGINATION OF 12
      * @OA\Get(
      *     path="/dgush-backend/public/api/product",
      *     tags={"Product"},
      *     summary="Show all products",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
-     *         name="page",
-     *         in="query",
-     *         description="Page number",
-     *         @OA\Schema(
-     *             type="integer"
-     *         )
-     *     ),
-     *     @OA\Parameter(
      *         name="search",
      *         in="query",
-     *         description="Search by name",
-     *         @OA\Schema(
-     *             type="string"
-     *         )
+     *         description="Search product",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
-     *         name="category",
+     *         name="status",
      *         in="query",
-     *         description="Filter by category",
-     *         @OA\Schema(
-     *             type="array",
-     *             @OA\Items(type="integer")
-     *         )
+     *         description="Status product",
+     *         @OA\Schema(type="string", enum={"onsale", "new"})
      *     ),
      *     @OA\Parameter(
-     *         name="subcategory",
+     *         name="score",
      *         in="query",
-     *         description="Filter by subcategory",
-     *         @OA\Schema(
-     *             type="array",
-     *             @OA\Items(type="integer")
-     *         )
+     *         description="Score product",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="subcategories",
+     *         in="query",
+     *         description="Subcategories product",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="price",
      *         in="query",
-     *         description="Filter by price",
-     *         @OA\Schema(
-     *             type="number",
-     *             format="float"
-     *         )
+     *         description="Price product",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="colors",
      *         in="query",
-     *         description="Filter by colors",
-     *         @OA\Schema(
-     *             type="string",
-     *             format="string",
-     *             example="1,5,8"
-     *         )
+     *         description="Colors product",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="sizes",
      *         in="query",
-     *         description="Filter by size",
-     *         @OA\Schema(
-     *             type="string",
-     *             format="string",
-     *             example="1,2,3"
-     *         )
+     *         description="Sizes product",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         description="Sort product",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="direction",
+     *         in="query",
+     *         description="Direction product",
+     *         @OA\Schema(type="string", enum={"asc", "desc"})
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Show all products",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Product")
+     *             @OA\Property(property="current_page", type="integer", example="1"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Product")),
+     *             @OA\Property(property="first_page_url", type="string", example="https://develop.garzasoft.com/dgush-backend/public/api/product?page=1"),
+     *             @OA\Property(property="from", type="integer", example="1"),
+     *             @OA\Property(property="next_page_url", type="string", example="https://develop.garzasoft.com/dgush-backend/public/api/product?page=2"),
+     *             @OA\Property(property="path", type="string", example="https://develop.garzasoft.com/dgush-backend/public/api/product"),
+     *             @OA\Property(property="per_page", type="integer", example="12"),
+     *             @OA\Property(property="prev_page_url", type="string", example="null"),
+     *             @OA\Property(property="to", type="integer", example="10"),
      *        )
      *     )
      * )
@@ -98,13 +96,14 @@ class ProductController extends Controller
 //        USE SEARCH AND SIMPLE PAGINATION 12
         $products = Product::search(
             request('search'),
-            request('category'),
-            request('subcategory'),
+            request('status'),
+            request('score'),
+            request('subcategories'),
             request('price'),
             request('colors'),
             request('sizes'),
-            request('size') ?? 'id',
-            request('direction') ?? 'asc',
+            request('sort') ?? 'id',
+            request('direction') ?? 'desc',
         );
         return response()->json($products);
 

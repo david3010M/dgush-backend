@@ -20,9 +20,9 @@ use Illuminate\Validation\ValidationException;
  *     @OA\Property(property="price1", type="number", example="100.00"),
  *     @OA\Property(property="price2", type="number", example="90.00"),
  *     @OA\Property(property="score", type="integer", example="5"),
- *     @OA\Property(property="image", type="string", example="image.jpg"),
  *     @OA\Property(property="status", type="'onsale'|'new'", example="onsale"),
  *     @OA\Property(property="subcategory_id", type="integer", example="1"),
+ *     @OA\Property(property="image", type="string", example="image.jpg"),
  * )
  */
 class Product extends Model
@@ -77,28 +77,34 @@ class Product extends Model
         }
     }
 
-    public static function search($search, $category, $subcategory, $price, $colors, $sizes, $sort, $direction)
+    public static function search($search, $status, $score, $subcategories, $price, $colors, $sizes, $sort, $direction)
     {
         $colors = explode(',', $colors);
         $sizes = explode(',', $sizes);
+        $subcategories = explode(',', $subcategories);
 
         $query = Product::query();
         if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('description', 'like', '%' . $search . '%')
+                ->orWhere('detailweb', 'like', '%' . $search . '%');
         }
 
-        if ($category) {
-            $query->whereHas('subcategory', function ($q) use ($category) {
-                $q->where('category_id', $category);
-            });
+        if ($status) {
+            $query->where('status', $status);
         }
 
-        if ($subcategory) {
-            $query->where('subcategory_id', $subcategory);
+        if ($score) {
+            $query->where('score', $score);
+        }
+
+        if ($subcategories[0] != null) {
+            $query->whereIn('subcategory_id', $subcategories);
         }
 
         if ($price !== null && $price > 0) {
-            $query->where('price1', '<=', $price);
+            $query->where('price1', '<=', $price)
+                ->orWhere('price2', '<=', $price);
         }
 
         if ($colors[0] != null) {

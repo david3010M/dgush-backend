@@ -29,7 +29,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Vestido casual para dama',
             'price1' => 100,
             'price2' => 90,
-            'score' => 5,
             'status' => 'onsale',
             'subcategory_id' => 1,
         ]);
@@ -40,7 +39,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Vestido formal para dama',
             'price1' => 200,
             'price2' => 180,
-            'score' => 5,
             'subcategory_id' => 2,
         ]);
 
@@ -50,7 +48,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Vestido cóctel para dama',
             'price1' => 150,
             'price2' => 135,
-            'score' => 5,
             'subcategory_id' => 3,
         ]);
 
@@ -60,7 +57,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Vestido de noche para dama',
             'price1' => 250,
             'price2' => 225,
-            'score' => 5,
             'subcategory_id' => 4,
         ]);
 
@@ -70,7 +66,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa casual para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'status' => 'onsale',
             'subcategory_id' => 5,
         ]);
@@ -81,7 +76,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa formal para dama',
             'price1' => 100,
             'price2' => 90,
-            'score' => 5,
             'subcategory_id' => 6,
         ]);
 
@@ -91,7 +85,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa deportiva para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'subcategory_id' => 7,
         ]);
 
@@ -101,7 +94,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa de noche para dama',
             'price1' => 125,
             'price2' => 112.5,
-            'score' => 5,
             'subcategory_id' => 8,
         ]);
 
@@ -111,7 +103,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón casual para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'subcategory_id' => 9,
         ]);
 
@@ -121,7 +112,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón formal para dama',
             'price1' => 100,
             'price2' => 90,
-            'score' => 5,
             'status' => 'onsale',
             'subcategory_id' => 10,
         ]);
@@ -132,7 +122,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón deportivo para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'subcategory_id' => 5,
         ]);
 
@@ -142,7 +131,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón de noche para dama',
             'price1' => 125,
             'price2' => 112.5,
-            'score' => 5,
             'subcategory_id' => 6,
         ]);
 
@@ -152,7 +140,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Falda casual para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'subcategory_id' => 6,
         ]);
 
@@ -162,7 +149,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Falda formal para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'subcategory_id' => 7,
         ]);
 
@@ -172,7 +158,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Falda deportiva para dama',
             'price1' => 25,
             'price2' => 22.5,
-            'score' => 5,
             'subcategory_id' => 8,
         ]);
 
@@ -182,7 +167,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Falda de noche para dama',
             'price1' => 100,
             'price2' => 90,
-            'score' => 5,
             'status' => 'onsale',
             'subcategory_id' => 9,
         ]);
@@ -193,7 +177,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Short casual para dama',
             'price1' => 25,
             'price2' => 22.5,
-            'score' => 5,
             'subcategory_id' => 10,
         ]);
 
@@ -203,7 +186,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Short formal para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'subcategory_id' => 1,
         ]);
 
@@ -213,7 +195,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Short deportivo para dama',
             'price1' => 25,
             'price2' => 22.5,
-            'score' => 5,
             'subcategory_id' => 2,
         ]);
 
@@ -223,7 +204,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Short de noche para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'subcategory_id' => 3,
         ]);
 
@@ -233,7 +213,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa casual para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'subcategory_id' => 4,
         ]);
 
@@ -243,7 +222,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa formal para dama',
             'price1' => 100,
             'price2' => 90,
-            'score' => 5,
             'status' => 'onsale',
             'subcategory_id' => 5,
         ]);
@@ -254,7 +232,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa deportiva para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'subcategory_id' => 6,
         ]);
 
@@ -264,7 +241,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Blusa de noche para dama',
             'price1' => 125,
             'price2' => 112.5,
-            'score' => 5,
             'subcategory_id' => 7,
         ]);
 
@@ -274,7 +250,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón casual para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'status' => 'new',
             'subcategory_id' => 8,
         ]);
@@ -285,7 +260,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón formal para dama',
             'price1' => 100,
             'price2' => 90,
-            'score' => 5,
             'subcategory_id' => 9,
         ]);
 
@@ -295,7 +269,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón deportivo para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'subcategory_id' => 10,
         ]);
 
@@ -305,7 +278,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Pantalón de noche para dama',
             'price1' => 125,
             'price2' => 112.5,
-            'score' => 5,
             'status' => 'new',
             'subcategory_id' => 1,
         ]);
@@ -316,7 +288,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Falda casual para dama',
             'price1' => 50,
             'price2' => 45,
-            'score' => 5,
             'status' => 'new',
             'subcategory_id' => 2,
         ]);
@@ -327,7 +298,6 @@ class ProductSeeder extends Seeder
             'detailweb' => 'Falda formal para dama',
             'price1' => 75,
             'price2' => 67.5,
-            'score' => 5,
             'subcategory_id' => 3,
         ]);
 
