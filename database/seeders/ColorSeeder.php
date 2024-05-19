@@ -12,39 +12,56 @@ class ColorSeeder extends Seeder
 
     public function run(): void
     {
+        /**
+         * #1B4464
+         * #AFAE2D
+         * #255E3D
+         * #5FB3C5
+         * #B9A48A
+         * #6d7cb5
+         * #040404
+         */
+
         Color::create([
-            'name' => 'Rojo',
-            'hex' => '#FF0000',
+            'name' => 'Azul Oscuro',
+            'value' => 'azul-oscuro',
+            'hex' => '#1B4464'
         ]);
 
         Color::create([
-            'name' => 'Azul',
-            'hex' => '#0000FF',
+            'name' => 'Verde Oliva',
+            'value' => 'verde-oliva',
+            'hex' => '#AFAE2D'
         ]);
 
         Color::create([
-            'name' => 'Verde',
-            'hex' => '#00FF00',
+            'name' => 'Verde Oscuro',
+            'value' => 'verde-oscuro',
+            'hex' => '#255E3D'
         ]);
 
         Color::create([
-            'name' => 'Amarillo',
-            'hex' => '#FFFF00',
+            'name' => 'Azul Claro',
+            'value' => 'azul-claro',
+            'hex' => '#5FB3C5'
         ]);
 
         Color::create([
-            'name' => 'Naranja',
-            'hex' => '#FFA500',
+            'name' => 'Beige',
+            'value' => 'beige',
+            'hex' => '#B9A48A'
         ]);
 
         Color::create([
-            'name' => 'Morado',
-            'hex' => '#800080',
+            'name' => 'Lila',
+            'value' => 'lila',
+            'hex' => '#6d7cb5'
         ]);
 
         Color::create([
-            'name' => 'Rosa',
-            'hex' => '#FFC0CB',
+            'name' => 'black',
+            'value' => 'black',
+            'hex' => '#040404'
         ]);
     }
 }

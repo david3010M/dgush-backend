@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('color', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('value')->unique();
             $table->string('hex');
             $table->softDeletes();
             $table->timestamps();

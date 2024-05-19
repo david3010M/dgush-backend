@@ -39,6 +39,40 @@ class SubcategoryController extends Controller
     }
 
     /**
+     * SEARCH SUBCATEGORIES
+     * @OA\Get(
+     *     path="/dgush-backend/public/api/subcategory/search",
+     *     summary="Search subcategories",
+     *     tags={"Subcategory"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Search subcategories",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Subcategory")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *        )
+     *     )
+     * )
+     */
+    public function search()
+    {
+        $subcategories = Subcategory::search(
+            request('search'),
+            request('sort', 'score'),
+            request('direction', 'desc')
+        );
+        return response()->json($subcategories);
+    }
+
+    /**
      * CREATE A NEW SUBCATEGORY
      * @OA\Post(
      *     path="/dgush-backend/public/api/subcategory",

@@ -14,26 +14,32 @@ class SizeSeeder extends Seeder
     {
         Size::create([
             'name' => 'XS',
+            'value' => 'XS'
         ]);
 
         Size::create([
             'name' => 'S',
+            'value' => 'S'
         ]);
 
         Size::create([
             'name' => 'M',
+            'value' => 'M'
         ]);
 
         Size::create([
             'name' => 'L',
+            'value' => 'L'
         ]);
 
         Size::create([
             'name' => 'XL',
+            'value' => 'XL'
         ]);
 
         Size::create([
             'name' => 'XXL',
+            'value' => 'XXL'
         ]);
     }
 }

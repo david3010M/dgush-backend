@@ -9,90 +9,13 @@ use Illuminate\Http\Request;
 
 class ProductSizeController extends Controller
 {
-    /**
-     * SHOW ALL PRODUCT SIZES
-     * @OA\Get(
-     *     path="/dgush-backend/public/api/productsize",
-     *     operationId="getProductSizes",
-     *     tags={"Product Size"},
-     *     summary="Get list of all product sizes",
-     *     description="Returns list of all product sizes",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/ProductSize")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     )
-     * )
-     */
+
     public function index()
     {
         return ProductSize::all();
     }
 
-    /**
-     * CREATE A NEW PRODUCT SIZE
-     * @OA\Post(
-     *     path="/dgush-backend/public/api/productsize",
-     *     operationId="storeProductSize",
-     *     tags={"Product Size"},
-     *     summary="Store new product size",
-     *     description="Store new product size",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"product_id", "size_id"},
-     *             @OA\Property(property="product_id", type="integer", example="1"),
-     *             @OA\Property(property="size_id", type="integer", example="1")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Product size created successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/ProductSize")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Product or Size not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=409,
-     *         description="Product size already exists",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product size already exists")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object", example={"product_id": {"The product id field is required."}})
-     *         )
-     *     )
-     * )
-     */
+
     public function store(Request $request)
     {
 //        VALIDATE DATA
@@ -129,46 +52,7 @@ class ProductSizeController extends Controller
 
     }
 
-    /**
-     * SHOW A PRODUCT SIZE
-     * @OA\Get(
-     *     path="/dgush-backend/public/api/productsize/{id}",
-     *     operationId="showProductSize",
-     *     tags={"Product Size"},
-     *     summary="Get product size by id",
-     *     description="Returns product size by id",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID of product size to return",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/ProductSize")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Product size not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product size not found")
-     *         )
-     *     )
-     * )
-     */
+
     public function show(int $id)
     {
         $productSize = ProductSize::find($id);
@@ -179,69 +63,7 @@ class ProductSizeController extends Controller
         }
     }
 
-    /**
-     * UPDATE A PRODUCT SIZE
-     * @OA\Put(
-     *     path="/dgush-backend/public/api/productsize/{id}",
-     *     operationId="updateProductSize",
-     *     tags={"Product Size"},
-     *     summary="Update product size by id",
-     *     description="Update product size by id",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID of product size to update",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"product_id", "size_id"},
-     *             @OA\Property(property="product_id", type="integer", example="1"),
-     *             @OA\Property(property="size_id", type="integer", example="1")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Product size updated successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/ProductSize")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Product or Size not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product size not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=409,
-     *         description="Product size already exists",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product size already exists")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object", example={"name": {"The name field is required."}})
-     *         )
-     *     )
-     * )
-     */
+
     public function update(Request $request, int $id)
     {
         $productSize = ProductSize::find($id);
@@ -284,48 +106,6 @@ class ProductSizeController extends Controller
     }
 
 
-    /**
-     * DELETE A PRODUCT SIZE
-     * @OA\Delete(
-     *     path="/dgush-backend/public/api/productsize/{id}",
-     *     operationId="destroyProductSize",
-     *     tags={"Product Size"},
-     *     summary="Delete product size by id",
-     *     description="Delete product size by id",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID of product size to delete",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Product size deleted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product size deleted successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Product size not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product size not found")
-     *         )
-     *     )
-     * )
-     */
     public function destroy(int $id)
     {
         $productSize = ProductSize::find($id);

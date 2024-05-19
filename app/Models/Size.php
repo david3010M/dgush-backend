@@ -22,7 +22,10 @@ class Size extends Model
 
     protected $table = 'size';
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name',
+        'value'
+    ];
 
     protected $hidden = [
         'created_at',

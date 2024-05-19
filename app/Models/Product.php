@@ -59,6 +59,12 @@ class Product extends Model
         static::saving(function ($model) {
             $model->validate();
         });
+
+        static::saved(function ($model) {
+            Subcategory::find($model->subcategory_id)->update([
+                'score' => round(Product::where('subcategory_id', $model->subcategory_id)->avg('score'), 1),
+            ]);
+        });
     }
 
     /**
@@ -77,17 +83,17 @@ class Product extends Model
         }
     }
 
-    public static function search($search, $status, $score, $subcategories, $price, $colors, $sizes, $sort, $direction)
+    public static function search($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction)
     {
-        $colors = explode(',', $colors);
-        $sizes = explode(',', $sizes);
-        $subcategories = explode(',', $subcategories);
+//        dd($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction);
 
         $query = Product::query();
         if ($search) {
-            $query->where('name', 'like', '%' . $search . '%')
-                ->orWhere('description', 'like', '%' . $search . '%')
-                ->orWhere('detailweb', 'like', '%' . $search . '%');
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('detailweb', 'like', '%' . $search . '%');
+            });
         }
 
         if ($status) {
@@ -98,24 +104,32 @@ class Product extends Model
             $query->where('score', $score);
         }
 
-        if ($subcategories[0] != null) {
+        if ($subcategory) {
+//            SUBACATEGORY IS ARRAY OF STRING WITH THE VALUES OF THE SUBCATEGORIES
+            $subcategories = Subcategory::whereIn('value', $subcategory)->pluck('id');
             $query->whereIn('subcategory_id', $subcategories);
         }
 
-        if ($price !== null && $price > 0) {
-            $query->where('price1', '<=', $price)
-                ->orWhere('price2', '<=', $price);
-        }
-
-        if ($colors[0] != null) {
-            $query->whereHas('productColors', function ($q) use ($colors) {
-                $q->whereIn('color_id', $colors);
+        if ($price !== null && $price[1] > 0) {
+            $query->where(function ($query) use ($price) {
+                $query->whereBetween('price1', $price)
+                    ->orWhereBetween('price2', $price);
             });
         }
 
-        if ($sizes[0] != null) {
-            $query->whereHas('productSizes', function ($q) use ($sizes) {
-                $q->whereIn('size_id', $sizes);
+//        COLOR
+        if ($color) {
+            $color = Color::whereIn('value', $color)->pluck('id');
+            $query->whereHas('productColors', function ($query) use ($color) {
+                $query->whereIn('color_id', $color);
+            });
+        }
+
+//        SIZE
+        if ($size) {
+            $size = Size::whereIn('value', $size)->pluck('id');
+            $query->whereHas('productSizes', function ($query) use ($size) {
+                $query->whereIn('size_id', $size);
             });
         }
 
@@ -125,7 +139,9 @@ class Product extends Model
             ->orderBy('id')
             ->limit(1)]);
 
-        return $query->orderBy($sort, $direction)->simplePaginate(12);
+//        dd($query->toSql(), $query->getBindings());
+
+        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->simplePaginate(12);
     }
 
     public static function getColors($id)

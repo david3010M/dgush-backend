@@ -25,6 +25,7 @@ class Color extends Model
 
     protected $fillable = [
         'name',
+        'value',
         'hex',
     ];
 

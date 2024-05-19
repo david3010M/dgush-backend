@@ -4,6 +4,6 @@ namespace App\Utils;
 
 class Constants
 {
-    const PAGINATION = 10;
+    const DEFAULT_PAGE_SIZE = 12;
     const CREATE = 'CREATE';
 }

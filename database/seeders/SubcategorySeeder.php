@@ -14,119 +14,138 @@ class SubcategorySeeder extends Seeder
     {
         // CREATE SUBCATEGORIES FOR "Vestidos"
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Vestidos Casuales',
+            'value' => 'vestidos-casuales',
             'order' => 1,
             'category_id' => 1,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Vestidos Formales',
+            'value' => 'vestidos-formales',
             'order' => 2,
             'category_id' => 1,
         ]);
 
         Subcategory::create([
-            'name' => 'Cóctel',
+            'name' => 'Vestidos Coctel',
+            'value' => 'vestidos-coctel',
             'order' => 3,
             'category_id' => 1,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Vestidos de Noche',
+            'value' => 'vestidos-de-noche',
             'order' => 4,
             'category_id' => 1,
         ]);
 
 //        CREATE SUBCATEGORIES FOR "Blusas"
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Blusas Casuales',
+            'value' => 'blusas-casuales',
             'order' => 1,
             'category_id' => 2,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Blusas Formales',
+            'value' => 'blusas-formales',
             'order' => 2,
             'category_id' => 2,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivas',
+            'name' => 'Blusas Deportivas',
+            'value' => 'blusas-deportivas',
             'order' => 3,
             'category_id' => 2,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Blusas de Noche',
+            'value' => 'blusas-de-noche',
             'order' => 4,
             'category_id' => 2,
         ]);
 
 //        CREATE SUBCATEGORIES FOR "Pantalones"
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Pantalones Casuales',
+            'value' => 'pantalones-casuales',
             'order' => 1,
             'category_id' => 3,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Pantalones Formales',
+            'value' => 'pantalones-formales',
             'order' => 2,
             'category_id' => 3,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivos',
+            'name' => 'Pantalones Deportivos',
+            'value' => 'pantalones-deportivos',
             'order' => 3,
             'category_id' => 3,
         ]);
 
         Subcategory::create([
-            'name' => 'Jeans',
+            'name' => 'Pantalones de Noche',
+            'value' => 'pantalones-de-noche',
             'order' => 4,
             'category_id' => 3,
         ]);
 
 //        CREATE SUBCATEGORIES FOR "Faldas"
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Faldas Casuales',
+            'value' => 'faldas-casuales',
             'order' => 1,
             'category_id' => 4,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Faldas Formales',
+            'value' => 'faldas-formales',
             'order' => 2,
             'category_id' => 4,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivas',
+            'name' => 'Faldas Deportivas',
+            'value' => 'faldas-deportivas',
             'order' => 3,
             'category_id' => 4,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Faldas de Noche',
+            'value' => 'faldas-de-noche',
             'order' => 4,
             'category_id' => 4,
         ]);
 
 //        CREATE SUBCATEGORIES FOR "Shorts"
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Shorts Casuales',
+            'value' => 'shorts-casuales',
             'order' => 1,
             'category_id' => 5,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivos',
+            'name' => 'Shorts Formales',
+            'value' => 'shorts-formales',
             'order' => 2,
             'category_id' => 5,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Shorts Deportivos',
+            'value' => 'shorts-deportivos',
             'order' => 3,
             'category_id' => 5,
         ]);
@@ -134,25 +153,29 @@ class SubcategorySeeder extends Seeder
 //        CREATE SUBCATEGORIES FOR "Chaquetas"
 
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Chaquetas Casuales',
+            'value' => 'chaquetas-casuales',
             'order' => 1,
             'category_id' => 6,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Chaquetas Formales',
+            'value' => 'chaquetas-formales',
             'order' => 2,
             'category_id' => 6,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivas',
+            'name' => 'Chaquetas Deportivas',
+            'value' => 'chaquetas-deportivas',
             'order' => 3,
             'category_id' => 6,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Chaquetas de Noche',
+            'value' => 'chaquetas-de-noche',
             'order' => 4,
             'category_id' => 6,
         ]);
@@ -160,25 +183,29 @@ class SubcategorySeeder extends Seeder
 //        CREATE SUBCATEGORIES FOR "Sweaters"
 
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Sweaters Casuales',
+            'value' => 'sweaters-casuales',
             'order' => 1,
             'category_id' => 7,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Sweaters Formales',
+            'value' => 'sweaters-formales',
             'order' => 2,
             'category_id' => 7,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivos',
+            'name' => 'Sweaters Deportivos',
+            'value' => 'sweaters-deportivos',
             'order' => 3,
             'category_id' => 7,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Sweaters de Noche',
+            'value' => 'sweaters-de-noche',
             'order' => 4,
             'category_id' => 7,
         ]);
@@ -186,25 +213,29 @@ class SubcategorySeeder extends Seeder
 //        CREATE SUBCATEGORIES FOR "Camisas"
 
         Subcategory::create([
-            'name' => 'Casuales',
+            'name' => 'Camisas Casuales',
+            'value' => 'camisas-casuales',
             'order' => 1,
             'category_id' => 8,
         ]);
 
         Subcategory::create([
-            'name' => 'Formales',
+            'name' => 'Camisas Formales',
+            'value' => 'camisas-formales',
             'order' => 2,
             'category_id' => 8,
         ]);
 
         Subcategory::create([
-            'name' => 'Deportivas',
+            'name' => 'Camisas Deportivas',
+            'value' => 'camisas-deportivas',
             'order' => 3,
             'category_id' => 8,
         ]);
 
         Subcategory::create([
-            'name' => 'De Noche',
+            'name' => 'Camisas de Noche',
+            'value' => 'camisas-de-noche',
             'order' => 4,
             'category_id' => 8,
         ]);
@@ -212,25 +243,29 @@ class SubcategorySeeder extends Seeder
 //        CREATE SUBCATEGORIES FOR "Trajes de Baño"
 
         Subcategory::create([
-            'name' => 'Enterizos',
+            'name' => 'Trajes Enterizos',
+            'value' => 'trajes-enterizos',
             'order' => 1,
             'category_id' => 9,
         ]);
 
         Subcategory::create([
             'name' => 'Bikinis',
+            'value' => 'bikinis',
             'order' => 2,
             'category_id' => 9,
         ]);
 
         Subcategory::create([
             'name' => 'Tankinis',
+            'value' => 'tankinis',
             'order' => 3,
             'category_id' => 9,
         ]);
 
         Subcategory::create([
-            'name' => 'Shorts',
+            'name' => 'Shorts de Baño',
+            'value' => 'shorts-de-bano',
             'order' => 4,
             'category_id' => 9,
         ]);
@@ -238,26 +273,23 @@ class SubcategorySeeder extends Seeder
 //        CREATE SUBCATEGORIES FOR "Ropa Deportiva"
 
         Subcategory::create([
-            'name' => 'Conjuntos',
+            'name' => 'Conjunto Ropa Deportiva',
+            'value' => 'conjunto-ropa-deportiva',
             'order' => 1,
             'category_id' => 10,
         ]);
 
         Subcategory::create([
-            'name' => 'Leggins',
+            'name' => 'Leggins Deportivos',
+            'value' => 'leggins-deportivos',
             'order' => 2,
             'category_id' => 10,
         ]);
 
         Subcategory::create([
-            'name' => 'Shorts',
+            'name' => 'Camisetas Deportivos',
+            'value' => 'camisetas-deportivos',
             'order' => 3,
-            'category_id' => 10,
-        ]);
-
-        Subcategory::create([
-            'name' => 'Camisetas',
-            'order' => 4,
             'category_id' => 10,
         ]);
 

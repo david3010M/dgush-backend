@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\HasPermissionController;
 use App\Http\Controllers\OptionMenuController;
@@ -42,13 +43,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
 // PUBLIC ROUTES
 Route::get('/product', [ProductController::class, 'index'])->name('product.index');
-Route::get('/product/search', [ProductController::class, 'search'])->name('product.search');
+Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+
 Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
 Route::get('/category/{id}', [CategoryController::class, 'show'])->name('category.show');
+
 Route::get('/subcategory', [SubcategoryController::class, 'index'])->name('subcategory.index');
+Route::get('/subcategory/search', [SubcategoryController::class, 'search'])->name('subcategory.search');
 Route::get('/subcategory/{id}', [SubcategoryController::class, 'show'])->name('subcategory.show');
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
