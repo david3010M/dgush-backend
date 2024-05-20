@@ -897,6 +897,10 @@
                                                 "type": "string",
                                                 "example": "Category 1"
                                             },
+                                            "vaLue": {
+                                                "type": "string",
+                                                "example": "Category 1"
+                                            },
                                             "order": {
                                                 "type": "integer",
                                                 "example": "1"
@@ -2925,21 +2929,21 @@
                                                 "type": "array",
                                                 "items": {
                                                     "type": "string",
-                                                    "example": "1"
+                                                    "example": "vestidos"
                                                 }
                                             },
                                             "price": {
                                                 "type": "array",
                                                 "items": {
                                                     "type": "number",
-                                                    "example": "100.00"
+                                                    "example": "100.00, 200.00"
                                                 }
                                             },
                                             "color": {
                                                 "type": "array",
                                                 "items": {
                                                     "type": "string",
-                                                    "example": "Red"
+                                                    "example": "azul-oscuro"
                                                 }
                                             },
                                             "size": {
