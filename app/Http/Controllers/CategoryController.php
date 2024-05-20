@@ -22,6 +22,7 @@ class CategoryController extends Controller
      *             @OA\Items(
      *                  @OA\Property(property="id", type="integer", example="1"),
      *                  @OA\Property(property="name", type="string", example="Category 1"),
+     *                  @OA\Property(property="vaLue", type="string", example="Category 1"),
      *                  @OA\Property(property="order", type="integer", example="1"),
      *                  @OA\Property(property="subcategories", type="array", @OA\Items(ref="#/components/schemas/Subcategory"))
      *             )
@@ -74,6 +75,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string:unique:category',
+            'value' => 'required|string',
             'order' => 'required|integer|unique:category',
         ]);
 

@@ -47,7 +47,7 @@ class ProductController extends Controller
     /**
      * SEARCH PRODUCTS
      * @OA\Post(
-     *     path="/api/product/search",
+     *     path="/dgush-backend/public/api/product/search",
      *     tags={"Product"},
      *     summary="Search products",
      *     security={{"bearerAuth": {}}},
@@ -89,33 +89,31 @@ class ProductController extends Controller
     {
         //        VALIDATE DATA
         request()->validate([
-            'filter' => 'required|array',
-            'filter.search' => 'nullable|string',
-            //            'filter.status' => 'string|in:onsale,new',
-            'filter.score' => 'nullable|integer',
-            'filter.category' => 'nullable|array',
-            'filter.category.*' => 'string',
-            'filter.price' => 'array|nullable|size:2',
-            'filter.price.*' => 'numeric',
-            'filter.color' => 'nullable|array',
-            'filter.color.*' => 'string',
-            'filter.size' => 'nullable|array',
-            'filter.size.*' => 'string',
-            'filter.sort' => 'nullable|string|in:id,name,description,price1,price2,score,status,subcategory_id,none',
-            'filter.direction' => 'string|nullable',
+            'search' => 'nullable|string',
+            'score' => 'nullable|integer',
+            'category' => 'nullable|array',
+            'category.*' => 'string',
+            'price' => 'nullable|array|size:2',
+            'price.*' => 'numeric',
+            'color' => 'nullable|array',
+            'color.*' => 'string',
+            'size' => 'nullable|array',
+            'size.*' => 'string',
+            'sort' => 'nullable|string|in:none,price-asc,price-desc,score',
+            'direction' => 'nullable|string',
         ]);
 
 
         $products = Product::search(
-            request('filter.search'),
-            request('filter.status'),
-            request('filter.score'),
-            request('filter.category'), // SUBCATEGORY IS AN ARRAY OF STRING
-            request('filter.price'),
-            request('filter.color'), // COLOR IS AN ARRAY OF STRING
-            request('filter.size'), // SIZE IS AN ARRAY OF STRING
-            request('filter.sort', 'id'),
-            request('filter.direction', 'desc'),
+            request('search'),
+            request('status'),
+            request('score'),
+            request('category'), // SUBCATEGORY IS AN ARRAY OF STRING
+            request('price'),
+            request('color'), // COLOR IS AN ARRAY OF STRING
+            request('size'), // SIZE IS AN ARRAY OF STRING
+            request('sort', 'id'),
+            request('direction', 'desc'),
         );
         return response()->json($products);
     }
@@ -222,9 +220,9 @@ class ProductController extends Controller
      */
     public function getAllProducts()
     {
-        //        ALL PRODUCTS WITH TRASHED
-        $allProducts = Product::withTrashed()->get();
-        return response()->json($allProducts);
+        //        ALL PRODUCTS WITH TRASHED WITH PAGINATION OF 6
+        $products = Product::withTrashed()->simplePaginate(6);
+        return response()->json($products);
     }
 
     /**

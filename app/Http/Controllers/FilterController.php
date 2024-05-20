@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\Size;
@@ -12,7 +13,7 @@ class FilterController extends Controller
 {
     /**
      * @OA\Get(
-     *      path="/api/filter/product",
+     *      path="/dgush-backend/public/api/filter/product",
      *      operationId="getFilterProduct",
      *      tags={"Filter"},
      *      summary="Get filter product",
@@ -39,7 +40,7 @@ class FilterController extends Controller
         return response()->json([
             'color' => Color::all(),
             'sizes' => Size::all(),
-            'subcategories' => Subcategory::all(),
+            'categories' => Category::all(),
             'price' => Product::max('price1'),
             'status' => [
                 'onsale',
@@ -53,8 +54,10 @@ class FilterController extends Controller
                 '5'
             ],
             'sort' => [
-                'name',
-                'price',
+                'none',
+                'price-asc',
+                'price-desc',
+                'score'
             ],
             'direction' => [
                 'asc',

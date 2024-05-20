@@ -98,7 +98,7 @@ class Product extends Model
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
 
-    public static function search($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction)
+    public static function search($search, $status, $score, $category, $price, $color, $size, $sort, $direction)
     {
         //        dd($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction);
 
@@ -116,13 +116,16 @@ class Product extends Model
         }
 
         if ($score) {
-            $query->where('score', $score);
+            $query->where('score', '>=', $score);
+            $sort = 'score';
+            $direction = 'desc';
         }
 
-        if ($subcategory) {
-            //            SUBACATEGORY IS ARRAY OF STRING WITH THE VALUES OF THE SUBCATEGORIES
-            $subcategories = Subcategory::whereIn('value', $subcategory)->pluck('id');
-            $query->whereIn('subcategory_id', $subcategories);
+        if ($category) {
+            $category = Category::whereIn('value', $category)->pluck('id');
+            $query->whereHas('subcategory', function ($query) use ($category) {
+                $query->whereIn('category_id', $category);
+            });
         }
 
         if ($price !== null && $price[1] > 0) {
@@ -153,6 +156,15 @@ class Product extends Model
             ->whereColumn('product_id', 'product.id')
             ->orderBy('id')
             ->limit(1)]);
+
+//        SORT: none, price-asc, price-desc
+        if ($sort == 'price-asc') {
+            $sort = 'price1';
+            $direction = 'asc';
+        } elseif ($sort == 'price-desc') {
+            $sort = 'price1';
+            $direction = 'desc';
+        }
 
         //        dd($query->toSql(), $query->getBindings());
 

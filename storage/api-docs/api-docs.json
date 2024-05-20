@@ -2122,7 +2122,7 @@
                 ]
             }
         },
-        "/api/filter/product": {
+        "/dgush-backend/public/api/filter/product": {
             "get": {
                 "tags": [
                     "Filter"
@@ -2890,14 +2890,14 @@
                 ]
             }
         },
-        "/api/product/search": {
+        "/dgush-backend/public/api/product/search": {
             "post": {
                 "tags": [
                     "Product"
                 ],
                 "summary": "Search products",
                 "description": "SEARCH PRODUCTS",
-                "operationId": "ab2db47404e0d1ea18496ef5196143dd",
+                "operationId": "442b31105879bd6f5783ac7eef1b2bb0",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2921,7 +2921,7 @@
                                                 "type": "integer",
                                                 "example": "5"
                                             },
-                                            "subcategory": {
+                                            "category": {
                                                 "type": "array",
                                                 "items": {
                                                     "type": "string",
