@@ -83,9 +83,24 @@ class Product extends Model
         }
     }
 
+    public static function withImage()
+    {
+
+        $query = Product::query();
+
+
+        $query->addSelect(['image' => Image::select('url')
+            ->whereColumn('product_id', 'product.id')
+            ->orderBy('id')
+            ->limit(1)]);
+
+
+        return $query->orderBy('id', 'desc')->simplePaginate(12);
+    }
+
     public static function search($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction)
     {
-//        dd($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction);
+        //        dd($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction);
 
         $query = Product::query();
         if ($search) {
@@ -105,7 +120,7 @@ class Product extends Model
         }
 
         if ($subcategory) {
-//            SUBACATEGORY IS ARRAY OF STRING WITH THE VALUES OF THE SUBCATEGORIES
+            //            SUBACATEGORY IS ARRAY OF STRING WITH THE VALUES OF THE SUBCATEGORIES
             $subcategories = Subcategory::whereIn('value', $subcategory)->pluck('id');
             $query->whereIn('subcategory_id', $subcategories);
         }
@@ -117,7 +132,7 @@ class Product extends Model
             });
         }
 
-//        COLOR
+        //        COLOR
         if ($color) {
             $color = Color::whereIn('value', $color)->pluck('id');
             $query->whereHas('productColors', function ($query) use ($color) {
@@ -125,7 +140,7 @@ class Product extends Model
             });
         }
 
-//        SIZE
+        //        SIZE
         if ($size) {
             $size = Size::whereIn('value', $size)->pluck('id');
             $query->whereHas('productSizes', function ($query) use ($size) {
@@ -133,13 +148,13 @@ class Product extends Model
             });
         }
 
-//        ADD COLUMN IMAGE WITCH IS THE FIRST IMAGE OF THE PRODUCT IN TABLE IMAGE
+        //        ADD COLUMN IMAGE WITCH IS THE FIRST IMAGE OF THE PRODUCT IN TABLE IMAGE
         $query->addSelect(['image' => Image::select('url')
             ->whereColumn('product_id', 'product.id')
             ->orderBy('id')
             ->limit(1)]);
 
-//        dd($query->toSql(), $query->getBindings());
+        //        dd($query->toSql(), $query->getBindings());
 
         return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->simplePaginate(12);
     }
@@ -183,10 +198,5 @@ class Product extends Model
     public function images($id)
     {
         return Image::where('product_id', $id)->get();
-    }
-
-    public function image()
-    {
-        return $this->belongsToMany(Image::class, 'product_image', 'product_id', 'image_id')->gir;
     }
 }

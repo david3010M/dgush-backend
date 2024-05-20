@@ -39,7 +39,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return response()->json(Product::simplePaginate(12));
+        //        ALL PRODUCTS WITH PAGINATION OF 12
+        $products = Product::withImage();
+        return response()->json($products);
     }
 
     /**
@@ -85,22 +87,22 @@ class ProductController extends Controller
      */
     public function search()
     {
-//        VALIDATE DATA
+        //        VALIDATE DATA
         request()->validate([
             'filter' => 'required|array',
-            'filter.search' => 'string',
-//            'filter.status' => 'string|in:onsale,new',
-            'filter.score' => 'integer',
-            'filter.category' => 'array',
+            'filter.search' => 'nullable|string',
+            //            'filter.status' => 'string|in:onsale,new',
+            'filter.score' => 'nullable|integer',
+            'filter.category' => 'nullable|array',
             'filter.category.*' => 'string',
-            'filter.price' => 'array|size:2',
+            'filter.price' => 'array|nullable|size:2',
             'filter.price.*' => 'numeric',
-            'filter.color' => 'array',
+            'filter.color' => 'nullable|array',
             'filter.color.*' => 'string',
-            'filter.size' => 'array',
+            'filter.size' => 'nullable|array',
             'filter.size.*' => 'string',
-            'filter.sort' => 'string|in:id,name,description,price1,price2,score,status,subcategory_id,none',
-            'filter.direction' => 'string',
+            'filter.sort' => 'nullable|string|in:id,name,description,price1,price2,score,status,subcategory_id,none',
+            'filter.direction' => 'string|nullable',
         ]);
 
 
