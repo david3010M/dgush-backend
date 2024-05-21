@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-
     /**
      * Authenticate user and generate access token
      * @OA\Post (
@@ -383,7 +382,6 @@ class AuthController extends Controller
         }
     }
 
-
     /**
      * Register a new user
      * @OA\Post (
@@ -495,7 +493,8 @@ class AuthController extends Controller
     {
         // Validar los datos de registro del usuario
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required|string',
+            'lastnames' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
         ]);
@@ -508,6 +507,7 @@ class AuthController extends Controller
         // Crear un nuevo usuario
         $user = User::create([
             'names' => $request->name,
+            'lastnames' => $request->lastnames,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'typeuser_id' => 2,

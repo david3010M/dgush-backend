@@ -50,6 +50,7 @@ class UserController extends Controller
      *          @OA\JsonContent(
      *              required={"names","email","password","typeuser_id"},
      *              @OA\Property(property="names", type="string", example="D'Gush Frontend", description="Full name of the user"),
+     *              @OA\Property(property="lastnames", type="string", example="Admin", description="Last name of the user"),
      *              @OA\Property(property="email", type="string", example="dgush@frontend.com", description="Email of the user"),
      *              @OA\Property(property="password", type="string", example="12345678", description="Password of the user"),
      *              @OA\Property(property="typeuser_id", type="integer", example="2", description="Type of user")
@@ -102,6 +103,7 @@ class UserController extends Controller
         // Validar los datos
         $request->validate([
             'names' => 'required|string',
+            'lastnames' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|string',
             'typeuser_id' => 'required|integer'
@@ -120,6 +122,7 @@ class UserController extends Controller
         // Crear un nuevo usuario con la contraseña cifrada
         return User::create([
             'names' => $request->names,
+            'lastnames' => $request->lastnames,
             'email' => $request->email,
             'password' => $hashedPassword,
             'typeuser_id' => $request->typeuser_id
@@ -201,6 +204,7 @@ class UserController extends Controller
      *          @OA\JsonContent(
      *              required={"names","email","password","typeuser_id"},
      *              @OA\Property(property="names", type="string", example="D'Gush Frontend", description="Full name of the user"),
+     *              @OA\Property(property="lastnames", type="string", example="Admin", description="Last name of the user"),
      *              @OA\Property(property="email", type="string", example="dgush@gmail.com", description="Email of the user"),
      *              @OA\Property(property="password", type="string", example="12345678", description="Password of the user"),
      *              @OA\Property(property="typeuser_id", type="integer", example="2", description="Type of user")
@@ -264,6 +268,7 @@ class UserController extends Controller
 //        Validate data
         $request->validate([
             'names' => 'required|string',
+            'lastnames' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'required|string',
             'typeuser_id' => 'required|integer'
