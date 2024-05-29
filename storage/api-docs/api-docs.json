@@ -6147,6 +6147,114 @@
                 },
                 "type": "object"
             },
+            "SendInformation": {
+                "title": "SendInformation",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "names": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "dni": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "mail@mail.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "987654321"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "Some address"
+                    },
+                    "reference": {
+                        "type": "string",
+                        "example": "Some reference"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Some comment"
+                    },
+                    "method": {
+                        "type": "string",
+                        "example": "Some method"
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "SendInformationRequest": {
+                "title": "SendInformationRequest",
+                "required": [
+                    "names",
+                    "dni",
+                    "email",
+                    "phone",
+                    "address",
+                    "reference",
+                    "comment",
+                    "method",
+                    "province_id",
+                    "order_id"
+                ],
+                "properties": {
+                    "names": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "dni": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "mail@mail.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "987654321"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "Some address"
+                    },
+                    "reference": {
+                        "type": "string",
+                        "example": "Some reference"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Some comment"
+                    },
+                    "method": {
+                        "type": "string",
+                        "example": "Some method"
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
             "Size": {
                 "properties": {
                     "id": {

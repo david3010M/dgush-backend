@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->decimal('total', 10);
             $table->decimal('quantity', 10);
             $table->timestamp('date');
-            $table->foreignId('user_id')->constrained('user');
+            $table->foreignId('user_id')->constrained('users');
             $table->foreignId('coupon_id')->constrained('coupon')->nullable();
             $table->timestamps();
             $table->softDeletes();
