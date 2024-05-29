@@ -13,8 +13,8 @@ class OptionMenuController extends Controller
 
     public function index()
     {
-//        return OptionMenu::paginate(Constants::PAGINATION);s
-        return OptionMenu::all();
+//        return OptionMenu::paginate(Constants::PAGINATION);
+        return response()->json(Optionmenu::with(['groupMenu'])->simplePaginate(15));
     }
 
 

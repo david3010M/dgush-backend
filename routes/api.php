@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\HasPermissionController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductColorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductSizeController;
+use App\Http\Controllers\SendInformationController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TypeUserController;
@@ -242,6 +244,32 @@ Route::group(
                 'show' => 'comment.show',
                 'update' => 'comment.update',
                 'destroy' => 'comment.destroy',
+            ]
+        );
+
+//        COUPON
+        Route::resource('coupon', CouponController::class)->only(
+            ['index', 'store', 'show', 'update', 'destroy']
+        )->names(
+            [
+                'index' => 'coupon.index',
+                'store' => 'coupon.store',
+                'show' => 'coupon.show',
+                'update' => 'coupon.update',
+                'destroy' => 'coupon.destroy',
+            ]
+        );
+
+//        SEND INFORMATION
+        Route::resource('sendinformation', SendInformationController::class)->only(
+            ['index', 'store', 'show', 'update', 'destroy']
+        )->names(
+            [
+                'index' => 'sendinformation.index',
+                'store' => 'sendinformation.store',
+                'show' => 'sendinformation.show',
+                'update' => 'sendinformation.update',
+                'destroy' => 'sendinformation.destroy',
             ]
         );
     }

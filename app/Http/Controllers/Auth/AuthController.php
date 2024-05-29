@@ -391,21 +391,11 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="name",
-     *                 type="string",
-     *                 example="D Gush"
-     *             ),
-     *             @OA\Property(
-     *                 property="email",
-     *                 type="string",
-     *                 example="dgush123@gmail.com"
-     *             ),
-     *             @OA\Property(
-     *                 property="password",
-     *                 type="string",
-     *                 example="abcd1234"
-     *             )
+     *             @OA\Property(property="name",type="string",example="D Gush"),
+     *             @OA\Property(property="lastnames",type="string",example="Gush"),
+     *             @OA\Property(property="email",type="string",example="dgush123@gmail.com"),
+     *             @OA\Property(property="password",type="string",example="abcd1234"),
+     *             @OA\Property(property="accept_terms",type="boolean",example="true")
      *         )
      *     ),
      *     @OA\Response(
@@ -422,59 +412,25 @@ class AuthController extends Controller
      *                 type="array",
      *                 @OA\Items(
      *                     type="object",
-     *                     @OA\Property(
-     *                         property="id",
-     *                         type="number",
-     *                         example="11"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="names",
-     *                         type="string",
-     *                         example="D Gush"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="email",
-     *                         type="string",
-     *                         example="dgush123@gmail.com"
-     *                     ),
-     *                     @OA\Property(
-     *                          property="typeuser_id",
-     *                          type="number",
-     *                          example="2"
-     *                     )
+     *                     @OA\Property(property="id",type="number",example="11"),
+     *                     @OA\Property(property="names",type="string",example="D Gush"),
+     *                     @OA\Property(property="email",type="string",example="dgush123@gmail.com"),
+     *                     @OA\Property(property="typeuser_id",type="number",example="2")
      *                )
      *             ),
-     *             @OA\Property(
-     *                  property="typeuser",
-     *                  type="array",
+     *             @OA\Property(property="typeuser",type="array",
      *                  @OA\Items(
      *                      type="object",
-     *                      @OA\Property(
-     *                          property="id",
-     *                          type="number",
-     *                          example="2"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="name",
-     *                          type="string",
-     *                          example="User"
-     *                      )
+     *                      @OA\Property(property="id",type="number",example="2"),
+     *                      @OA\Property(property="name",type="string",example="User")
      *                  )
      *              ),
-     *              @OA\Property(
-     *                  property="optionMenuAccess",
-     *                  type="string",
-     *                  example="1, 2, 3, 4"
-     *              ),
-     *              @OA\Property(
-     *                  property="permissions",
-     *                  type="string",
-     *                  example="1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
-     *              )
+     *              @OA\Property(property="optionMenuAccess",type="string",example="1, 2, 3, 4"),
+     *              @OA\Property(property="permissions",type="string",example="1, 2, 3, 4, 5, 6, 7, 8, 9, 10")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=400,
+     *         response=422,
      *         description="Invalid data",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -484,6 +440,15 @@ class AuthController extends Controller
      *                     type="string",
      *                     example="The email has already been taken."
      *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="You must accept the terms and conditions",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="error", type="string", example="You must accept the terms and conditions"
      *             )
      *         )
      *     )
@@ -497,11 +462,16 @@ class AuthController extends Controller
             'lastnames' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
+            'accept_terms' => 'required|boolean'
         ]);
 
         // Verificar si los datos son válidos
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        if (!$request->accept_terms) {
+            return response()->json(['error' => 'You must accept the terms and conditions'], 400);
         }
 
         // Crear un nuevo usuario

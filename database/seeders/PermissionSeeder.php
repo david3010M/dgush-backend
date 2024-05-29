@@ -436,5 +436,31 @@ class PermissionSeeder extends Seeder
             'route' => 'comment.destroy',
         ]);
 
+//        COUPON
+        Permission::create([
+            'name' => 'Ver Cupones',
+            'route' => 'coupon.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Cupón',
+            'route' => 'coupon.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Cupones',
+            'route' => 'coupon.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Cupones',
+            'route' => 'coupon.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Cupones',
+            'route' => 'coupon.destroy',
+        ]);
+
     }
 }

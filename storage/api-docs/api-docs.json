@@ -771,6 +771,10 @@
                                         "type": "string",
                                         "example": "D Gush"
                                     },
+                                    "lastnames": {
+                                        "type": "string",
+                                        "example": "Gush"
+                                    },
                                     "email": {
                                         "type": "string",
                                         "example": "dgush123@gmail.com"
@@ -778,6 +782,10 @@
                                     "password": {
                                         "type": "string",
                                         "example": "abcd1234"
+                                    },
+                                    "accept_terms": {
+                                        "type": "boolean",
+                                        "example": "true"
                                     }
                                 },
                                 "type": "object"
@@ -850,7 +858,7 @@
                             }
                         }
                     },
-                    "400": {
+                    "422": {
                         "description": "Invalid data",
                         "content": {
                             "application/json": {
@@ -862,6 +870,22 @@
                                                 "type": "string",
                                                 "example": "The email has already been taken."
                                             }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "You must accept the terms and conditions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "You must accept the terms and conditions"
                                         }
                                     },
                                     "type": "object"
@@ -2111,6 +2135,391 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Comment not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/coupon": {
+            "get": {
+                "tags": [
+                    "Coupon"
+                ],
+                "summary": "Get all coupons",
+                "description": "Get all coupons",
+                "operationId": "22b4bc02e1413a312b97d33029c10d52",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Coupon"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/coupons?page=1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "next_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/coupons?page=1"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/coupons"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "prev_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/coupons?page=1"
+                                        },
+                                        "to": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Coupon"
+                ],
+                "summary": "Create a new coupon",
+                "description": "Create a new coupon",
+                "operationId": "4acbe3c972e1944cdbed3deb33b428c4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CouponRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Coupon"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The code has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/coupon/{id}": {
+            "get": {
+                "tags": [
+                    "Coupon"
+                ],
+                "summary": "Get a specific coupon",
+                "description": "Get a specific coupon",
+                "operationId": "40d899507fd85120991e8f968f16a161",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Coupon ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Coupon"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Coupon not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Coupon not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Coupon"
+                ],
+                "summary": "Update a specific coupon",
+                "description": "Update a specific coupon",
+                "operationId": "75c24de8cd486cd8d886956abd5ff9aa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Coupon ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CouponRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Coupon"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The code has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Coupon not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Coupon not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Coupon"
+                ],
+                "summary": "Delete a specific coupon",
+                "description": "Delete a specific coupon",
+                "operationId": "5f2ef56fd23b41b88be34d08f0d7696b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Coupon ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Coupon deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Coupon deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Coupon not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Coupon not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
                                         }
                                     },
                                     "type": "object"
@@ -4972,6 +5381,11 @@
                                         "type": "string",
                                         "example": "D'Gush Frontend"
                                     },
+                                    "lastnames": {
+                                        "description": "Last name of the user",
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
                                     "email": {
                                         "description": "Email of the user",
                                         "type": "string",
@@ -5196,6 +5610,11 @@
                                         "description": "Full name of the user",
                                         "type": "string",
                                         "example": "D'Gush Frontend"
+                                    },
+                                    "lastnames": {
+                                        "description": "Last name of the user",
+                                        "type": "string",
+                                        "example": "Admin"
                                     },
                                     "email": {
                                         "description": "Email of the user",
@@ -5487,6 +5906,82 @@
                 },
                 "type": "object"
             },
+            "Coupon": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "10% Off"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "10% discount on all purchases."
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "10OFF"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "percentage"
+                    },
+                    "value": {
+                        "type": "number",
+                        "example": "10"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2022-05-26 14:39:51"
+                    }
+                },
+                "type": "object"
+            },
+            "CouponRequest": {
+                "required": [
+                    "name",
+                    "description",
+                    "code",
+                    "type",
+                    "value",
+                    "expires_at"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "10% Off"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "10% discount on all purchases."
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "10OFF"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "percentage",
+                            "discount"
+                        ],
+                        "example": "percentage"
+                    },
+                    "value": {
+                        "type": "number",
+                        "example": "10"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2022-05-26 14:39:51"
+                    }
+                },
+                "type": "object"
+            },
             "GroupMenu": {
                 "title": "GroupMenu",
                 "properties": {
@@ -5708,6 +6203,10 @@
                     "names": {
                         "type": "string",
                         "example": "D Gush"
+                    },
+                    "lastnames": {
+                        "type": "string",
+                        "example": "Admin"
                     },
                     "email": {
                         "type": "string",

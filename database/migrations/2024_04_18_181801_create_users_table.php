@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->boolean('login')->default(false);
             $table->string('password');
+            $table->boolean('accept_terms')->default(true);
             $table->foreignId('typeuser_id')->constrained('typeuser');
             $table->rememberToken();
             $table->softDeletes();
