@@ -462,5 +462,112 @@ class PermissionSeeder extends Seeder
             'route' => 'coupon.destroy',
         ]);
 
+//        PROVINCE
+
+        Permission::create([
+            'name' => 'Ver Provincias',
+            'route' => 'province.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Provincia',
+            'route' => 'province.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Provincias',
+            'route' => 'province.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Provincias',
+            'route' => 'province.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Provincias',
+            'route' => 'province.destroy',
+        ]);
+
+//        DISTRICT
+
+        Permission::create([
+            'name' => 'Ver Distritos',
+            'route' => 'district.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Distrito',
+            'route' => 'district.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Distritos',
+            'route' => 'district.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Distritos',
+            'route' => 'district.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Distritos',
+            'route' => 'district.destroy',
+        ]);
+
+//            SEND INFORMATION
+
+        Permission::create([
+            'name' => 'Ver Envíos de Información',
+            'route' => 'sendinformation.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Envío de Información',
+            'route' => 'sendinformation.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Envíos de Información',
+            'route' => 'sendinformation.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Envíos de Información',
+            'route' => 'sendinformation.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Envíos de Información',
+            'route' => 'sendinformation.destroy',
+        ]);
+
+//        ORDER
+
+        Permission::create([
+            'name' => 'Ver Pedidos',
+            'route' => 'order.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Pedido',
+            'route' => 'order.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Pedidos',
+            'route' => 'order.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Pedidos',
+            'route' => 'order.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Pedidos',
+            'route' => 'order.destroy',
+        ]);
     }
 }

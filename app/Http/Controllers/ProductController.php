@@ -352,15 +352,17 @@ class ProductController extends Controller
         $product = Product::find($id);
         if ($product) {
             //            GET COMMENTS
-            $colors = $product->getColors($id);
-            $sizes = $product->getSizes($id);
+            $colors = $product->getColorsByProduct($id);
+            $sizes = $product->getSizesByProduct($id);
             $comments = $product->comments($id);
             $images = $product->images($id);
+            $productDetails = $product->getProductDetails($id);
             return response()->json([
                 'product' => $product,
                 'colors' => $colors,
                 'sizes' => $sizes,
                 'comments' => $comments,
+                'productDetails' => $productDetails,
                 'images' => $images
             ]);
         } else {

@@ -10,10 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('province', function (Blueprint $table) {
+        Schema::create('product_details', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->foreignId('department_id')->constrained('department');
+            $table->decimal('stock');
+            $table->foreignId('product_id')->constrained('product');
+            $table->foreignId('color_id')->constrained('color');
+            $table->foreignId('size_id')->constrained('size');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -24,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('province');
+        Schema::dropIfExists('product_details');
     }
 };

@@ -2,23 +2,23 @@
 
 namespace Database\Seeders;
 
-use App\Models\Province;
+use App\Models\District;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ProvinceSeeder extends Seeder
+class DistrictSeeder extends Seeder
 {
-    protected $model = Province::class;
-
+    protected $model = District::class;
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
         $array = [
-            ['id' => 1, 'name' => 'Lambayeque', 'department_id' => 1],
-            ['id' => 2, 'name' => 'Chiclayo', 'department_id' => 1],
-            ['id' => 3, 'name' => 'Ferreñafe', 'department_id' => 1]
+            ['name' => 'Lambayeque', 'province_id' => 1],
+            ['name' => 'Jayanca', 'province_id' => 1],
+            ['name' => 'Chiclayo', 'province_id' => 2],
+            ['name' => 'Ferreñafe', 'province_id' => 3]
         ];
 
         foreach ($array as $item) {

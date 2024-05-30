@@ -8,29 +8,28 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @OA\Schema (
- *     schema="Province",
- *     title="Province",
- *     description="Province model",
+ *     schema="Department",
+ *     title="Department",
+ *     description="Department model",
  *     @OA\Property(property="id", type="integer", example="1"),
- *     @OA\Property(property="name", type="string", example="Jawa Barat"),
- *     @OA\Property(property="districts", type="array", @OA\Items(ref="#/components/schemas/District"))
+ *     @OA\Property(property="name", type="string", example="Pendidikan"),
+ *     @OA\Property(property="provinces", type="array", @OA\Items(ref="#/components/schemas/Province"))
  * )
- *
  */
-class Province extends Model
+class Department extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'province';
+    protected $table = 'department';
 
     protected $fillable = ['name'];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
-    public function districts()
+    public function provinces()
     {
-        return $this->hasMany(District::class);
+        return $this->hasMany(Province::class);
     }
 
 }

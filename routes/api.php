@@ -6,14 +6,18 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\HasPermissionController;
 use App\Http\Controllers\OptionMenuController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductColorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductSizeController;
+use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\SendInformationController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\SubcategoryController;
@@ -57,6 +61,18 @@ Route::get('/category/{id}', [CategoryController::class, 'show'])->name('categor
 Route::get('/subcategory', [SubcategoryController::class, 'index'])->name('subcategory.index');
 Route::get('/subcategory/search', [SubcategoryController::class, 'search'])->name('subcategory.search');
 Route::get('/subcategory/{id}', [SubcategoryController::class, 'show'])->name('subcategory.show');
+
+//    PROVINCE
+Route::get('/province', [ProvinceController::class, 'index'])->name('province.index');
+Route::get('/province/{id}', [ProvinceController::class, 'show'])->name('province.show');
+
+//    DISTRICT
+Route::get('/district', [DistrictController::class, 'index'])->name('district.index');
+Route::get('/district/{id}', [DistrictController::class, 'show'])->name('district.show');
+
+// DEPARTMENT
+Route::get('/department', [DepartmentController::class, 'index'])->name('department.index');
+Route::get('/department/{id}', [DepartmentController::class, 'show'])->name('department.show');
 
 Route::get('/filter/product', [FilterController::class, 'product'])->name('filter.product');
 
@@ -270,6 +286,19 @@ Route::group(
                 'show' => 'sendinformation.show',
                 'update' => 'sendinformation.update',
                 'destroy' => 'sendinformation.destroy',
+            ]
+        );
+
+        //    ORDER
+        Route::resource('order', OrderController::class)->only(
+            ['index', 'show', 'store', 'update', 'destroy']
+        )->names(
+            [
+                'index' => 'order.index',
+                'show' => 'order.show',
+                'store' => 'order.store',
+                'update' => 'order.update',
+                'destroy' => 'order.destroy',
             ]
         );
     }

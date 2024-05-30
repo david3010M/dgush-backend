@@ -37,5 +37,13 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSizeSeeder::class);
         $this->call(CommentSeeder::class);
         $this->call(ImageSeeder::class);
+
+        $this->call(DepartmentSeeder::class);
+        $this->call(ProvinceSeeder::class);
+        $this->call(DistrictSeeder::class);
+
+//        ProductDetailsSeeder
+        $this->call(ProductDetailsSeeder::class);
+
     }
 }

@@ -10,18 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('send_information', function (Blueprint $table) {
+        Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->string('names');
-            $table->string('dni');
-            $table->string('email');
-            $table->string('phone');
-            $table->string('address');
-            $table->string('reference');
-            $table->string('comment');
-            $table->string('method');
+            $table->decimal('quantity');
+            $table->foreignId('product_detail_id')->constrained('product_details');
             $table->foreignId('order_id')->constrained('order');
-            $table->foreignId('district_id')->constrained('district');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('send_information');
+        Schema::dropIfExists('order_items');
     }
 };

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="name", type="string", example="Red"),
+ *     @OA\Property(property="value", type="string", example="red"),
  *     @OA\Property(property="hex", type="string", example="#FF0000")
  * )
  */

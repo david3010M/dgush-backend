@@ -85,15 +85,11 @@ class Product extends Model
 
     public static function withImage()
     {
-
         $query = Product::query();
-
-
         $query->addSelect(['image' => Image::select('url')
             ->whereColumn('product_id', 'product.id')
             ->orderBy('id')
             ->limit(1)]);
-
 
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
@@ -166,26 +162,39 @@ class Product extends Model
             $direction = 'desc';
         }
 
-        //        dd($query->toSql(), $query->getBindings());
-
         return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->simplePaginate(12);
     }
 
-    public static function getColors($id)
+    public static function getColorsByProduct($id)
     {
-        return Color::join('product_color', 'color.id', '=', 'product_color.color_id')
-            ->where('product_color.product_id', $id)
-            ->select('color.id', 'color.name', 'color.hex')
+        return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
+            ->join('color', 'product_details.color_id', '=', 'color.id')
+            ->where('product.id', $id)
+            ->select('color.id', 'color.name', 'color.value', 'color.hex')
+            ->distinct()
             ->get();
     }
 
-    public static function getSizes($id)
+    public static function getSizesByProduct($id)
     {
-        return Size::join('product_size', 'size.id', '=', 'product_size.size_id')
-            ->where('product_size.product_id', $id)
-            ->select('size.id', 'size.name')
+        return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
+            ->join('size', 'product_details.size_id', '=', 'size.id')
+            ->where('product.id', $id)
+            ->select('size.id', 'size.name', 'size.value')
+            ->distinct()
             ->get();
     }
+
+    public static function getProductDetails($id)
+    {
+        return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
+            ->join('color', 'product_details.color_id', '=', 'color.id')
+            ->join('size', 'product_details.size_id', '=', 'size.id')
+            ->where('product.id', $id)
+            ->select('product_details.id', 'product_details.stock', 'color.id as color_id', 'color.name as color_name', 'color.value as color_value', 'size.id as size_id', 'size.name as size_name', 'size.value as size_value')
+            ->get();
+    }
+
 
     public function subcategory()
     {
@@ -194,12 +203,12 @@ class Product extends Model
 
     public function productColors()
     {
-        return $this->belongsToMany(Color::class, 'product_color', 'product_id', 'color_id');
+        return $this->belongsToMany(Color::class, 'product_details', 'product_id', 'color_id');
     }
 
     public function productSizes()
     {
-        return $this->belongsToMany(Size::class, 'product_size', 'product_id', 'size_id');
+        return $this->belongsToMany(Size::class, 'product_details', 'product_id', 'size_id');
     }
 
     public function comments($id)
@@ -210,5 +219,10 @@ class Product extends Model
     public function images($id)
     {
         return Image::where('product_id', $id)->get();
+    }
+
+    public function image()
+    {
+        return $this->hasOne(Image::class);
     }
 }

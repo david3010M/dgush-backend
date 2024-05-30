@@ -2535,6 +2535,112 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/department": {
+            "get": {
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get all departments",
+                "operationId": "097fe7f4c6cc94fd158eec6f6a5ae6fc",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Department"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/department/{id}": {
+            "get": {
+                "tags": [
+                    "Department"
+                ],
+                "summary": "Get department by id",
+                "operationId": "21b5bf0782a36e4144b30d9de3e6ca6a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of district",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Department"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/district": {
+            "get": {
+                "tags": [
+                    "District"
+                ],
+                "summary": "Get all districts",
+                "operationId": "b51683137af148cd5b446d9d34c30441",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/District"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/district/{id}": {
+            "get": {
+                "tags": [
+                    "District"
+                ],
+                "summary": "Get district by id",
+                "operationId": "af178fa51c3ce25bb8725018116d1860",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of district",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/District"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dgush-backend/public/api/filter/product": {
             "get": {
                 "tags": [
@@ -3001,6 +3107,80 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/dgush-backend/public/api/order": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Create a new order",
+                "operationId": "e1343e60962174d24371218cc3018e2c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "orderItems"
+                                ],
+                                "properties": {
+                                    "orderItems": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "product_id": {
+                                                    "type": "integer"
+                                                },
+                                                "color_id": {
+                                                    "type": "integer"
+                                                },
+                                                "size_id": {
+                                                    "type": "integer"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "coupon_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/dgush-backend/public/api/permission": {
@@ -4040,6 +4220,59 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/dgush-backend/public/api/province": {
+            "get": {
+                "tags": [
+                    "Province"
+                ],
+                "summary": "Get all provinces",
+                "operationId": "98382c9169bff7abdac3bf6c6c2f35d8",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Province"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/province/{id}": {
+            "get": {
+                "tags": [
+                    "Province"
+                ],
+                "summary": "Get province by id",
+                "operationId": "eefc0a02b536f7de9011bf52ce7b53f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of province",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Province"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/dgush-backend/public/api/size": {
@@ -5874,6 +6107,10 @@
                         "type": "string",
                         "example": "Red"
                     },
+                    "value": {
+                        "type": "string",
+                        "example": "red"
+                    },
                     "hex": {
                         "type": "string",
                         "example": "#FF0000"
@@ -5982,6 +6219,46 @@
                 },
                 "type": "object"
             },
+            "Department": {
+                "title": "Department",
+                "description": "Department model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Pendidikan"
+                    },
+                    "provinces": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Province"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "District": {
+                "title": "District",
+                "description": "District model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Kota Bandung"
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
             "GroupMenu": {
                 "title": "GroupMenu",
                 "properties": {
@@ -6047,6 +6324,110 @@
                     "groupmenu_id": {
                         "type": "number",
                         "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "Order": {
+                "title": "Order",
+                "description": "Order model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "subtotal": {
+                        "type": "decimal",
+                        "example": "100.00"
+                    },
+                    "total": {
+                        "type": "decimal",
+                        "example": "90.00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date": {
+                        "type": "timestamp",
+                        "example": "2024-05-26 14:40:02"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "coupon_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "orderItems": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    },
+                    "coupon": {
+                        "$ref": "#/components/schemas/Coupon"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderRequest": {
+                "title": "OrderRequest",
+                "description": "Order request model",
+                "properties": {
+                    "subtotal": {
+                        "type": "decimal",
+                        "example": "100.00"
+                    },
+                    "total": {
+                        "type": "decimal",
+                        "example": "90.00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date": {
+                        "type": "timestamp",
+                        "example": "2024-05-26 14:40:02"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "coupon_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderItem": {
+                "title": "OrderItem",
+                "description": "OrderItem model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "product_detail_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "productDetail": {
+                        "$ref": "#/components/schemas/ProductDetails"
                     }
                 },
                 "type": "object"
@@ -6130,6 +6511,42 @@
                 },
                 "type": "object"
             },
+            "ProductDetails": {
+                "title": "ProductDetails",
+                "description": "ProductDetails model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "example": "10"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "color_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "size_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    },
+                    "color": {
+                        "$ref": "#/components/schemas/Color"
+                    },
+                    "size": {
+                        "$ref": "#/components/schemas/Size"
+                    }
+                },
+                "type": "object"
+            },
             "ProductSize": {
                 "properties": {
                     "id": {
@@ -6143,6 +6560,27 @@
                     "size_id": {
                         "type": "integer",
                         "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "Province": {
+                "title": "Province",
+                "description": "Province model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Jawa Barat"
+                    },
+                    "districts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/District"
+                        }
                     }
                 },
                 "type": "object"
@@ -6264,6 +6702,10 @@
                     "name": {
                         "type": "string",
                         "example": "Small"
+                    },
+                    "value": {
+                        "type": "string",
+                        "example": "S"
                     }
                 },
                 "type": "object"
