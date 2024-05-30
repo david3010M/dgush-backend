@@ -23,6 +23,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('/product', [ProductController::class, 'index'])->name('product.index');
 Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/product/subcategoryRelated/{id}', [ProductController::class, 'subcategoryRelated'])->name('product.subcategoryRelated');
 
 Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
 Route::get('/category/{id}', [CategoryController::class, 'show'])->name('category.show');
@@ -61,6 +63,7 @@ Route::get('/category/{id}', [CategoryController::class, 'show'])->name('categor
 Route::get('/subcategory', [SubcategoryController::class, 'index'])->name('subcategory.index');
 Route::get('/subcategory/search', [SubcategoryController::class, 'search'])->name('subcategory.search');
 Route::get('/subcategory/{id}', [SubcategoryController::class, 'show'])->name('subcategory.show');
+Route::get('/subcategoryMostPopular', [SubcategoryController::class, 'mostPopular'])->name('subcategory.mostPopular');
 
 //    PROVINCE
 Route::get('/province', [ProvinceController::class, 'index'])->name('province.index');
@@ -301,5 +304,18 @@ Route::group(
                 'destroy' => 'order.destroy',
             ]
         );
+
+//        WISH ITEM
+        Route::resource('wishitem', WishItemController::class)->only(
+            ['index', 'store', 'show', 'destroy']
+        )->names(
+            [
+                'index' => 'wishitem.index',
+                'store' => 'wishitem.store',
+                'show' => 'wishitem.show',
+                'destroy' => 'wishitem.destroy',
+            ]
+        );
+
     }
 );

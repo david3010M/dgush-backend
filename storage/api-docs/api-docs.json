@@ -5139,6 +5139,30 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/subcategoryMostPopular": {
+            "get": {
+                "tags": [
+                    "Subcategory"
+                ],
+                "summary": "Most popular subcategories",
+                "operationId": "ec0e55056db865e95092d0a541343bf5",
+                "responses": {
+                    "200": {
+                        "description": "List of most popular subcategories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Subcategory"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dgush-backend/public/api/typeuser": {
             "get": {
                 "tags": [
@@ -6720,9 +6744,21 @@
                         "type": "string",
                         "example": "T-Shirts"
                     },
+                    "value": {
+                        "type": "string",
+                        "example": "t-shirts"
+                    },
                     "order": {
                         "type": "integer",
                         "example": "1"
+                    },
+                    "score": {
+                        "type": "number",
+                        "example": "5.0"
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "t-shirts.jpg"
                     },
                     "category_id": {
                         "type": "integer",
@@ -6765,6 +6801,48 @@
                     "typeuser_id": {
                         "type": "number",
                         "example": "2"
+                    }
+                },
+                "type": "object"
+            },
+            "WishItem": {
+                "title": "WishItem",
+                "description": "WishItem model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    }
+                },
+                "type": "object"
+            },
+            "WishItemRequest": {
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "color_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "size_id": {
+                        "type": "integer",
+                        "example": "1"
                     }
                 },
                 "type": "object"

@@ -319,4 +319,28 @@ class SubcategoryController extends Controller
             return response()->json(['message' => 'Subcategory not found'], 404);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/dgush-backend/public/api/subcategoryMostPopular",
+     *     summary="Most popular subcategories",
+     *     tags={"Subcategory"},
+     *     @OA\Response(
+     *          response=200,
+     *          description="List of most popular subcategories",
+     *          @OA\JsonContent(
+     *              type="array",
+     *              @OA\Items(ref="#/components/schemas/Subcategory")
+     *          )
+     *     )
+     * )
+     */
+    public function mostPopular()
+    {
+        $subcategories = Subcategory::orderBy('score', 'desc')
+            ->limit(5)
+            ->get();
+
+        return $subcategories;
+    }
 }

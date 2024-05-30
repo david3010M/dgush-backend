@@ -17,6 +17,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Vestidos Casuales',
             'value' => 'vestidos-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 1,
         ]);
 
@@ -24,6 +25,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Vestidos Formales',
             'value' => 'vestidos-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 1,
         ]);
 
@@ -31,6 +33,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Vestidos Coctel',
             'value' => 'vestidos-coctel',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 1,
         ]);
 
@@ -38,6 +41,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Vestidos de Noche',
             'value' => 'vestidos-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 1,
         ]);
 
@@ -46,6 +50,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Blusas Casuales',
             'value' => 'blusas-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 2,
         ]);
 
@@ -53,6 +58,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Blusas Formales',
             'value' => 'blusas-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 2,
         ]);
 
@@ -60,6 +66,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Blusas Deportivas',
             'value' => 'blusas-deportivas',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 2,
         ]);
 
@@ -67,6 +74,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Blusas de Noche',
             'value' => 'blusas-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 2,
         ]);
 
@@ -75,6 +83,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Pantalones Casuales',
             'value' => 'pantalones-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/pantalones.png',
             'category_id' => 3,
         ]);
 
@@ -82,6 +91,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Pantalones Formales',
             'value' => 'pantalones-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/pantalones.png',
             'category_id' => 3,
         ]);
 
@@ -89,6 +99,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Pantalones Deportivos',
             'value' => 'pantalones-deportivos',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/pantalones.png',
             'category_id' => 3,
         ]);
 
@@ -96,6 +107,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Pantalones de Noche',
             'value' => 'pantalones-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/pantalones.png',
             'category_id' => 3,
         ]);
 
@@ -104,6 +116,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Faldas Casuales',
             'value' => 'faldas-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 4,
         ]);
 
@@ -111,6 +124,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Faldas Formales',
             'value' => 'faldas-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 4,
         ]);
 
@@ -118,6 +132,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Faldas Deportivas',
             'value' => 'faldas-deportivas',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 4,
         ]);
 
@@ -125,6 +140,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Faldas de Noche',
             'value' => 'faldas-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 4,
         ]);
 
@@ -133,6 +149,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Shorts Casuales',
             'value' => 'shorts-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 5,
         ]);
 
@@ -140,6 +157,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Shorts Formales',
             'value' => 'shorts-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 5,
         ]);
 
@@ -147,6 +165,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Shorts Deportivos',
             'value' => 'shorts-deportivos',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/faldas.png',
             'category_id' => 5,
         ]);
 
@@ -156,6 +175,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Chaquetas Casuales',
             'value' => 'chaquetas-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 6,
         ]);
 
@@ -163,6 +183,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Chaquetas Formales',
             'value' => 'chaquetas-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 6,
         ]);
 
@@ -170,6 +191,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Chaquetas Deportivas',
             'value' => 'chaquetas-deportivas',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 6,
         ]);
 
@@ -177,6 +199,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Chaquetas de Noche',
             'value' => 'chaquetas-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 6,
         ]);
 
@@ -186,6 +209,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Sweaters Casuales',
             'value' => 'sweaters-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 7,
         ]);
 
@@ -193,6 +217,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Sweaters Formales',
             'value' => 'sweaters-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 7,
         ]);
 
@@ -200,6 +225,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Sweaters Deportivos',
             'value' => 'sweaters-deportivos',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 7,
         ]);
 
@@ -207,6 +233,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Sweaters de Noche',
             'value' => 'sweaters-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 7,
         ]);
 
@@ -216,6 +243,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Camisas Casuales',
             'value' => 'camisas-casuales',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 8,
         ]);
 
@@ -223,6 +251,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Camisas Formales',
             'value' => 'camisas-formales',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 8,
         ]);
 
@@ -230,6 +259,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Camisas Deportivas',
             'value' => 'camisas-deportivas',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 8,
         ]);
 
@@ -237,6 +267,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Camisas de Noche',
             'value' => 'camisas-de-noche',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 8,
         ]);
 
@@ -246,6 +277,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Trajes Enterizos',
             'value' => 'trajes-enterizos',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/pantalones.png',
             'category_id' => 9,
         ]);
 
@@ -253,6 +285,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Bikinis',
             'value' => 'bikinis',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 9,
         ]);
 
@@ -260,6 +293,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Tankinis',
             'value' => 'tankinis',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 9,
         ]);
 
@@ -267,6 +301,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Shorts de Baño',
             'value' => 'shorts-de-bano',
             'order' => 4,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/vestidos.png',
             'category_id' => 9,
         ]);
 
@@ -276,6 +311,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Conjunto Ropa Deportiva',
             'value' => 'conjunto-ropa-deportiva',
             'order' => 1,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 10,
         ]);
 
@@ -283,6 +319,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Leggins Deportivos',
             'value' => 'leggins-deportivos',
             'order' => 2,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/pantalones.png',
             'category_id' => 10,
         ]);
 
@@ -290,6 +327,7 @@ class SubcategorySeeder extends Seeder
             'name' => 'Camisetas Deportivos',
             'value' => 'camisetas-deportivos',
             'order' => 3,
+            'image' => 'https://develop.garzasoft.com/dgush-backend/resources/image/polos.png',
             'category_id' => 10,
         ]);
 

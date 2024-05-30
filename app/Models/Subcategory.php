@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="name", type="string", example="T-Shirts"),
+ *     @OA\Property(property="value", type="string", example="t-shirts"),
  *     @OA\Property(property="order", type="integer", example="1"),
+ *     @OA\Property(property="score", type="number", example="5.0"),
+ *     @OA\Property(property="image", type="string", example="t-shirts.jpg"),
  *     @OA\Property(property="category_id", type="integer", example="1")
  * )
  */
@@ -30,7 +33,8 @@ class Subcategory extends Model
         'value',
         'order',
         'score',
-        'category_id'
+        'image',
+        'category_id',
     ];
 
     protected $hidden = [

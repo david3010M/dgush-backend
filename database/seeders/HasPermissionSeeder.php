@@ -23,7 +23,7 @@ class HasPermissionSeeder extends Seeder
 
 //        USER PERMISSION
         $userPermissions = [
-            36, 37, 42, 43, 47, 48
+            36, 37, 42, 43, 47, 48, 100, 101, 102
         ];
         foreach ($userPermissions as $userPermission) {
             HasPermission::create([

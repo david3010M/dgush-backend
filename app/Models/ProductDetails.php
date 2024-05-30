@@ -33,6 +33,8 @@ class ProductDetails extends Model
         'size_id',
     ];
 
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
     public function product()
     {
         return $this->belongsTo(Product::class);

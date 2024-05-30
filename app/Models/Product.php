@@ -225,4 +225,19 @@ class Product extends Model
     {
         return $this->hasOne(Image::class);
     }
+
+    public static function getRelatedProducts($id)
+    {
+        $product = Product::find($id);
+        return Product::where('subcategory_id', $product->subcategory_id)
+            ->where('id', '!=', $id)
+            ->addSelect(['image' => Image::select('url')
+                ->whereColumn('product_id', 'product.id')
+                ->orderBy('id')
+                ->limit(1)])
+            ->orderBy('score', 'desc')
+            ->limit(6)
+            ->get();
+
+    }
 }

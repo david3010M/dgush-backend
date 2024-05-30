@@ -39,7 +39,7 @@ class CheckAccess
         }
 
         // Verifica si el usuario tiene acceso a la opción de menú
-        if ($user && $user->typeuser->hasPermission->contains('id', $permission->id)) {
+        if ($user && $user->typeuser->hasPermission->contains('permission_id', $permission->id)) {
             return $next($request);
         }
 

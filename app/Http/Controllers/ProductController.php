@@ -357,13 +357,15 @@ class ProductController extends Controller
             $comments = $product->comments($id);
             $images = $product->images($id);
             $productDetails = $product->getProductDetails($id);
+            $productRelated = $product->getRelatedProducts($id);
             return response()->json([
                 'product' => $product,
                 'colors' => $colors,
                 'sizes' => $sizes,
                 'comments' => $comments,
                 'productDetails' => $productDetails,
-                'images' => $images
+                'images' => $images,
+                'productRelated' => $productRelated
             ]);
         } else {
             //            PRODUCT NOT FOUND

@@ -569,5 +569,31 @@ class PermissionSeeder extends Seeder
             'name' => 'Eliminar Pedidos',
             'route' => 'order.destroy',
         ]);
+
+//        WISH ITEM
+        Permission::create([
+            'name' => 'Ver Lista de Deseos',
+            'route' => 'wishitem.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Deseo',
+            'route' => 'wishitem.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Deseo',
+            'route' => 'wishitem.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Deseo',
+            'route' => 'wishitem.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Deseo',
+            'route' => 'wishitem.destroy',
+        ]);
     }
 }
