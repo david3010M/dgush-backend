@@ -12,6 +12,38 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
 
+    /**
+     * Orders from the authenticated user
+     * @OA\Get (
+     *     path="/dgush-backend/public/api/order",
+     *     summary="Get all orders",
+     *     tags={"Order"},
+     *     @OA\Parameter(name="page", in="query", description="Page number", required=false, @OA\Schema(type="integer")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Orders retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="current_page", type="integer", example="1"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Order")),
+     *             @OA\Property(property="first_page_url", type="string", example="http://localhost:8000/api/order?page=1"),
+     *             @OA\Property(property="from", type="integer", example="1"),
+     *             @OA\Property(property="next_page_url", type="string", example="null"),
+     *             @OA\Property(property="path", type="string", example="http://localhost:8000/api/order"),
+     *             @OA\Property(property="per_page", type="integer", example="10"),
+     *             @OA\Property(property="prev_page_url", type="string", example="null"),
+     *             @OA\Property(property="to", type="integer", example="1")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthenticated")
+     *         )
+     *     )
+     * )
+     *
+     */
     public function index(Request $request)
     {
         $pageSize = $request->input('page', 10);
@@ -87,6 +119,8 @@ class OrderController extends Controller
         // Crear la orden
         $order = Order::create([
             'subtotal' => 0,
+            'discount' => 0,
+            'sendCost' => 0,
             'total' => 0,
             'quantity' => 0,
             'date' => now(),
@@ -122,7 +156,9 @@ class OrderController extends Controller
         // Actualizar la orden con el subtotal y la cantidad total
         $order->update([
             'subtotal' => $subtotal,
-            'total' => $subtotal, // Puedes aplicar descuentos o impuestos aquí si es necesario
+            'discount' => 0,
+            'sendCost' => 0,
+            'total' => $subtotal,
             'quantity' => $quantity
         ]);
 
@@ -143,7 +179,7 @@ class OrderController extends Controller
         if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-    
+
         return response()->json($order);
     }
 

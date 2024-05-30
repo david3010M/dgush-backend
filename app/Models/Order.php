@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     description="Order model",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="subtotal", type="decimal", example="100.00"),
+ *     @OA\Property(property="discount", type="decimal", example="10.00"),
+ *     @OA\Property(property="sendCost", type="decimal", example="5.00"),
  *     @OA\Property(property="total", type="decimal", example="90.00"),
  *     @OA\Property(property="quantity", type="integer", example="1"),
  *     @OA\Property(property="date", type="timestamp", example="2024-05-26 14:40:02"),
@@ -45,6 +47,8 @@ class Order extends Model
 
     protected $fillable = [
         'subtotal',
+        'discount',
+        'sendCost',
         'total',
         'quantity',
         'date',

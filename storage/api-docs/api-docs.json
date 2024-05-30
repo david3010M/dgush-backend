@@ -3110,6 +3110,93 @@
             }
         },
         "/dgush-backend/public/api/order": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Get all orders",
+                "description": "Orders from the authenticated user",
+                "operationId": "a35680f94ed255cd9b1cd44e20925789",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Order"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/order?page=1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "next_page_url": {
+                                            "type": "string",
+                                            "example": "null"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/order"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": "10"
+                                        },
+                                        "prev_page_url": {
+                                            "type": "string",
+                                            "example": "null"
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Order"
@@ -6363,6 +6450,14 @@
                     "subtotal": {
                         "type": "decimal",
                         "example": "100.00"
+                    },
+                    "discount": {
+                        "type": "decimal",
+                        "example": "10.00"
+                    },
+                    "sendCost": {
+                        "type": "decimal",
+                        "example": "5.00"
                     },
                     "total": {
                         "type": "decimal",
