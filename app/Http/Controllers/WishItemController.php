@@ -16,7 +16,7 @@ class WishItemController extends Controller
 
     public function index()
     {
-        $wishItems = WishItem::with('productDetails.product', 'productDetails.color', 'productDetails.size')
+        $wishItems = WishItem::with('productDetails.product.image', 'productDetails.color', 'productDetails.size')
             ->where('user_id', auth()->user()->id)
             ->get();
 
