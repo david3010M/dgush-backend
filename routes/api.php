@@ -305,6 +305,9 @@ Route::group(
             ]
         );
 
+        Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
+        Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
+
 //        WISH ITEM
         Route::resource('wishitem', WishItemController::class)->only(
             ['index', 'store', 'show', 'destroy']

@@ -25,12 +25,14 @@ class HasPermissionSeeder extends Seeder
         $userPermissions = [
             36, 37, 42, 43, 47, 48, 100, 101, 102
         ];
-        foreach ($userPermissions as $userPermission) {
+//        foreach ($userPermissions as $userPermission) {
+        Permission::all()->each(function ($permission) {
             HasPermission::create([
-                'permission_id' => $userPermission,
+                'permission_id' => $permission->id,
                 'typeuser_id' => 2,
             ]);
-        }
+        });
+//        }
 
 //        GUEST PERMISSION
         $guestPermissions = [

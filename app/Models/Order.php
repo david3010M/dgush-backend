@@ -37,6 +37,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="coupon_id", type="integer", example="1")
  * )
  *
+ * @OA\Schema (
+ *     schema="OrderConfirmation",
+ *     title="OrderConfirmation",
+ *     description="Order confirmation model",
+ *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="subtotal", type="decimal", example="100.00"),
+ *     @OA\Property(property="discount", type="decimal", example="10.00"),
+ *     @OA\Property(property="sendCost", type="decimal", example="5.00"),
+ *     @OA\Property(property="total", type="decimal", example="90.00"),
+ *     @OA\Property(property="quantity", type="integer", example="1"),
+ *     @OA\Property(property="date", type="timestamp", example="2024-05-26 14:40:02"),
+ *     @OA\Property(property="user_id", type="integer", example="1"),
+ *     @OA\Property(property="coupon_id", type="integer", example="1"),
+ *     @OA\Property(property="user", type="object", ref="#/components/schemas/User"),
+ *     @OA\Property(property="orderItems", type="array", @OA\Items(ref="#/components/schemas/OrderItem")),
+ *     @OA\Property(property="coupon", type="object", ref="#/components/schemas/Coupon"),
+ *     @OA\Property(property="sendInformation", type="object", ref="#/components/schemas/SendInformation")
+ * )
+ *
  */
 class Order extends Model
 {
@@ -52,8 +71,15 @@ class Order extends Model
         'total',
         'quantity',
         'date',
+        'status',
         'user_id',
         'coupon_id'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
 //
 //    public static function boot()
@@ -103,5 +129,9 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function sendInformation()
+    {
+        return $this->hasOne(SendInformation::class);
+    }
 
 }

@@ -43,6 +43,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DistrictSeeder::class);
 
 //        ProductDetailsSeeder
+        $this->call(CouponSeeder::class);
         $this->call(ProductDetailsSeeder::class);
         $this->call(WishItemSeeder::class);
 

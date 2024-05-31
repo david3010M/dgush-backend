@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('reference');
             $table->string('comment');
             $table->string('method');
-            $table->foreignId('order_id')->constrained('order');
+            $table->foreignId('order_id')->constrained('order')->unique();
             $table->foreignId('district_id')->constrained('district');
             $table->timestamps();
             $table->softDeletes();

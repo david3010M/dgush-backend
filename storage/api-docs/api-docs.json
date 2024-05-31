@@ -3270,6 +3270,222 @@
                 }
             }
         },
+        "/dgush-backend/public/api/applyCouponToOrder/{id}": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Apply a coupon to an order",
+                "operationId": "16080f7f1b8172a6f9a13bcf96c734d9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "coupon"
+                                ],
+                                "properties": {
+                                    "coupon": {
+                                        "type": "string",
+                                        "example": "PRIMERA31"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Coupon applied successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Order not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The coupon field is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/confirmOrder": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Confirm order",
+                "operationId": "681350b9e5bb6e2d424e5f45a107d541",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "names",
+                                    "dni",
+                                    "email",
+                                    "phone",
+                                    "address",
+                                    "reference",
+                                    "comment",
+                                    "method",
+                                    "district_id"
+                                ],
+                                "properties": {
+                                    "names": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "dni": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "johndoe@gmail.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "987654321"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main St."
+                                    },
+                                    "reference": {
+                                        "type": "string",
+                                        "example": "Near the park"
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Please call before delivery"
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "example": "cash"
+                                    },
+                                    "district_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order confirmed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderConfirmation"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Order not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The names field is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dgush-backend/public/api/permission": {
             "get": {
                 "tags": [
@@ -6521,6 +6737,64 @@
                     "coupon_id": {
                         "type": "integer",
                         "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderConfirmation": {
+                "title": "OrderConfirmation",
+                "description": "Order confirmation model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "subtotal": {
+                        "type": "decimal",
+                        "example": "100.00"
+                    },
+                    "discount": {
+                        "type": "decimal",
+                        "example": "10.00"
+                    },
+                    "sendCost": {
+                        "type": "decimal",
+                        "example": "5.00"
+                    },
+                    "total": {
+                        "type": "decimal",
+                        "example": "90.00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date": {
+                        "type": "timestamp",
+                        "example": "2024-05-26 14:40:02"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "coupon_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "orderItems": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    },
+                    "coupon": {
+                        "$ref": "#/components/schemas/Coupon"
+                    },
+                    "sendInformation": {
+                        "$ref": "#/components/schemas/SendInformation"
                     }
                 },
                 "type": "object"

@@ -570,6 +570,7 @@ class PermissionSeeder extends Seeder
             'route' => 'order.destroy',
         ]);
 
+
 //        WISH ITEM
         Permission::create([
             'name' => 'Ver Lista de Deseos',
@@ -595,5 +596,18 @@ class PermissionSeeder extends Seeder
             'name' => 'Eliminar Deseo',
             'route' => 'wishitem.destroy',
         ]);
+
+//        ORDER MORE
+        Permission::create([
+            'name' => 'Confirmar Pedido',
+            'route' => 'order.confirm'
+        ]);
+
+        Permission::create([
+            'name' => 'Aplicar Cupón',
+            'route' => 'order.applyCoupon'
+        ]);
+
+
     }
 }

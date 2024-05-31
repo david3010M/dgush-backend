@@ -54,7 +54,7 @@ class SendInformation extends Model
         'reference',
         'comment',
         'method',
-        'province_id',
+        'district_id',
         'order_id',
     ];
 

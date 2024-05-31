@@ -6,8 +6,10 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductDetails;
+use App\Models\SendInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -120,7 +122,7 @@ class OrderController extends Controller
         $order = Order::create([
             'subtotal' => 0,
             'discount' => 0,
-            'sendCost' => 0,
+            'sendCost' => 10,
             'total' => 0,
             'quantity' => 0,
             'date' => now(),
@@ -156,9 +158,7 @@ class OrderController extends Controller
         // Actualizar la orden con el subtotal y la cantidad total
         $order->update([
             'subtotal' => $subtotal,
-            'discount' => 0,
-            'sendCost' => 0,
-            'total' => $subtotal,
+            'total' => $subtotal + $order->sendCost,
             'quantity' => $quantity
         ]);
 
@@ -270,7 +270,6 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-
     public function destroy(int $id)
     {
         $order = Order::find($id);
@@ -289,5 +288,205 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->json(['message' => 'Order deleted successfully']);
+    }
+
+    /**
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/applyCouponToOrder/{id}",
+     *     summary="Apply a coupon to an order",
+     *     tags={"Order"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"coupon"},
+     *             @OA\Property(property="coupon", type="string", example="PRIMERA31")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Coupon applied successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Order")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Order not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Order not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="The coupon field is required")
+     *         )
+     *     )
+     * )
+     *
+     */
+    public function applyCoupon(Request $request, int $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'coupon' => 'required|exists:coupon,code'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        $coupon = Coupon::where('code', $request->input('coupon'))->first();
+        if (!$coupon) {
+            return response()->json(['error' => 'Coupon not found'], 404);
+        }
+
+        if (!$coupon->active) {
+            return response()->json(['error' => 'Coupon is not active'], 422);
+        }
+
+        if ($coupon->expires_at < now()) {
+            return response()->json(['error' => 'Coupon has expired'], 422);
+        }
+
+        $discount = 0;
+
+        if ($coupon->type === 'percentage') {
+            $discount = $order->subtotal * $coupon->value / 100;
+        } else if ($coupon->type === 'discount') {
+            $discount = $coupon->value;
+        }
+
+        $total = $order->subtotal + $order->sendCost - $discount;
+
+        $order->update([
+            'coupon_id' => $coupon->id,
+            'discount' => $discount,
+            'total' => $total
+        ]);
+
+        $order = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+            ->find($order->id);
+
+        return response()->json($order);
+    }
+
+
+    /**
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/confirmOrder",
+     *     summary="Confirm order",
+     *     tags={"Order"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"names", "dni", "email", "phone", "address", "reference", "comment", "method", "district_id"},
+     *             @OA\Property(property="names", type="string", example="John Doe"),
+     *             @OA\Property(property="dni", type="string", example="12345678"),
+     *             @OA\Property(property="email", type="string", example="johndoe@gmail.com"),
+     *             @OA\Property(property="phone", type="string", example="987654321"),
+     *             @OA\Property(property="address", type="string", example="123 Main St."),
+     *             @OA\Property(property="reference", type="string", example="Near the park"),
+     *             @OA\Property(property="comment", type="string", example="Please call before delivery"),
+     *             @OA\Property(property="method", type="string", example="cash"),
+     *             @OA\Property(property="district_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Order confirmed successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/OrderConfirmation")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Order not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Order not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="The names field is required")
+     *         )
+     *     )
+     * )
+     */
+    public function confirmOrder(Request $request, int $id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        if ($order->status !== 'pending') {
+            return response()->json(['error' => 'Order has already been confirmed'], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'names' => 'required|string',
+            'dni' => 'required|string|size:8',
+            'email' => 'required|string',
+            'phone' => 'required|string',
+            'address' => 'required|string',
+            'reference' => 'required|string',
+            'comment' => 'required|string',
+            'method' => 'required|string',
+            'district_id' => 'required|exists:district,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'names' => $request->input('names'),
+            'dni' => $request->input('dni'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'reference' => $request->input('reference'),
+            'comment' => $request->input('comment'),
+            'method' => $request->input('method'),
+            'district_id' => $request->input('district_id'),
+            'order_id' => $id,
+//            NUMBER OF PAYMENT
+//            'payment' => $request->input('payment')
+        ];
+
+        $sendInformation = SendInformation::create($data);
+
+        if (!$sendInformation) {
+            return response()->json(['error' => 'Error creating send information'], 500);
+        }
+
+        $order->update([
+            'status' => 'paid'
+        ]);
+
+        $order = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+            ->find($order->id);
+
+        return response()->json($order);
     }
 }

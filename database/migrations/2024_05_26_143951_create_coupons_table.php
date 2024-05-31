@@ -15,7 +15,8 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description');
             $table->string('code');
-            $table->string('type');
+            $table->string('type')->enum('percentage', 'discount')->default('discount');
+            $table->boolean('active')->default(true);
             $table->decimal('value')->default(0);
             $table->timestamp('expires_at');
             $table->timestamps();
