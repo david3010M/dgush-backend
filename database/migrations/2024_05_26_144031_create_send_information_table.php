@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('phone');
             $table->string('address');
             $table->string('reference');
-            $table->string('comment');
+            $table->string('comment')->nullable();
             $table->string('method');
             $table->foreignId('order_id')->constrained('order')->unique();
             $table->foreignId('district_id')->constrained('district');

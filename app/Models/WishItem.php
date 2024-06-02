@@ -21,7 +21,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     schema="WishItemRequest",
  *     @OA\Property (property="product_id", type="integer", example="1"),
  *     @OA\Property (property="color_id", type="integer", example="1"),
- *     @OA\Property (property="size_id", type="integer", example="1")
+ *     @OA\Property (property="size_id", type="integer", example="1"),
+ *     @OA\Property (property="quantity", type="integer", example="1")
  * )
  *
  */
@@ -30,7 +31,7 @@ class WishItem extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'product_details_id'];
+    protected $fillable = ['user_id', 'product_details_id', 'quantity'];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 

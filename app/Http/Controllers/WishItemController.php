@@ -30,6 +30,7 @@ class WishItemController extends Controller
             'product_id' => 'required|integer|exists:product,id',
             'color' => 'required|string|exists:color,value',
             'size' => 'required|string|exists:size,value',
+            'quantity' => 'integer|min:1'
         ]);
 
         if ($validator->fails()) {
@@ -53,7 +54,8 @@ class WishItemController extends Controller
         // Crear el WishItem
         $wishItem = WishItem::create([
             'product_details_id' => $productDetails->id,
-            'user_id' => auth()->user()->id
+            'user_id' => auth()->user()->id,
+            'quantity' => $request->input('quantity', 1)
         ]);
 
         $wishItem = WishItem::with('productDetails.product', 'productDetails.color', 'productDetails.size')
