@@ -449,7 +449,7 @@ class OrderController extends Controller
             'phone' => 'required|string',
             'address' => 'required|string',
             'reference' => 'required|string',
-            'comment' => 'string',
+            'comment' => 'nullable|string',
             'method' => 'required|string',
             'district_id' => 'required|exists:district,id',
         ]);
