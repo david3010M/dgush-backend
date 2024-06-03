@@ -152,8 +152,18 @@ class OrderController extends Controller
             ]);
 
             $quantity += $products[$key]['quantity'];
-            $subtotal += $productDetail->product->price1 * $products[$key]['quantity'];
         }
+
+        if ($quantity >= 3) {
+            foreach ($productDetails as $key => $productDetail) {
+                $subtotal += $productDetail->product->price2 * $products[$key]['quantity'];
+            }
+        } else {
+            foreach ($productDetails as $key => $productDetail) {
+                $subtotal += $productDetail->product->price1 * $products[$key]['quantity'];
+            }
+        }
+
 
         // Actualizar la orden con el subtotal y la cantidad total
         $order->update([
