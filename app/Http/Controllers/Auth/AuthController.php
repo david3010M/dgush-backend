@@ -174,7 +174,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             // Generar un token de acceso para el usuario
-            $token = $user->createToken('AuthToken', expiresAt: now()->addMinutes(240));
+            $token = $user->createToken('AuthToken', expiresAt: now()->addHours(24));
 
 //            TYPEUSER
             $typeuser = $user->typeuser()->first();

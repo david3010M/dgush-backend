@@ -181,6 +181,7 @@ class Product extends Model
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
             ->select('size.id', 'size.name', 'size.value')
+            ->orderBy('size.id')
             ->distinct()
             ->get();
     }
@@ -192,6 +193,7 @@ class Product extends Model
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
             ->select('product_details.id', 'product_details.stock', 'color.id as color_id', 'color.name as color_name', 'color.value as color_value', 'size.id as size_id', 'size.name as size_name', 'size.value as size_value')
+            ->orderBy('color.id')
             ->get();
     }
 
