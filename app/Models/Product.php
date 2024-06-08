@@ -94,7 +94,7 @@ class Product extends Model
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
 
-    public static function search($search, $status, $score, $category, $price, $color, $size, $sort, $direction)
+    public static function search($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction)
     {
         //        dd($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction);
 
@@ -117,11 +117,9 @@ class Product extends Model
             $direction = 'desc';
         }
 
-        if ($category) {
-            $category = Category::whereIn('value', $category)->pluck('id');
-            $query->whereHas('subcategory', function ($query) use ($category) {
-                $query->whereIn('category_id', $category);
-            });
+        if ($subcategory) {
+            $subcategory = Subcategory::whereIn('value', $subcategory)->pluck('id');
+            $query->whereIn('subcategory_id', $subcategory);
         }
 
         if ($price !== null && $price[1] > 0) {
@@ -162,7 +160,7 @@ class Product extends Model
             $direction = 'desc';
         }
 
-        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->simplePaginate(12);
+        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
     }
 
     public static function getColorsByProduct($id)

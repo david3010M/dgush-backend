@@ -40,7 +40,7 @@ class FilterController extends Controller
         return response()->json([
             'color' => Color::all(),
             'sizes' => Size::all(),
-            'categories' => Category::all(),
+            'subcategories' => Subcategory::all(),
             'price' => Product::max('price1'),
             'status' => [
                 'onsale',
