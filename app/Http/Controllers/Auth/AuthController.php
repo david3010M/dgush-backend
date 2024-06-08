@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\TypeUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +13,47 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    /**
+     * Log out user.
+     * @OA\Get (
+     *     path="/dgush-backend/public/api/logout",
+     *     tags={"Authentication"},
+     *     summary="Logout user",
+     *     security={{"bearerAuth":{}}},
+     *      @OA\Response(
+     *          response=200,
+     *          description="User logged out",
+     *           @OA\JsonContent(
+     *               @OA\Property(
+     *                   property="message",
+     *                   type="string",
+     *                   example="Logged out successfully."
+     *              )
+     *           )
+     *      ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="User not authenticated",
+     *           @OA\JsonContent(
+     *               @OA\Property(
+     *                   property="message",
+     *                   type="string",
+     *                   example="Unauthenticated."
+     *              )
+     *           )
+     *      )
+     * )
+     */
+    public function logout(Request $request)
+    {
+        if (auth('sanctum')->user()) {
+            auth('sanctum')->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logged out successfully']);
+        } else {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+    }
+
     /**
      * Authenticate user and generate access token
      * @OA\Post (
@@ -187,6 +229,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
+                'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
                 'optionMenuAccess' => $typeuserAccess,
@@ -197,47 +240,6 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-    }
-
-    /**
-     * Log out user.
-     * @OA\Get (
-     *     path="/dgush-backend/public/api/logout",
-     *     tags={"Authentication"},
-     *     summary="Logout user",
-     *     security={{"bearerAuth":{}}},
-     *      @OA\Response(
-     *          response=200,
-     *          description="User logged out",
-     *           @OA\JsonContent(
-     *               @OA\Property(
-     *                   property="message",
-     *                   type="string",
-     *                   example="Logged out successfully."
-     *              )
-     *           )
-     *      ),
-     *     @OA\Response(
-     *          response=401,
-     *          description="User not authenticated",
-     *           @OA\JsonContent(
-     *               @OA\Property(
-     *                   property="message",
-     *                   type="string",
-     *                   example="Unauthenticated."
-     *              )
-     *           )
-     *      )
-     * )
-     */
-    public function logout(Request $request)
-    {
-        if (auth('sanctum')->user()) {
-            auth('sanctum')->user()->currentAccessToken()->delete();
-            return response()->json(['message' => 'Logged out successfully']);
-        } else {
-            return response()->json(['message' => 'User not authenticated'], 401);
-        }
     }
 
     /**
@@ -371,6 +373,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'access_token' => $token,
+                'expires_at' => Carbon::parse($user->currentAccessToken()->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
                 'optionMenuAccess' => $typeuserAccess,
@@ -490,18 +493,152 @@ class AuthController extends Controller
         $permissions = $typeuser->getHasPermission($typeuser->id);
 
         // Generar un token de acceso para el nuevo usuario
-        $token = $user->createToken('AuthToken')->plainTextToken;
+        $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
 
 
         // Devolver el usuario completo junto con el token en la respuesta
         return response()->json(
             [
-                'access_token' => $token,
+                'access_token' => $token->plainTextToken,
+                'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
                 'optionMenuAccess' => $optionMenuAccess,
                 'permissions' => $permissions
             ]
         );
+    }
+
+    /**
+     * Refresh access token
+     * @OA\Get (
+     *     path="/dgush-backend/public/api/refreshtoken",
+     *     tags={"Authentication"},
+     *     summary="Authenticate user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token refreshed",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="access_token",
+     *                 type="string",
+     *                 example="10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147",
+     *             ),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(
+     *                         property="id",
+     *                         type="number",
+     *                         example="11"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="names",
+     *                         type="string",
+     *                         example="D Gush"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="dgush@gmail.com"
+     *                     ),
+     *                     @OA\Property(
+     *                          property="typeuser_id",
+     *                          type="number",
+     *                          example="2"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="created_at",
+     *                         type="string",
+     *                         example="2024-02-23T00:09:16.000000Z"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="updated_at",
+     *                         type="string",
+     *                         example="2024-02-23T12:13:45.000000Z"
+     *                     ),
+     *                      @OA\Property(
+     *                          property="deleted_at",
+     *                          type="string",
+     *                          example="null",
+     *                      )
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                  property="typeuser",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="number",
+     *                          example="6"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="name",
+     *                          type="string",
+     *                          example="Admin"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="created_at",
+     *                          type="string",
+     *                          example="2024-02-23T00:09:16.000000Z"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="updated_at",
+     *                          type="string",
+     *                          example="2024-02-23T12:13:45.000000Z"
+     *                      ),
+     *                       @OA\Property(
+     *                           property="deleted_at",
+     *                           type="string",
+     *                           example="null",
+     *                       )
+     *                  )
+     *              ),
+     *               @OA\Property(
+     *                   property="optionMenuAccess",
+     *                   type="string",
+     *                   example="1, 2, 3, 4"
+     *               ),
+     *               @OA\Property(
+     *                   property="permissions",
+     *                   type="string",
+     *                   example="1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+     *               )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="User not authenticated",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="message",
+     *                  type="string",
+     *                  example="Unauthenticated."
+     *             )
+     *          )
+     *     )
+     * )
+     */
+    public function refreshToken(Request $request)
+    {
+        $user = auth('sanctum')->user();
+        $plainToken = $request->bearerToken();
+        $user->currentAccessToken()->update([
+            'expires_at' => now()->addDays(7)
+        ]);
+
+        return response()->json([
+            'access_token' => $plainToken,
+            'expires_at' => Carbon::parse($user->currentAccessToken()->expires_at)->toDateTimeString(),
+            'user' => $user,
+            'typeuser' => $user->typeuser()->first(),
+            'optionMenuAccess' => $user->typeuser()->first()->getAccess($user->typeuser()->first()->id),
+            'permissions' => $user->typeuser()->first()->getHasPermission($user->typeuser()->first()->id)
+        ]);
     }
 }
