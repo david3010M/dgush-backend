@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TypeUserAccessesRequest;
 use App\Models\Access;
 use App\Models\OptionMenu;
 use App\Models\TypeUser;
@@ -242,32 +243,17 @@ class AccessController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, int $id)
+    public function update(TypeUserAccessesRequest $request, int $id)
     {
-//        NOT UPDATE ADMIN ACCESS
-        if ($id == 1) {
-            return response()->json(['message' => 'You cannot update the admin access'], 400);
-        }
-
-//        VALIDATE DATA
-        $validation = $this->validateAccess($request);
-
-        if ($validation->getStatusCode() !== 200) {
-            return $validation;
-        }
-
-//        TYPEUSER ID FROM REQUEST
-        $typeuser_id = $id;
-
 //        DELETE ACCESS
-        Access::where('typeuser_id', $typeuser_id)->delete();
+        Access::where('typeuser_id', $id)->delete();
 
 //        UPDATE ACCESS FROM A STRING OF ACCESS WITH COMMA
         $optionmenus = explode(',', $request->input('optionmenu_id'));
 
         foreach ($optionmenus as $optionmenu) {
             $access = new Access();
-            $access->typeuser_id = $typeuser_id;
+            $access->typeuser_id = $id;
             $access->optionmenu_id = $optionmenu;
             $access->save();
         }

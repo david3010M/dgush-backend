@@ -308,6 +308,8 @@ Route::group(
 
         Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
         Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
+        Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+        Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
 
 //        WISH ITEM
         Route::resource('wishitem', WishItemController::class)->only(

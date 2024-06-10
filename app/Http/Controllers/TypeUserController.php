@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TypeUserAccessesRequest;
 use App\Models\OptionMenu;
 use App\Models\TypeUser;
 use Illuminate\Http\Request;
@@ -91,7 +92,6 @@ class TypeUserController extends Controller
         return TypeUser::create($request->all());
     }
 
-
     /**
      * @OA\Get(
      *     path="/dgush-backend/public/api/typeuser/{id}",
@@ -150,7 +150,6 @@ class TypeUserController extends Controller
 
         return $typeUser;
     }
-
 
     /**
      * @OA\Put(
@@ -316,4 +315,40 @@ class TypeUserController extends Controller
             ['message' => 'Type User deleted successfully']
         );
     }
+
+//    GET ACCESSES
+    public function getAccesses(int $id)
+    {
+        $typeUser = TypeUser::find($id);
+
+        if (!$typeUser) {
+            return response()->json(
+                ['message' => 'Type User not found'], 404
+            );
+        }
+        return $typeUser->access;
+    }
+
+
+//    UPDATE ACCESSES
+    public function updateAccess(TypeUserAccessesRequest $request, int $id)
+    {
+        $typeUser = TypeUser::find($id);
+
+        if (!$typeUser) {
+            return response()->json(
+                ['message' => 'Type User not found'], 404
+            );
+        }
+
+        $request->validate([
+            'access' => 'required|array',
+            'access.*' => 'integer|exists:option_menu,id',
+        ]);
+
+        $typeUser->access()->sync($request->access);
+        return $typeUser->access;
+    }
+
+
 }

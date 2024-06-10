@@ -21,9 +21,9 @@ class HasPermissionSeeder extends Seeder
             ]);
         });
 
-//        USER PERMISSION
+//        CLIENT PERMISSION
         $userPermissions = [
-            36, 37, 42, 43, 47, 48, 100, 101, 102
+            1, 2, 6, 12
         ];
 //        foreach ($userPermissions as $userPermission) {
         Permission::all()->each(function ($permission) {

@@ -169,6 +169,8 @@ class UserController extends Controller
      */
     public function show(string $id): User|JsonResponse
     {
+        auth()->user()->typeuser_id;
+
 //        Find a user by ID
         $user = User::find($id);
 

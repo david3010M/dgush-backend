@@ -608,6 +608,16 @@ class PermissionSeeder extends Seeder
             'route' => 'order.applyCoupon'
         ]);
 
+        Permission::create([
+            'name' => 'Cancelar Pedido',
+            'route' => 'order.cancel'
+        ]);
+
+        Permission::create([
+            'name' => 'Dashboard',
+            'route' => 'order.dashboard'
+        ]);
+
 
     }
 }

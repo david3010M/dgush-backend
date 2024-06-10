@@ -392,7 +392,6 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-
     /**
      * @OA\Post (
      *     path="/dgush-backend/public/api/confirmOrder",
@@ -499,4 +498,87 @@ class OrderController extends Controller
 
         return response()->json($order);
     }
+
+    /**
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/cancelOrder/{id}",
+     *     summary="Cancel order",
+     *     tags={"Order"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Order cancelled successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Order cancelled successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Order not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Order not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Order has already been confirmed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Order has already been confirmed")
+     *         )
+     *     )
+     * )
+     */
+    public function cancelOrder(int $id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        if ($order->status !== 'pending') {
+            return response()->json(['error' => 'Order has already been confirmed'], 422);
+        }
+
+        $order->update([
+            'status' => 'cancelled'
+        ]);
+
+        return response()->json(['message' => 'Order cancelled successfully']);
+    }
+
+    /**
+     * @OA\Get (
+     *     path="/dgush-backend/public/api/dashboardOrders",
+     *     summary="Get orders for dashboard",
+     *     tags={"Order"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Orders retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total", type="integer", example="10"),
+     *             @OA\Property(property="pending", type="integer", example="5"),
+     *             @OA\Property(property="confirmed", type="integer", example="3"),
+     *             @OA\Property(property="cancelled", type="integer", example="1"),
+     *             @OA\Property(property="paid", type="integer", example="1")
+     *         )
+     *     )
+     * )
+     */
+    public function dashboardOrders()
+    {
+        $orders = Order::all();
+        $total = $orders->count();
+        $pending = $orders->where('status', 'pending')->count();
+        $confirmed = $orders->where('status', 'confirmed')->count();
+        $cancelled = $orders->where('status', 'cancelled')->count();
+        $paid = $orders->where('status', 'paid')->count();
+
+        return response()->json([
+            'total' => $total,
+            'pending' => $pending,
+            'confirmed' => $confirmed,
+            'cancelled' => $cancelled,
+            'paid' => $paid
+        ]);
+    }
+
 }

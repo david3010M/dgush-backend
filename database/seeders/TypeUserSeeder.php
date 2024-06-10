@@ -13,14 +13,16 @@ class TypeUserSeeder extends Seeder
 
     public function run(): void
     {
-        TypeUser::create([
-            'name' => 'Admin',
-        ]);
-        TypeUser::create([
-            'name' => 'User',
-        ]);
-        TypeUser::create([
-            'name' => 'Guest',
-        ]);
+        $array = [
+            'Admin',
+            'Client',
+            'Guest',
+        ];
+
+        foreach ($array as $item) {
+            $this->model::create([
+                'name' => $item,
+            ]);
+        }
     }
 }
