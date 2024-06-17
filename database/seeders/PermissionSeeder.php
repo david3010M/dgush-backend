@@ -618,6 +618,32 @@ class PermissionSeeder extends Seeder
             'route' => 'order.dashboard'
         ]);
 
+//        PRODUCT DETAILS
+        Permission::create([
+            'name' => 'Ver Detalles de Producto',
+            'route' => 'productdetails.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Detalle de Producto',
+            'route' => 'productdetails.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Detalles de Producto',
+            'route' => 'productdetails.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Editar Detalles de Producto',
+            'route' => 'productdetails.update',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Detalles de Producto',
+            'route' => 'productdetails.destroy',
+        ]);
+
 
     }
 }

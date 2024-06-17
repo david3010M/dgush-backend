@@ -3607,6 +3607,108 @@
                 }
             }
         },
+        "/dgush-backend/public/api/cancelOrder/{id}": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Cancel order",
+                "operationId": "400c7d79f5e2e8a6e5c82dee9c33fc9b",
+                "responses": {
+                    "200": {
+                        "description": "Order cancelled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Order cancelled successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Order not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Order has already been confirmed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Order has already been confirmed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/dashboardOrders": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Get orders for dashboard",
+                "operationId": "690d27772b152097fcdce31e2b545fd8",
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "type": "integer",
+                                            "example": "10"
+                                        },
+                                        "pending": {
+                                            "type": "integer",
+                                            "example": "5"
+                                        },
+                                        "confirmed": {
+                                            "type": "integer",
+                                            "example": "3"
+                                        },
+                                        "cancelled": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "paid": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dgush-backend/public/api/permission": {
             "get": {
                 "tags": [
@@ -4631,6 +4733,141 @@
                                                     "The sizes field is required."
                                                 ]
                                             }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "dgush-backend/public/api/product-details": {
+            "get": {
+                "tags": [
+                    "Product Details"
+                ],
+                "summary": "Get all product details",
+                "operationId": "3db320e993ece7f85d3d371b1fb9dd38",
+                "responses": {
+                    "200": {
+                        "description": "Get all product details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProductDetailsResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Product Details"
+                ],
+                "summary": "Create a product details",
+                "operationId": "8d3774fe0874edff3b9e9a190529a60e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "stock",
+                                    "product_id",
+                                    "color_id",
+                                    "size_id"
+                                ],
+                                "properties": {
+                                    "stock": {
+                                        "type": "integer",
+                                        "example": "10"
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "color_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "size_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Create a product details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductDetailsResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given data was invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The stock field is required."
                                         }
                                     },
                                     "type": "object"
@@ -6511,6 +6748,49 @@
     },
     "components": {
         "schemas": {
+            "ProductDetailsResource": {
+                "title": "ProductDetailsResource",
+                "description": "ProductDetailsResource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Product Name"
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "example": "10"
+                    },
+                    "colorName": {
+                        "type": "string",
+                        "example": "Red"
+                    },
+                    "sizeName": {
+                        "type": "string",
+                        "example": "Large"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "active"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "color_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "size_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
             "Access": {
                 "properties": {
                     "id": {

@@ -16,6 +16,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductColorController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\ProductSizeController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\SendInformationController;
@@ -320,6 +321,19 @@ Route::group(
                 'store' => 'wishitem.store',
                 'show' => 'wishitem.show',
                 'destroy' => 'wishitem.destroy',
+            ]
+        );
+
+//        PRODUCT DETAILS
+        Route::resource('productdetails', ProductDetailsController::class)->only(
+            ['index', 'show', 'store', 'update', 'destroy']
+        )->names(
+            [
+                'index' => 'productdetails.index',
+                'store' => 'productdetails.store',
+                'show' => 'productdetails.show',
+                'update' => 'productdetails.update',
+                'destroy' => 'productdetails.destroy',
             ]
         );
 
