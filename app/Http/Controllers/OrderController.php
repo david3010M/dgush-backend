@@ -573,11 +573,26 @@ class OrderController extends Controller
         $paid = $orders->where('status', 'paid')->count();
 
         return response()->json([
-            'total' => $total,
-            'pending' => $pending,
-            'confirmed' => $confirmed,
-            'cancelled' => $cancelled,
-            'paid' => $paid
+            [
+                'description' => 'Total de Órdenes',
+                'value' => $total
+            ],
+            [
+                'description' => 'Órdenes Pendientes',
+                'value' => $pending
+            ],
+//            [
+//                'description' => 'Órdenes Confirmadas',
+//                'value' => $confirmed
+//            ],
+//            [
+//                'description' => 'Órdenes Canceladas',
+//                'value' => $cancelled
+//            ],
+            [
+                'description' => 'Órdenes Pagadas',
+                'value' => $paid
+            ]
         ]);
     }
 

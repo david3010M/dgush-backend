@@ -34,7 +34,7 @@ class ProductDetailsController extends Controller
      */
     public function index()
     {
-        $productDetails = ProductDetails::withTrashed()->get();
+        $productDetails = ProductDetails::all();
         return response()->json(ProductDetailsResource::collection($productDetails));
     }
 
