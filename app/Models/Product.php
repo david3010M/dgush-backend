@@ -24,6 +24,28 @@ use Illuminate\Validation\ValidationException;
  *     @OA\Property(property="subcategory_id", type="integer", example="1"),
  *     @OA\Property(property="image", type="string", example="image.jpg"),
  * )
+ *
+ * @OA\Schema (
+ *     schema="ProductRequest",
+ *     required={"name", "description", "detailweb", "price1", "price2", "subcategory_id", "product_details[]", "images[]"},
+ *     @OA\Property(property="name", type="string", example="Product 1"),
+ *     @OA\Property(property="description", type="string", example="Description of product 1"),
+ *     @OA\Property(property="detailweb", type="string", example="Detail of product 1"),
+ *     @OA\Property(property="price1", type="number", example="100.00"),
+ *     @OA\Property(property="price2", type="number", example="90.00"),
+ *     @OA\Property(property="status", type="'onsale'|'new'", example="onsale"),
+ *     @OA\Property(property="subcategory_id", type="integer", example="1"),
+ *     @OA\Property(property="product_details[]", type="array",
+ *         @OA\Items(
+ *             @OA\Property(property="color_id", type="integer", example="1"),
+ *             @OA\Property(property="size_id", type="integer", example="1"),
+ *             @OA\Property(property="stock", type="integer", example="10"),
+ *         )
+ *     ),
+ *     @OA\Property(property="images[]", type="array",
+ *         @OA\Items(type="file", format="binary"),
+ *     )
+ * )
  */
 class Product extends Model
 {
@@ -40,9 +62,9 @@ class Product extends Model
         'price1',
         'price2',
         'score',
-        'image',
         'status',
-        'subcategory_id'
+        'subcategory_id',
+        'image',
     ];
 
     protected $hidden = [
@@ -82,6 +104,7 @@ class Product extends Model
             throw new ValidationException($validator);
         }
     }
+
 
     public static function withImage()
     {
@@ -195,6 +218,10 @@ class Product extends Model
             ->get();
     }
 
+    public function productDetails()
+    {
+        return $this->hasMany(ProductDetails::class);
+    }
 
     public function subcategory()
     {
@@ -219,6 +246,11 @@ class Product extends Model
     public function images($id)
     {
         return Image::where('product_id', $id)->get();
+    }
+
+    public function imagesProduct()
+    {
+        return $this->hasMany(Image::class);
     }
 
     public function image()

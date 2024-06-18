@@ -15,9 +15,10 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description');
             $table->string('detailweb');
-            $table->decimal('price1', 8, 2);
-            $table->decimal('price2', 8, 2);
+            $table->decimal('price1');
+            $table->decimal('price2');
             $table->decimal('score', 8, 1)->default(0);
+//            $table->string('condition')->values(['new', 'used'])->default('new');
             $table->string('status')->values(['onsale', 'new', ''])->default('');
             $table->foreignId('subcategory_id')->constrained('subcategory');
             $table->softDeletes();

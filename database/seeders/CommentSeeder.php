@@ -19,7 +19,7 @@ class CommentSeeder extends Seeder
 
     public function run(): void
     {
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 7; $i++) {
             Comment::create([
                 'description' => 'This is a comment for product ' . $i,
                 'score' => random_int(1, 5),

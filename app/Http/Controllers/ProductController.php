@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Image;
 use App\Models\Product;
+use App\Models\ProductDetails;
 use App\Models\Size;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -39,8 +42,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //        ALL PRODUCTS WITH PAGINATION OF 12
-        $products = Product::withImage();
+        $products = Product::with('image')->orderBy('id', 'desc')->simplePaginate(12);
+        ProductResource::collection($products);
         return response()->json($products);
     }
 
@@ -118,7 +121,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-
     public function listImages()
     {
         $disk = Storage::disk('spaces');
@@ -150,7 +152,6 @@ class ProductController extends Controller
                 'images.*' => 'required|image'
             ]
         );
-
 
         //        FIND PRODUCT
         $product = Product::find($id);
@@ -234,15 +235,9 @@ class ProductController extends Controller
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *              required={"name", "description", "detailweb", "price1", "price2", "score", "subcategory_id"},
-     *              @OA\Property(property="name", type="string", example="Product 1"),
-     *              @OA\Property(property="description", type="string", example="Description of product 1"),
-     *              @OA\Property(property="detailweb", type="string", example="Detail of product 1"),
-     *              @OA\Property(property="price1", type="number", example="100.00"),
-     *              @OA\Property(property="price2", type="number", example="90.00"),
-     *              @OA\Property(property="score", type="integer", example="5"),
-     *              @OA\Property(property="subcategory_id", type="integer", example="1"),
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(ref="#/components/schemas/ProductRequest")
      *         )
      *     ),
      *     @OA\Response(
@@ -276,28 +271,74 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //        VALIDATE DATA
-        $request->validate(
-            [
-                'name' => 'required|string|unique:product',
-                'description' => 'required|string',
-                'detailweb' => 'required|string',
-                'price1' => 'required|numeric',
-                'price2' => 'required|numeric',
-                'score' => 'required|integer',
-                'status' => 'string|in:onsale,new',
-                'subcategory_id' => 'required|integer',
-            ]
-        );
+        $validator = validator()->make($request->all(), [
+            'name' => 'required|string|unique:product',
+            'description' => 'required|string',
+            'detailweb' => 'required|string',
+            'price1' => 'required|numeric',
+            'price2' => 'required|numeric',
+//            'condition' => 'nullable|string|in:new,used',
+            'status' => 'nullable|string|in:onsale,new',
+            'subcategory_id' => 'required|integer|exists:subcategory,id',
+            'product_details' => 'required|array',
+            'product_details.*.stock' => 'required|numeric',
+            'product_details.*.color_id' => 'required|integer|exists:color,id',
+            'product_details.*.size_id' => 'required|integer|exists:size,id',
+            'images' => 'required|array',
+            'images.*' => 'required|image',
+//            'images.*' => [
+//                'required',
+//                'image',
+//                Rule::unique('image', 'name')->where('product_id', $request->product_id)
+//            ]
 
-        //        VALIDATE SUBCATEGORY
-        $subcategory = Subcategory::find($request->subcategory_id);
-        if (!$subcategory) {
-            return response()->json(['message' => 'Subcategory not found'], 404);
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        //        CREATE PRODUCT
-        $product = Product::create($request->all());
+        $data = [
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'detailweb' => $request->input('detailweb'),
+            'price1' => $request->input('price1'),
+            'price2' => $request->input('price2'),
+            'status' => $request->input('status') ?? '',
+            'subcategory_id' => $request->input('subcategory_id'),
+        ];
+
+        $product = Product::create($data);
+        $id = $product->id;
+
+        $images = $request->file('images');
+
+        $productDetails = $request->input('product_details');
+
+        foreach ($productDetails as $productDetail) {
+            $dataProductDetail = [
+                'stock' => $productDetail['stock'],
+                'color_id' => $productDetail['color_id'],
+                'size_id' => $productDetail['size_id'],
+                'product_id' => $id
+            ];
+            ProductDetails::create($dataProductDetail);
+        }
+
+        foreach ($images as $image) {
+            $fileName = $id . '/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            Image::create([
+                'name' => $fileName,
+                'url' => $imageUrl,
+                'product_id' => $id
+            ]);
+        }
+
+        $product = Product::with('productDetails', 'imagesProduct')->find($id);
         return response()->json($product);
     }
 
@@ -593,7 +634,6 @@ class ProductController extends Controller
      *     )
      * )
      */
-
     public function setColors(Request $request, int $id)
     {
         $request->validate([
