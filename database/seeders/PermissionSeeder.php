@@ -644,6 +644,17 @@ class PermissionSeeder extends Seeder
             'route' => 'productdetails.destroy',
         ]);
 
+//        IMAGE
+        Permission::create([
+            'name' => 'Ver Imágenes',
+            'route' => 'images.all',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Imágenes',
+            'route' => 'images.deleteDirectoryProduct',
+        ]);
+
 
     }
 }

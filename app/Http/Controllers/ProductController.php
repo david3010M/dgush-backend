@@ -121,79 +121,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    public function listImages()
-    {
-        $disk = Storage::disk('spaces');
-
-        $files = $disk->allFiles();
-
-        return $files;
-    }
-
-    public function deleteImage(Request $request)
-    {
-        $request->validate(
-            [
-                'fileName' => 'required|string'
-            ]
-        );
-
-        Storage::disk('spaces')->delete($request->fileName);
-
-        return response()->json(['message' => 'Imagen eliminada correctamente']);
-    }
-
-    public function uploadImages(Request $request, int $id)
-    {
-        //        VALIDATE DATA
-        $request->validate(
-            [
-                'images' => 'required|array',
-                'images.*' => 'required|image'
-            ]
-        );
-
-        //        FIND PRODUCT
-        $product = Product::find($id);
-
-        if ($product) {
-            $images = $request->file('images');
-            $imagesResponse = [];
-
-            //            VALIDATE IMAGE NAME MUST BE UNIQUE IN TABLE IMAGE WITH THE SAME PRODUCT_ID
-
-            foreach ($images as $image) {
-                $imageValidate = Image::where('name', $image->getClientOriginalName())
-                    ->where('product_id', $id)
-                    ->first();
-                if ($imageValidate) {
-                    return response()->json(['message' => 'Image is already uploaded'], 409);
-                }
-            }
-
-            foreach ($images as $image) {
-                //                UPLOAD IMAGE
-                $fileName = $id . '/' . $image->getClientOriginalName();
-                Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
-
-                //                GET IMAGE URLs
-                $imageUrl = Storage::disk('spaces')->url($fileName);
-
-                $image = Image::create([
-                    'name' => $fileName,
-                    'url' => $imageUrl,
-                    'product_id' => $id
-                ]);
-
-                $imagesResponse[] = $image;
-            }
-            return response()->json($imagesResponse);
-        } else {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
-    }
-
-
     /**
      * GET ALL PRODUCTS WITH TRASHED
      * @OA\Get(
@@ -271,6 +198,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->typeuser_id != 1) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
         $validator = validator()->make($request->all(), [
             'name' => 'required|string|unique:product',
             'description' => 'required|string',
@@ -341,7 +272,6 @@ class ProductController extends Controller
         $product = Product::with('productDetails', 'imagesProduct')->find($id);
         return response()->json($product);
     }
-
 
     /**
      * SHOW PRODUCT

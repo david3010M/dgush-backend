@@ -11,6 +11,7 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\HasPermissionController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
@@ -44,8 +45,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 Route::post('/product/image/{id}', [ProductController::class, 'uploadImages'])->name('product.images');
-Route::get('/images', [ProductController::class, 'listImages'])->name('images.all');
-Route::post('/deleteImage', [ProductController::class, 'deleteImage'])->name('images.delete');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -339,6 +338,10 @@ Route::group(
                 'destroy' => 'productdetails.destroy',
             ]
         );
+
+//        IMAGES
+        Route::get('/images', [ImageController::class, 'listImages'])->name('images.all');
+        Route::delete('/deleteDirectoryProduct', [ImageController::class, 'deleteDirectoryProduct'])->name('images.deleteDirectoryProduct');
 
     }
 );
