@@ -644,6 +644,11 @@ class PermissionSeeder extends Seeder
             'route' => 'productdetails.destroy',
         ]);
 
+        Permission::create([
+            'name' => 'Search Product Details',
+            'route' => 'productdetails.search',
+        ]);
+
 //        IMAGE
         Permission::create([
             'name' => 'Ver Imágenes',

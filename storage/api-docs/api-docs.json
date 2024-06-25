@@ -896,14 +896,14 @@
                 }
             }
         },
-        "/dgush-backend/public/api/refreshtoken": {
+        "/dgush-backend/public/api/refreshToken": {
             "get": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Authenticate user",
                 "description": "Refresh access token",
-                "operationId": "62fc1db5a371db04f74005a1a1019bbd",
+                "operationId": "2119dd9028c18b47cec7aceb5257654b",
                 "responses": {
                     "200": {
                         "description": "Token refreshed",
@@ -3230,6 +3230,53 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/images": {
+            "get": {
+                "tags": [
+                    "Images"
+                ],
+                "summary": "List images from storage",
+                "description": "List images from storage",
+                "operationId": "2286be913973c6030d84c7c7f05e8bd8",
+                "responses": {
+                    "200": {
+                        "description": "List of images",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "example": "1/image.jpg"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/dgush-backend/public/api/order": {
             "get": {
                 "tags": [
@@ -4709,13 +4756,13 @@
                 ]
             }
         },
-        "dgush-backend/public/api/product-details": {
+        "/dgush-backend/public/api/product-details": {
             "get": {
                 "tags": [
                     "Product Details"
                 ],
                 "summary": "Get all product details",
-                "operationId": "3db320e993ece7f85d3d371b1fb9dd38",
+                "operationId": "d7fc46426a9d3709b40c2b36008c6d70",
                 "responses": {
                     "200": {
                         "description": "Get all product details",
@@ -4758,7 +4805,7 @@
                     "Product Details"
                 ],
                 "summary": "Create a product details",
-                "operationId": "8d3774fe0874edff3b9e9a190529a60e",
+                "operationId": "59b8b3c8f0e6d7d4be8f8a77298b6f57",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4842,6 +4889,329 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/dgush-backend/public/api/product-details/{id}": {
+            "get": {
+                "tags": [
+                    "Product Details"
+                ],
+                "summary": "Get a product details",
+                "operationId": "82649ffe31cacc5d9c12bdf15f454bf5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product details ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a product details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductDetailsResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product details not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Product details not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Product Details"
+                ],
+                "summary": "Update a product details",
+                "operationId": "23565117b55de05777e69d75f37b5c19",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product details ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "stock",
+                                    "product_id",
+                                    "color_id",
+                                    "size_id"
+                                ],
+                                "properties": {
+                                    "stock": {
+                                        "type": "integer",
+                                        "example": "10"
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "color_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "size_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update a product details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductDetailsResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product details not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Product details not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given data was invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The stock field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Product Details"
+                ],
+                "summary": "Delete a product details",
+                "operationId": "11fa7ef6ee4ec8d45b8b69a9ef8f2f89",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product details ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product details deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product details deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product details not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Product details not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Product details already deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Product details already deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/product-details/search": {
+            "post": {
+                "tags": [
+                    "Product Details"
+                ],
+                "summary": "Search product details",
+                "operationId": "e5776916a35369f1fce54073bf0fa89d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product",
+                                    "color",
+                                    "size",
+                                    "category",
+                                    "sort",
+                                    "direction"
+                                ],
+                                "properties": {
+                                    "product": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "Product 1"
+                                        }
+                                    },
+                                    "color": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "size": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "category": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "sort": {
+                                        "type": "string",
+                                        "example": "score"
+                                    },
+                                    "direction": {
+                                        "type": "string",
+                                        "example": "asc"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Search product details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProductDetailsResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given data was invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The product.0 must be a string."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/dgush-backend/public/api/province": {

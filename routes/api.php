@@ -339,6 +339,8 @@ Route::group(
             ]
         );
 
+        Route::post('/productdetails/search', [ProductDetailsController::class, 'search'])->name('productdetails.search');
+
 //        IMAGES
         Route::get('/images', [ImageController::class, 'listImages'])->name('images.all');
         Route::delete('/deleteDirectoryProduct', [ImageController::class, 'deleteDirectoryProduct'])->name('images.deleteDirectoryProduct');

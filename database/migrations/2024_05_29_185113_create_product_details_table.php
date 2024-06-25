@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained('product');
             $table->foreignId('color_id')->constrained('color');
             $table->foreignId('size_id')->constrained('size');
-            $table->string('state')->default('active')->nullable(); // active, inactive
+            $table->boolean('status')->default(true); // active, inactive
             $table->timestamps();
             $table->softDeletes();
         });

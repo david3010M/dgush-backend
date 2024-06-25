@@ -32,7 +32,7 @@ class ProductDetailsResource extends JsonResource
             'stock' => $this->stock,
             'colorName' => (new ColorResource($this->color))->name,
             'sizeName' => (new SizeResource($this->size))->name,
-            'status' => $this->deleted_at ? 'inactive' : 'active',
+            'status' => $this->status,
             'product_id' => $this->product_id,
             'color_id' => $this->color_id,
             'size_id' => $this->size_id

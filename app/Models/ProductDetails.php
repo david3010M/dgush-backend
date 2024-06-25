@@ -31,9 +31,14 @@ class ProductDetails extends Model
         'product_id',
         'color_id',
         'size_id',
+        'status'
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+    protected $casts = [
+        'status' => 'boolean'
+    ];
 
     public function product()
     {
@@ -53,5 +58,43 @@ class ProductDetails extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public static function search($product, $color, $size, $subcategory, $sort, $direction)
+    {
+        $query = ProductDetails::query();
+
+        if ($product) {
+            $query->whereHas('product', function ($query) use ($product) {
+                $query->whereIn('product_id', $product);
+            });
+        }
+
+        if ($subcategory) {
+            $subcategory = Subcategory::whereIn('value', $subcategory)->pluck('id');
+            $query->whereHas('product', function ($query) use ($subcategory) {
+                $query->whereIn('subcategory_id', $subcategory);
+            });
+        }
+
+        if ($color) {
+            $color = Color::whereIn('value', $color)->pluck('id');
+            $query->whereIn('color_id', $color);
+        }
+
+        if ($size) {
+            $size = Size::whereIn('value', $size)->pluck('id');
+            $query->whereIn('size_id', $size);
+        }
+
+        if ($sort == 'price-asc') {
+            $sort = 'price1';
+            $direction = 'asc';
+        } elseif ($sort == 'price-desc') {
+            $sort = 'price1';
+            $direction = 'desc';
+        }
+
+        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
     }
 }

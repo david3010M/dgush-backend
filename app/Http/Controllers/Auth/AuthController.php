@@ -229,7 +229,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
-                'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
+//                'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
                 'optionMenuAccess' => $typeuserAccess,
@@ -373,11 +373,11 @@ class AuthController extends Controller
 
             return response()->json([
                 'access_token' => $token,
-                'expires_at' => Carbon::parse($user->currentAccessToken()->expires_at)->toDateTimeString(),
+//                'expires_at' => Carbon::parse($user->currentAccessToken()->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
-                'optionMenuAccess' => $typeuserAccess,
-                'permissions' => $typeuserHasPermission
+//                'optionMenuAccess' => $typeuserAccess,
+//                'permissions' => $typeuserHasPermission
 
             ]);
         } else {
@@ -512,7 +512,7 @@ class AuthController extends Controller
     /**
      * Refresh access token
      * @OA\Get (
-     *     path="/dgush-backend/public/api/refreshtoken",
+     *     path="/dgush-backend/public/api/refreshToken",
      *     tags={"Authentication"},
      *     summary="Authenticate user",
      *     security={{"bearerAuth":{}}},
@@ -628,17 +628,24 @@ class AuthController extends Controller
     {
         $user = auth('sanctum')->user();
         $plainToken = $request->bearerToken();
-        $user->currentAccessToken()->update([
-            'expires_at' => now()->addDays(7)
-        ]);
+        $currentAccessToken = $user->currentAccessToken();
+
+        if ($currentAccessToken) {
+            $currentAccessToken->update([
+                'expires_at' => now()->addDays(7)
+            ]);
+        }
+
+        $typeuser = $user->typeuser()->first();
+        $expiresAt = $currentAccessToken ? Carbon::parse($currentAccessToken->expires_at)->toDateTimeString() : null;
 
         return response()->json([
             'access_token' => $plainToken,
-            'expires_at' => Carbon::parse($user->currentAccessToken()->expires_at)->toDateTimeString(),
+//            'expires_at' => $expiresAt,
             'user' => $user,
-            'typeuser' => $user->typeuser()->first(),
-            'optionMenuAccess' => $user->typeuser()->first()->getAccess($user->typeuser()->first()->id),
-            'permissions' => $user->typeuser()->first()->getHasPermission($user->typeuser()->first()->id)
+            'typeuser' => $typeuser,
+//            'optionMenuAccess' => $typeuser ? $typeuser->getAccess($typeuser->id) : null,
+//            'permissions' => $typeuser ? $typeuser->getHasPermission($typeuser->id) : null
         ]);
     }
 }

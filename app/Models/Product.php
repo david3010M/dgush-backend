@@ -119,8 +119,6 @@ class Product extends Model
 
     public static function search($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction)
     {
-        //        dd($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction);
-
         $query = Product::query();
         if ($search) {
             $query->where(function ($query) use ($search) {
