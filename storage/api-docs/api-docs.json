@@ -4756,13 +4756,13 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/product-details": {
+        "/dgush-backend/public/api/productdetails": {
             "get": {
                 "tags": [
                     "Product Details"
                 ],
                 "summary": "Get all product details",
-                "operationId": "d7fc46426a9d3709b40c2b36008c6d70",
+                "operationId": "9f8b349ae218c1044a1b56e04ccb616d",
                 "responses": {
                     "200": {
                         "description": "Get all product details",
@@ -4805,7 +4805,7 @@
                     "Product Details"
                 ],
                 "summary": "Create a product details",
-                "operationId": "59b8b3c8f0e6d7d4be8f8a77298b6f57",
+                "operationId": "b0ab96802bc8aaf24e63d6f2a4c84563",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4891,13 +4891,13 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/product-details/{id}": {
+        "/dgush-backend/public/api/productdetails/{id}": {
             "get": {
                 "tags": [
                     "Product Details"
                 ],
                 "summary": "Get a product details",
-                "operationId": "82649ffe31cacc5d9c12bdf15f454bf5",
+                "operationId": "56a63f188d02ad9a8591bfd7189de5bd",
                 "parameters": [
                     {
                         "name": "id",
@@ -4948,7 +4948,7 @@
                     "Product Details"
                 ],
                 "summary": "Update a product details",
-                "operationId": "23565117b55de05777e69d75f37b5c19",
+                "operationId": "0d9abda7f9ef54958f8d2c957e2d016d",
                 "parameters": [
                     {
                         "name": "id",
@@ -5049,7 +5049,7 @@
                     "Product Details"
                 ],
                 "summary": "Delete a product details",
-                "operationId": "11fa7ef6ee4ec8d45b8b69a9ef8f2f89",
+                "operationId": "ae15a402a63a5b8365e3fa2848c5b5ed",
                 "parameters": [
                     {
                         "name": "id",
@@ -5118,26 +5118,18 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/product-details/search": {
+        "/dgush-backend/public/api/productdetails/search": {
             "post": {
                 "tags": [
                     "Product Details"
                 ],
                 "summary": "Search product details",
-                "operationId": "e5776916a35369f1fce54073bf0fa89d",
+                "operationId": "3c0cf34997667c1a8518a0b185670011",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "product",
-                                    "color",
-                                    "size",
-                                    "category",
-                                    "sort",
-                                    "direction"
-                                ],
                                 "properties": {
                                     "product": {
                                         "type": "array",

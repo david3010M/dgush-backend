@@ -11,7 +11,7 @@ class ProductDetailsController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/dgush-backend/public/api/product-details",
+     *     path="/dgush-backend/public/api/productdetails",
      *     summary="Get all product details",
      *     tags={"Product Details"},
      *     security={{"bearerAuth": {}}},
@@ -40,7 +40,7 @@ class ProductDetailsController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/dgush-backend/public/api/product-details",
+     *     path="/dgush-backend/public/api/productdetails",
      *     summary="Create a product details",
      *     tags={"Product Details"},
      *     security={{"bearerAuth": {}}},
@@ -113,7 +113,7 @@ class ProductDetailsController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/dgush-backend/public/api/product-details/{id}",
+     *     path="/dgush-backend/public/api/productdetails/{id}",
      *     summary="Get a product details",
      *     tags={"Product Details"},
      *     security={{"bearerAuth": {}}},
@@ -149,7 +149,7 @@ class ProductDetailsController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/dgush-backend/public/api/product-details/{id}",
+     *     path="/dgush-backend/public/api/productdetails/{id}",
      *     summary="Update a product details",
      *     tags={"Product Details"},
      *     security={{"bearerAuth": {}}},
@@ -235,7 +235,7 @@ class ProductDetailsController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/dgush-backend/public/api/product-details/{id}",
+     *     path="/dgush-backend/public/api/productdetails/{id}",
      *     summary="Delete a product details",
      *     tags={"Product Details"},
      *     security={{"bearerAuth": {}}},
@@ -286,13 +286,12 @@ class ProductDetailsController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/dgush-backend/public/api/product-details/search",
+     *     path="/dgush-backend/public/api/productdetails/search",
      *     summary="Search product details",
      *     tags={"Product Details"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"product", "color", "size", "category", "sort", "direction"},
      *             @OA\Property(property="product", type="array",
      *                 @OA\Items(type="string", example="Product 1")
      *             ),

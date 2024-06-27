@@ -81,6 +81,7 @@ Route::get('/department/{id}', [DepartmentController::class, 'show'])->name('dep
 
 Route::get('/filter/product', [FilterController::class, 'product'])->name('filter.product');
 Route::get('/color', [ColorController::class, 'index'])->name('color.index');
+Route::get('/size', [SizeController::class, 'index'])->name('size.index');
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(
@@ -233,10 +234,9 @@ Route::group(
 
         //    SIZE
         Route::resource('size', SizeController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
+            ['show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'size.index',
                 'store' => 'size.store',
                 'show' => 'size.show',
                 'update' => 'size.update',
