@@ -576,6 +576,7 @@ class OrderController extends Controller
         $generated = $orders->where('status', 'generated')->count();
         $paid = $orders->where('status', 'paid')->count();
         $send = $orders->where('status', 'send')->count();
+        $received = $orders->where('status', 'received')->count();
         $cancelled = $orders->where('status', 'cancelled')->count();
 
 
@@ -595,6 +596,10 @@ class OrderController extends Controller
             [
                 'description' => 'Órdenes Enviadas',
                 'value' => $send
+            ],
+            [
+                'description' => 'Órdenes Recibidas',
+                'value' => $received
             ],
             [
                 'description' => 'Órdenes Canceladas',
