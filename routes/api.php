@@ -53,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 // PUBLIC ROUTES
 Route::get('/product', [ProductController::class, 'index'])->name('product.index');
-Route::post('/product', [ProductController::class, 'store'])->name('product.store');
+//Route::post('/product', [ProductController::class, 'store'])->name('product.store');
 Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/product/subcategoryRelated/{id}', [ProductController::class, 'subcategoryRelated'])->name('product.subcategoryRelated');
@@ -169,12 +169,10 @@ Route::group(
         );
         //    PRODUCT
         Route::resource('product', ProductController::class)->only(
-            [
-//                'store',
-                'update', 'destroy']
+            ['store', 'update', 'destroy']
         )->names(
             [
-//                'store' => 'product.store',
+                'store' => 'product.store',
                 'update' => 'product.update',
                 'destroy' => 'product.destroy',
             ]

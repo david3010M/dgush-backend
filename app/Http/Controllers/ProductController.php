@@ -201,7 +201,7 @@ class ProductController extends Controller
         if (auth()->user()->typeuser_id != 1) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-        
+
         $validator = validator()->make($request->all(), [
             'name' => 'required|string|unique:product',
             'description' => 'required|string',
