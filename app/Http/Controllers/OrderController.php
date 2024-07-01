@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\ProductDetailsResource;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -49,10 +51,15 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $pageSize = $request->input('page', 10);
-        return response()->json(Order::with('user', 'orderItems.productDetail.product.image',
+        $orders = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
-            ->where('user_id', auth()->user()->id)
-            ->simplePaginate($pageSize));
+            ->where('user_id', auth()->user()->id)->get();
+        return response()->json(OrderResource::collection($orders));
+
+//        return response()->json(Order::with('user', 'orderItems.productDetail.product.image',
+//            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+//            ->where('user_id', auth()->user()->id)->get());
+//            ->simplePaginate($pageSize));
     }
 
     /**
@@ -163,7 +170,6 @@ class OrderController extends Controller
                 $subtotal += $productDetail->product->price1 * $products[$key]['quantity'];
             }
         }
-
 
         // Actualizar la orden con el subtotal y la cantidad total
         $order->update([
@@ -567,10 +573,11 @@ class OrderController extends Controller
     {
         $orders = Order::all();
         $total = $orders->count();
-        $pending = $orders->where('status', 'pending')->count();
-        $confirmed = $orders->where('status', 'confirmed')->count();
-        $cancelled = $orders->where('status', 'cancelled')->count();
+        $generated = $orders->where('status', 'generated')->count();
         $paid = $orders->where('status', 'paid')->count();
+        $send = $orders->where('status', 'send')->count();
+        $cancelled = $orders->where('status', 'cancelled')->count();
+
 
         return response()->json([
             [
@@ -578,20 +585,20 @@ class OrderController extends Controller
                 'value' => $total
             ],
             [
-                'description' => 'Órdenes Pendientes',
-                'value' => $pending
+                'description' => 'Órdenes Generadas',
+                'value' => $generated
             ],
-//            [
-//                'description' => 'Órdenes Confirmadas',
-//                'value' => $confirmed
-//            ],
-//            [
-//                'description' => 'Órdenes Canceladas',
-//                'value' => $cancelled
-//            ],
             [
                 'description' => 'Órdenes Pagadas',
                 'value' => $paid
+            ],
+            [
+                'description' => 'Órdenes Enviadas',
+                'value' => $send
+            ],
+            [
+                'description' => 'Órdenes Canceladas',
+                'value' => $cancelled
             ]
         ]);
     }

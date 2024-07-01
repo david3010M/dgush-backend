@@ -48,7 +48,6 @@ Route::post('/product/image/{id}', [ProductController::class, 'uploadImages'])->
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
-    Route::get('/refreshToken', [AuthController::class, 'refreshToken'])->name('refreshToken');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

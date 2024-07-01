@@ -8,6 +8,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -216,6 +217,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             // Generar un token de acceso para el usuario
+//            $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
             $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
 
 //            TYPEUSER
@@ -232,8 +234,8 @@ class AuthController extends Controller
 //                'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
-                'optionMenuAccess' => $typeuserAccess,
-                'permissions' => $typeuserHasPermission
+//                'optionMenuAccess' => $typeuserAccess,
+//                'permissions' => $typeuserHasPermission
 
             ]);
         } else {
@@ -360,30 +362,25 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
         $user = auth('sanctum')->user();
-        $token = $request->bearerToken();
 
         if ($user) {
+            $user = User::find($user->id);
+
+            $user->tokens()->delete();
+
+            $token = $user->createToken('AuthToken', ['expires_at' => now()->addDays(7)])->plainTextToken;
             $typeuser = $user->typeuser()->first();
-
-//            ACCESS IN A JUST STRING TYPE WITH COMMA
-            $typeuserAccess = $typeuser->getAccess($typeuser->id);
-
-//            PERMISSIONS IN A STRING FORMAT
-            $typeuserHasPermission = $typeuser->getHasPermission($typeuser->id);
 
             return response()->json([
                 'access_token' => $token,
-//                'expires_at' => Carbon::parse($user->currentAccessToken()->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
-//                'optionMenuAccess' => $typeuserAccess,
-//                'permissions' => $typeuserHasPermission
-
             ]);
         } else {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
     }
+
 
     /**
      * Register a new user
