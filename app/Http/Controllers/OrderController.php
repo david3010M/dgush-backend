@@ -247,7 +247,7 @@ class OrderController extends Controller
     public function show(int $id)
     {
         $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->where('user_id', auth()->user()->id)
             ->find($id);
 
