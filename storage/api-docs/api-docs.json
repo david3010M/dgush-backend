@@ -5803,25 +5803,10 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Subcategory 1"
-                                    },
-                                    "order": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    },
-                                    "category_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/SubcategoryRequest"
                             }
                         }
                     }
@@ -7780,14 +7765,6 @@
                     "name": {
                         "type": "string",
                         "example": "T-Shirts"
-                    },
-                    "value": {
-                        "type": "string",
-                        "example": "t-shirts"
-                    },
-                    "image": {
-                        "type": "file",
-                        "format": "binary"
                     },
                     "category_id": {
                         "type": "integer",

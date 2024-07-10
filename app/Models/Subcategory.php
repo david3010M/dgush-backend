@@ -23,12 +23,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     schema="SubcategoryRequest",
  *     type="object",
  *     @OA\Property(property="name", type="string", example="T-Shirts"),
- *     @OA\Property(property="value", type="string", example="t-shirts"),
- *     @OA\Property(property="image", type="file", format="binary"),
  *     @OA\Property(property="category_id", type="integer", example="1")
  * )
- *
- *
  */
 class Subcategory extends Model
 {

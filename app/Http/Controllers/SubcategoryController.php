@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SubcategoryController extends Controller
 {
@@ -117,20 +119,32 @@ class SubcategoryController extends Controller
      */
     public function store(Request $request)
     {
-//        VALIDATE DATA
-        $request->validate([
-            'name' => 'required|string|unique:subcategory',
-            'order' => 'required|integer|unique:subcategory',
-            'category_id' => 'required|integer'
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('subcategory', 'name')->whereNull('deleted_at')
+            ],
+            'category_id' => 'required|integer|exists:category,id',
         ]);
 
-//        VERIFY IF CATEGORY EXISTS
-        if (!Category::find($request->category_id)) {
-            return response()->json(['message' => 'Category not found'], 404);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-//        CREATE NEW SUBCATEGORY
-        return Subcategory::create($request->all());
+        $name = $request->input('name');
+        $value = strtolower(str_replace(' ', '-', $name));
+
+        $data = [
+            'name' => $name,
+            'value' => $value,
+            'category_id' => $request->category_id
+        ];
+
+        $color = Subcategory::create($data);
+        $color = Subcategory::find($color->id);
+
+        return response()->json($color);
     }
 
     /**
@@ -201,12 +215,7 @@ class SubcategoryController extends Controller
      *         )
      *     ),
      *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Subcategory 1"),
-     *             @OA\Property(property="order", type="integer", example="1"),
-     *             @OA\Property(property="category_id", type="integer", example="1"),
-     *          ),
+     *         @OA\JsonContent(ref="#/components/schemas/SubcategoryRequest")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -236,20 +245,32 @@ class SubcategoryController extends Controller
         $subcategory = Subcategory::find($id);
 
         if ($subcategory) {
-//            VALIDATE DATA
-            $request->validate([
-                'name' => 'required|string|unique:subcategory,name,' . $id,
-                'order' => 'required|integer|unique:subcategory,order,' . $id,
-                'category_id' => 'required|integer'
+            $validator = validator()->make($request->all(), [
+                'name' => [
+                    'nullable',
+                    'string',
+                    Rule::unique('subcategory', 'name')->ignore($subcategory->id)->whereNull('deleted_at')
+                ],
+                'category_id' => 'nullable|integer|exists:category,id',
             ]);
 
-//            VERIFY IF CATEGORY EXISTS
-            if (!Category::find($request->category_id)) {
-                return response()->json(['message' => 'Category not found'], 404);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()->first()], 422);
             }
 
-            $subcategory->update($request->all());
-            return $subcategory;
+            $name = $request->input('name') ?? $subcategory->name;
+            $value = strtolower(str_replace(' ', '-', $name));
+
+            $data = [
+                'name' => $name,
+                'value' => $value,
+                'category_id' => $request->input('category_id') ?? $subcategory->category_id
+            ];
+
+            $subcategory->update($data);
+            $subcategory = Subcategory::find($subcategory->id);
+
+            return response()->json($subcategory);
         } else {
             return response()->json(['message' => 'Subcategory not found'], 404);
         }
@@ -313,7 +334,7 @@ class SubcategoryController extends Controller
             }
 
             $subcategory->delete();
-            return response()->json(['message' => 'Subcategory deleted'], 200);
+            return response()->json(['message' => 'Subcategory deleted']);
         } else {
             return response()->json(['message' => 'Subcategory not found'], 404);
         }

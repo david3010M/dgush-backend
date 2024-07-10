@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SizeController extends Controller
 {
@@ -78,11 +79,31 @@ class SizeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:size'
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('size', 'name')->whereNull('deleted_at')
+            ]
         ]);
 
-        return Size::create($request->all());
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $name = $request->input('name');
+        $value = strtolower(str_replace(' ', '-', $name));
+
+        $data = [
+            'name' => $name,
+            'value' => $value
+        ];
+
+        $size = Size::create($data);
+        $size = Size::find($size->id);
+
+        return response()->json($size);
+
     }
 
     /**
@@ -194,12 +215,30 @@ class SizeController extends Controller
     {
         $size = Size::find($id);
         if ($size) {
-            $request->validate([
-                'name' => 'required|string|unique:size,name,' . $id,
+            $validator = validator()->make($request->all(), [
+                'name' => [
+                    'nullable',
+                    'string',
+                    Rule::unique('size', 'name')->ignore($size->id)->whereNull('deleted_at')
+                ]
             ]);
 
-            $size->update($request->all());
-            return $size;
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()->first()], 422);
+            }
+
+            $name = $request->input('name') ?? $size->name;
+            $value = strtolower(str_replace(' ', '-', $name));
+
+            $data = [
+                'name' => $name,
+                'value' => $value
+            ];
+
+            $size->update($data);
+            $size = Size::find($size->id);
+
+            return response()->json($size);
         } else {
             return response()->json(['message' => 'Size not found'], 404);
         }

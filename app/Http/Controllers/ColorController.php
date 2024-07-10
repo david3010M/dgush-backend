@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Color;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ColorController extends Controller
 {
@@ -76,12 +77,36 @@ class ColorController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:color',
-            'hex' => 'required|string|unique:color',
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('color', 'name')->whereNull('deleted_at')
+            ],
+            'hex' => [
+                'required',
+                'string',
+                Rule::unique('color', 'hex')->whereNull('deleted_at')
+            ]
         ]);
 
-        return Color::create($request->all());
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $name = $request->input('name');
+        $value = strtolower(str_replace(' ', '-', $name));
+
+        $data = [
+            'name' => $name,
+            'value' => $value,
+            'hex' => $request->input('hex')
+        ];
+
+        $color = Color::create($data);
+        $color = Color::find($color->id);
+
+        return response()->json($color);
     }
 
     /**
@@ -193,13 +218,36 @@ class ColorController extends Controller
     {
         $color = Color::find($id);
         if ($color) {
-            $request->validate([
-                'name' => 'required|string|unique:color,name,' . $id,
-                'hex' => 'required|string|unique:color,hex,' . $id,
+            $validator = validator()->make($request->all(), [
+                'name' => [
+                    'required',
+                    'string',
+                    Rule::unique('color', 'name')->ignore($color->id)->whereNull('deleted_at')
+                ],
+                'hex' => [
+                    'required',
+                    'string',
+                    Rule::unique('color', 'hex')->ignore($color->id)->whereNull('deleted_at')
+                ]
             ]);
 
-            $color->update($request->all());
-            return $color;
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()->first()], 422);
+            }
+
+            $name = $request->input('name');
+            $value = strtolower(str_replace(' ', '-', $name));
+
+            $data = [
+                'name' => $name,
+                'value' => $value,
+                'hex' => $request->input('hex')
+            ];
+
+            $color->update($data);
+            $color = Color::find($color->id);
+
+            return response()->json($color);
         } else {
             return response()->json(['message' => 'Color not found'], 404);
         }
