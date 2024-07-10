@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->timestamp('date');
 //            $table->string('numberPayment');
             $table->string('status')->default('generated');
+            $table->string('description')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('coupon_id')->nullable()->constrained('coupon');
             $table->timestamps();

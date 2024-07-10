@@ -50,16 +50,46 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $pageSize = $request->input('page', 10);
+        $pageSize = $request->input('per_page');
         $orders = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
-            ->where('user_id', auth()->user()->id)->get();
-        return response()->json(OrderResource::collection($orders));
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('id', 'desc');
 
+        return $pageSize ? OrderResource::collection($orders->simplePaginate($pageSize))
+            : response()->json(OrderResource::collection($orders->get()));
+//        return response()->json(OrderResource::collection($orders));
 //        return response()->json(Order::with('user', 'orderItems.productDetail.product.image',
 //            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
 //            ->where('user_id', auth()->user()->id)->get());
 //            ->simplePaginate($pageSize));
+    }
+
+    public function search(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado',
+            'sort' => 'nullable|string|in:none,date-asc,date-desc',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $orders = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+            ->where('status', 'like', '%' . $request->input('status') . '%')
+            ->where('user_id', auth()->user()->id);
+
+        $sort = $request->input('sort');
+
+        if ($sort === 'date-asc') {
+            $orders->orderBy('date');
+        } else if ($sort === 'date-desc') {
+            $orders->orderBy('date', 'desc');
+        }
+
+        return response()->json(OrderResource::collection($orders->get()));
     }
 
     /**
@@ -178,6 +208,35 @@ class OrderController extends Controller
             'quantity' => $quantity
         ]);
 
+        $order = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+            ->find($order->id);
+
+        return response()->json($order);
+    }
+
+    public function updateStatus(Request $request, int $id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado',
+            'description' => 'nullable|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'status' => $request->input('status'),
+            'description' => $request->input('description')
+        ];
+
+        $order->update($data);
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
             ->find($order->id);
@@ -495,7 +554,7 @@ class OrderController extends Controller
         }
 
         $order->update([
-            'status' => 'paid'
+            'status' => 'confirmado'
         ]);
 
         $order = Order::with('user', 'orderItems.productDetail.product.image',
@@ -512,9 +571,9 @@ class OrderController extends Controller
      *     tags={"Order"},
      *     @OA\Response(
      *         response=200,
-     *         description="Order cancelled successfully",
+     *         description="Order cancelado successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Order cancelled successfully")
+     *             @OA\Property(property="message", type="string", example="Order cancelado successfully")
      *         )
      *     ),
      *     @OA\Response(
@@ -545,10 +604,27 @@ class OrderController extends Controller
         }
 
         $order->update([
-            'status' => 'cancelled'
+            'status' => 'cancelado'
         ]);
 
-        return response()->json(['message' => 'Order cancelled successfully']);
+        return response()->json(['message' => 'Order cancelado successfully']);
+    }
+
+    public function orderStatus()
+    {
+        $orders = Order::all();
+        $verificado = $orders->where('status', 'verificado')->count();
+        $confirmado = $orders->where('status', 'confirmado')->count();
+        $enviado = $orders->where('status', 'enviado')->count();
+        $entregado = $orders->where('status', 'entregado')->count();
+        $cancelado = $orders->where('status', 'cancelado')->count();
+        return response()->json([
+            'verificado' => $verificado,
+            'confirmado' => $confirmado,
+            'enviado' => $enviado,
+            'entregado' => $entregado,
+            'cancelado' => $cancelado
+        ]);
     }
 
     /**
@@ -563,8 +639,8 @@ class OrderController extends Controller
      *             @OA\Property(property="total", type="integer", example="10"),
      *             @OA\Property(property="pending", type="integer", example="5"),
      *             @OA\Property(property="confirmed", type="integer", example="3"),
-     *             @OA\Property(property="cancelled", type="integer", example="1"),
-     *             @OA\Property(property="paid", type="integer", example="1")
+     *             @OA\Property(property="cancelado", type="integer", example="1"),
+     *             @OA\Property(property="confirmado", type="integer", example="1")
      *         )
      *     )
      * )
@@ -573,11 +649,11 @@ class OrderController extends Controller
     {
         $orders = Order::all();
         $total = $orders->count();
-        $generated = $orders->where('status', 'generated')->count();
-        $paid = $orders->where('status', 'paid')->count();
-        $send = $orders->where('status', 'send')->count();
-        $received = $orders->where('status', 'received')->count();
-        $cancelled = $orders->where('status', 'cancelled')->count();
+        $verificado = $orders->where('status', 'verificado')->count();
+        $confirmado = $orders->where('status', 'confirmado')->count();
+        $enviado = $orders->where('status', 'enviado')->count();
+        $entregado = $orders->where('status', 'entregado')->count();
+        $cancelado = $orders->where('status', 'cancelado')->count();
 
 
         return response()->json([
@@ -587,23 +663,23 @@ class OrderController extends Controller
             ],
             [
                 'description' => 'Órdenes Generadas',
-                'value' => $generated
+                'value' => $verificado
             ],
             [
                 'description' => 'Órdenes Pagadas',
-                'value' => $paid
+                'value' => $confirmado
             ],
             [
                 'description' => 'Órdenes Enviadas',
-                'value' => $send
+                'value' => $enviado
             ],
             [
-                'description' => 'Órdenes Recibidas',
-                'value' => $received
+                'description' => 'Órdenes Entregadas',
+                'value' => $entregado
             ],
             [
                 'description' => 'Órdenes Canceladas',
-                'value' => $cancelled
+                'value' => $cancelado
             ]
         ]);
     }

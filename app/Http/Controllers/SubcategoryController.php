@@ -80,13 +80,12 @@ class SubcategoryController extends Controller
      *     tags={"Subcategory"},
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Subcategory 1"),
-     *             @OA\Property(property="order", type="integer", example="1"),
-     *             @OA\Property(property="category_id", type="integer", example="1"),
-     *         )
-     *     ),
+     *          required=true,
+     *          @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(ref="#/components/schemas/SubcategoryRequest")
+     *          )
+     *      ),
      *     @OA\Response(
      *         response=200,
      *         description="Subcategory created",

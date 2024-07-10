@@ -28,16 +28,17 @@ class OrderResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'user' => new UserResource($this->user),
             'subtotal' => $this->subtotal,
             'discount' => $this->discount,
             'sendCost' => $this->sendCost,
             'total' => $this->total,
-            'quantity' => $this->quantity,
-            'date' => $this->date,
             'status' => $this->status,
-            'user_id' => $this->user_id,
-            'coupon_id' => $this->coupon_id,
-            'items' => $orderItems,
+//            'quantity' => $this->quantity,
+//            'date' => $this->date,
+//            'user_id' => $this->user_id,
+//            'coupon_id' => $this->coupon_id,
+            'order_items' => $this->orderItems,
 //            'coupon' => new CouponResource($this->whenLoaded('coupon')),
 //            'sendInformation' => new SendInformationResource($this->whenLoaded('sendInformation')),
         ];

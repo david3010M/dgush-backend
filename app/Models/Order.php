@@ -72,6 +72,7 @@ class Order extends Model
         'quantity',
         'date',
         'status',
+        'description',
         'user_id',
         'coupon_id'
     ];

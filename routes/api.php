@@ -306,9 +306,13 @@ Route::group(
             ]
         );
 
+        Route::post('/order/search', [OrderController::class, 'search'])->name('order.search');
+        Route::post('/order/updateStatus/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+
         Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
         Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
         Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+        Route::get('/orderStatus', [OrderController::class, 'orderStatus'])->name('order.orderStatus');
         Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
 
 //        WISH ITEM

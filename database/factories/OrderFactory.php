@@ -33,7 +33,7 @@ class OrderFactory extends Factory
             'total' => $total,
             'quantity' => 2,
             'date' => $this->faker->dateTimeThisYear(),
-            'status' => $this->faker->randomElement(['generated', 'paid', 'send', 'received', 'cancelled']),
+            'status' => $this->faker->randomElement(['verificado', 'confirmado', 'enviado', 'entregado', 'cancelado']),
             'user_id' => $this->faker->numberBetween(1, $countUsers),
             'coupon_id' => $this->faker->numberBetween(1, $countCoupons)
         ];

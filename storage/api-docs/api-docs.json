@@ -896,127 +896,6 @@
                 }
             }
         },
-        "/dgush-backend/public/api/refreshToken": {
-            "get": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Authenticate user",
-                "description": "Refresh access token",
-                "operationId": "2119dd9028c18b47cec7aceb5257654b",
-                "responses": {
-                    "200": {
-                        "description": "Token refreshed",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "access_token": {
-                                            "type": "string",
-                                            "example": "10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147"
-                                        },
-                                        "user": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "number",
-                                                        "example": "11"
-                                                    },
-                                                    "names": {
-                                                        "type": "string",
-                                                        "example": "D Gush"
-                                                    },
-                                                    "email": {
-                                                        "type": "string",
-                                                        "example": "dgush@gmail.com"
-                                                    },
-                                                    "typeuser_id": {
-                                                        "type": "number",
-                                                        "example": "2"
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T00:09:16.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T12:13:45.000000Z"
-                                                    },
-                                                    "deleted_at": {
-                                                        "type": "string",
-                                                        "example": "null"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "typeuser": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "number",
-                                                        "example": "6"
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "Admin"
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T00:09:16.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "example": "2024-02-23T12:13:45.000000Z"
-                                                    },
-                                                    "deleted_at": {
-                                                        "type": "string",
-                                                        "example": "null"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "optionMenuAccess": {
-                                            "type": "string",
-                                            "example": "1, 2, 3, 4"
-                                        },
-                                        "permissions": {
-                                            "type": "string",
-                                            "example": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "User not authenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/dgush-backend/public/api/category": {
             "get": {
                 "tags": [
@@ -1045,10 +924,6 @@
                                             "vaLue": {
                                                 "type": "string",
                                                 "example": "Category 1"
-                                            },
-                                            "order": {
-                                                "type": "integer",
-                                                "example": "1"
                                             },
                                             "subcategories": {
                                                 "type": "array",
@@ -1086,10 +961,6 @@
                                     "name": {
                                         "type": "string",
                                         "example": "Category 1"
-                                    },
-                                    "order": {
-                                        "type": "integer",
-                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -1258,10 +1129,6 @@
                                     "name": {
                                         "type": "string",
                                         "example": "Category 1"
-                                    },
-                                    "order": {
-                                        "type": "integer",
-                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -3663,14 +3530,14 @@
                 "operationId": "400c7d79f5e2e8a6e5c82dee9c33fc9b",
                 "responses": {
                     "200": {
-                        "description": "Order cancelled successfully",
+                        "description": "Order cancelado successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Order cancelled successfully"
+                                            "example": "Order cancelado successfully"
                                         }
                                     },
                                     "type": "object"
@@ -3739,11 +3606,11 @@
                                             "type": "integer",
                                             "example": "3"
                                         },
-                                        "cancelled": {
+                                        "cancelado": {
                                             "type": "integer",
                                             "example": "1"
                                         },
-                                        "paid": {
+                                        "confirmado": {
                                             "type": "integer",
                                             "example": "1"
                                         }
@@ -5718,23 +5585,9 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Subcategory 1"
-                                    },
-                                    "order": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    },
-                                    "category_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/SubcategoryRequest"
                             }
                         }
                     }
@@ -7140,10 +6993,6 @@
                     "name": {
                         "type": "string",
                         "example": "Category 1"
-                    },
-                    "order": {
-                        "type": "integer",
-                        "example": "1"
                     }
                 },
                 "type": "object"
@@ -7911,10 +7760,6 @@
                         "type": "string",
                         "example": "t-shirts"
                     },
-                    "order": {
-                        "type": "integer",
-                        "example": "1"
-                    },
                     "score": {
                         "type": "number",
                         "example": "5.0"
@@ -7922,6 +7767,27 @@
                     "image": {
                         "type": "string",
                         "example": "t-shirts.jpg"
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "SubcategoryRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "T-Shirts"
+                    },
+                    "value": {
+                        "type": "string",
+                        "example": "t-shirts"
+                    },
+                    "image": {
+                        "type": "file",
+                        "format": "binary"
                     },
                     "category_id": {
                         "type": "integer",

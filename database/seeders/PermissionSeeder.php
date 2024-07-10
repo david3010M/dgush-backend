@@ -551,6 +551,16 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
+            'name' => 'Buscar Pedidos',
+            'route' => 'order.search',
+        ]);
+
+        Permission::create([
+            'name' => 'Actualizar Estado de Pedido',
+            'route' => 'order.updateStatus',
+        ]);
+
+        Permission::create([
             'name' => 'Ver Pedido',
             'route' => 'order.show',
         ]);
@@ -616,6 +626,11 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'name' => 'Dashboard',
             'route' => 'order.dashboard'
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Estados de Pedidos',
+            'route' => 'order.orderStatus'
         ]);
 
 //        PRODUCT DETAILS

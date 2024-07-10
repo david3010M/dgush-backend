@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('value')->unique();
-            $table->integer('order');
             $table->decimal('score', 8, 1)->default(0);
             $table->string('image')->nullable();
             $table->foreignId('category_id')->constrained('category');

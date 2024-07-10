@@ -11,8 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     schema="Category",
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
- *     @OA\Property(property="name", type="string", example="Category 1"),
- *     @OA\Property(property="order", type="integer", example="1")
+ *     @OA\Property(property="name", type="string", example="Category 1")
  * )
  */
 class Category extends Model
@@ -25,8 +24,7 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'value',
-        'order',
+        'value'
     ];
 
     protected $hidden = [

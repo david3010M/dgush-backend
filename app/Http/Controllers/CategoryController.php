@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -23,7 +24,6 @@ class CategoryController extends Controller
      *                  @OA\Property(property="id", type="integer", example="1"),
      *                  @OA\Property(property="name", type="string", example="Category 1"),
      *                  @OA\Property(property="vaLue", type="string", example="Category 1"),
-     *                  @OA\Property(property="order", type="integer", example="1"),
      *                  @OA\Property(property="subcategories", type="array", @OA\Items(ref="#/components/schemas/Subcategory"))
      *             )
      *         )
@@ -45,8 +45,7 @@ class CategoryController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Category 1"),
-     *             @OA\Property(property="order", type="integer", example="1"),
+     *             @OA\Property(property="name", type="string", example="Category 1")
      *         )
      *     ),
      *     @OA\Response(
@@ -73,13 +72,30 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string:unique:category',
-            'value' => 'required|string',
-            'order' => 'required|integer|unique:category',
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('category', 'name')->whereNull('deleted_at')
+            ]
         ]);
 
-        return Category::create($request->all());
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $name = $request->input('name');
+        $value = strtolower(str_replace(' ', '-', $name));
+
+        $data = [
+            'name' => $name,
+            'value' => $value
+        ];
+
+        $category = Category::create($data);
+        $category = Category::find($category->id);
+
+        return response()->json($category);
     }
 
 
@@ -150,8 +166,7 @@ class CategoryController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Category 1"),
-     *             @OA\Property(property="order", type="integer", example="1"),
+     *             @OA\Property(property="name", type="string", example="Category 1")
      *         )
      *     ),
      *     @OA\Response(
@@ -191,14 +206,30 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        $request->validate([
-            'name' => 'required|string|unique:category,name,' . $id,
-            'order' => 'required|integer|unique:category,order,' . $id,
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('category', 'name')->ignore($category->id)->whereNull('deleted_at')
+            ]
         ]);
 
-        $category->update($request->all());
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
 
-        return $category;
+        $name = $request->name ?? $category->name;
+        $value = strtolower(str_replace(' ', '-', $name));
+
+        $data = [
+            'name' => $name,
+            'value' => $value
+        ];
+
+        $category->update($data);
+        $category = Category::find($category->id);
+        
+        return response()->json($category);
     }
 
     /**
@@ -249,7 +280,6 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-//        VALIDATE IF CATEGORY HAS SUBCATEGORIES
         if ($category->subcategories()->count() > 0) {
             return response()->json(['message' => 'Category has subcategories'], 409);
         }
