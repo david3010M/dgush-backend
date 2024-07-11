@@ -77,7 +77,7 @@ class OrderController extends Controller
         }
 
         $orders = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
             ->where('status', 'like', '%' . $request->input('status') . '%')
             ->where('user_id', auth()->user()->id);
 

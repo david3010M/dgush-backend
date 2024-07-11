@@ -64,9 +64,9 @@ class SendInformation extends Model
         'deleted_at',
     ];
 
-    public function province()
+    public function district()
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(District::class);
     }
 
     public function order()

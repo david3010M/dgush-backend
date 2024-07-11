@@ -14,16 +14,6 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-//        'subtotal',
-//        'discount',
-//        'sendCost',
-//        'total',
-//        'quantity',
-//        'date',
-//        'status',
-//        'user_id',
-//        'coupon_id'
-
         $orderItems = OrderItemResource::collection($this->orderItems);
 
         return [
@@ -34,13 +24,14 @@ class OrderResource extends JsonResource
             'sendCost' => $this->sendCost,
             'total' => $this->total,
             'status' => $this->status,
+            'description' => $this->description ?? '-',
 //            'quantity' => $this->quantity,
 //            'date' => $this->date,
 //            'user_id' => $this->user_id,
 //            'coupon_id' => $this->coupon_id,
             'order_items' => $this->orderItems,
 //            'coupon' => new CouponResource($this->whenLoaded('coupon')),
-//            'sendInformation' => new SendInformationResource($this->whenLoaded('sendInformation')),
+            'send_information' => new SendInformationResource($this->sendInformation),
         ];
     }
 }

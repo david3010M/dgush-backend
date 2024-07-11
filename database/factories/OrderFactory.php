@@ -18,9 +18,10 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
+        $coupon = $this->faker->randomElement([1, 2]);
         $subtotal = $this->faker->randomFloat(2, 100, 1000);
-        $discount = $this->faker->randomFloat(2, 0, 1000);
         $sendCost = $this->faker->randomFloat(2, 10, 30);
+        $discount = $this->faker->randomFloat(2, 0, $subtotal - $sendCost);
         $total = $subtotal - $discount + $sendCost;
 
         $countUsers = User::count();
