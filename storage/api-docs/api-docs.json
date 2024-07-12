@@ -3305,6 +3305,89 @@
                 }
             }
         },
+        "/dgush-backend/public/api/order/search": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Search orders",
+                "operationId": "985c00639c4666c352a77f35d5c27407",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "verificado"
+                                    },
+                                    "sort": {
+                                        "type": "string",
+                                        "example": "date-asc"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "2024-05-26"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrderResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/dgush-backend/public/api/applyCouponToOrder/{id}": {
             "post": {
                 "tags": [
@@ -6909,6 +6992,57 @@
     },
     "components": {
         "schemas": {
+            "OrderResource": {
+                "title": "OrderResource",
+                "description": "Order resource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "subtotal": {
+                        "type": "decimal",
+                        "example": "100.00"
+                    },
+                    "discount": {
+                        "type": "decimal",
+                        "example": "10.00"
+                    },
+                    "sendCost": {
+                        "type": "decimal",
+                        "example": "5.00"
+                    },
+                    "total": {
+                        "type": "decimal",
+                        "example": "90.00"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "pending"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "description"
+                    },
+                    "date": {
+                        "type": "timestamp",
+                        "example": "2024-05-26 14:40:02"
+                    },
+                    "order_items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    },
+                    "send_information": {
+                        "$ref": "#/components/schemas/SendInformation"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
             "ProductDetailsResource": {
                 "title": "ProductDetailsResource",
                 "description": "ProductDetailsResource",

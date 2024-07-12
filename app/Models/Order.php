@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="coupon", type="object", ref="#/components/schemas/Coupon"),
  * )
  *
+ *
  * @OA\Schema (
  *     schema="OrderRequest",
  *     title="OrderRequest",

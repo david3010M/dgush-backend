@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
-use App\Http\Resources\ProductDetailsResource;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -11,7 +10,6 @@ use App\Models\ProductDetails;
 use App\Models\SendInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -65,11 +63,32 @@ class OrderController extends Controller
 //            ->simplePaginate($pageSize));
     }
 
+    /**
+     * @OA\Post  (
+     *     path="/dgush-backend/public/api/order/search",
+     *     summary="Search orders",
+     *     tags={"Order"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="verificado"),
+     *             @OA\Property(property="sort", type="string", example="date-asc"),
+     *             @OA\Property(property="date", type="string", example="2024-05-26")
+     *         )
+     *     ),
+     *     @OA\Response( response=200, description="Orders retrieved successfully", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/OrderResource")) ),
+     *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string")) ),
+     *     @OA\Response( response=401, description="Unauthenticated", @OA\JsonContent(@OA\Property(property="error", type="string")) )
+     * )
+     *
+     */
     public function search(Request $request)
     {
         $validator = validator($request->all(), [
             'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado',
             'sort' => 'nullable|string|in:none,date-asc,date-desc',
+            'date' => 'nullable|date_format:Y-m-d',
         ]);
 
         if ($validator->fails()) {
@@ -79,6 +98,7 @@ class OrderController extends Controller
         $orders = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
             ->where('status', 'like', '%' . $request->input('status') . '%')
+            ->whereDate('date', 'like', '%' . $request->input('date') . '%')
             ->where('user_id', auth()->user()->id);
 
         $sort = $request->input('sort');
