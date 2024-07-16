@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CommentController;
@@ -314,6 +315,18 @@ Route::group(
 //        IMAGES
         Route::get('/images', [ImageController::class, 'listImages'])->name('images.all');
         Route::delete('/deleteDirectoryProduct', [ImageController::class, 'deleteDirectoryProduct'])->name('images.deleteDirectoryProduct');
+
+//        BANNER
+        Route::resource('banner', BannerController::class)->only(
+            ['index', 'store', 'show', 'destroy']
+        )->names(
+            [
+                'index' => 'banner.index',
+                'store' => 'banner.store',
+                'show' => 'banner.show',
+                'destroy' => 'banner.destroy',
+            ]
+        );
 
     }
 );

@@ -675,6 +675,27 @@ class PermissionSeeder extends Seeder
             'route' => 'images.deleteDirectoryProduct',
         ]);
 
+//        BANNER
+        Permission::create([
+            'name' => 'Ver Banners',
+            'route' => 'banner.index',
+        ]);
+
+        Permission::create([
+            'name' => 'Ver Banner',
+            'route' => 'banner.show',
+        ]);
+
+        Permission::create([
+            'name' => 'Crear Banners',
+            'route' => 'banner.store',
+        ]);
+
+        Permission::create([
+            'name' => 'Eliminar Banners',
+            'route' => 'banner.destroy',
+        ]);
+
 
     }
 }

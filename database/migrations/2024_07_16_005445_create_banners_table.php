@@ -10,12 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('image', function (Blueprint $table) {
+        Schema::create('banners', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('url');
-            $table->foreignId('product_id')->nullable()->constrained('product');
+            $table->string('route');
+            $table->foreignId('image_id')->constrained('image');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('image');
+        Schema::dropIfExists('banners');
     }
 };

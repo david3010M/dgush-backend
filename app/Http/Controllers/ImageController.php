@@ -52,9 +52,9 @@ class ImageController extends Controller
             'id' => 'required|integer|exists:product,id'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()->first()], 400);
-        }
+//        if ($validator->fails()) {
+//            return response()->json(['message' => $validator->errors()->first()], 400);
+//        }
 
         $response = Storage::disk('spaces')->deleteDirectory("/" . $request->id . "/");
         if (!$response) {
