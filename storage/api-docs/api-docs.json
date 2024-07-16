@@ -896,6 +896,234 @@
                 }
             }
         },
+        "/dgush-backend/public/api/banner": {
+            "get": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Obtener todos los banners",
+                "operationId": "416763aabb85c6d1f7bbe1ede739ed1d",
+                "responses": {
+                    "200": {
+                        "description": "Devuelve todos los banners",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Banner"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Crear un banner",
+                "operationId": "313c6bb4e0b1714af10ee7bfaf08dc64",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Banner creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Banner"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/banner/{id}": {
+            "get": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Obtener un banner",
+                "operationId": "14705b524b02a052af0afefafb269cbe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del banner",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Devuelve un banner",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Banner"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Banner no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Banner not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Eliminar un banner",
+                "operationId": "aa8c8034505c107054023722e1c1e85d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del banner",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Banner eliminado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Banner eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Banner no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Banner not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error al eliminar la imagen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al eliminar la imagen"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dgush-backend/public/api/category": {
             "get": {
                 "tags": [
@@ -4431,242 +4659,6 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/product/setColors/{id}": {
-            "put": {
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Set colors",
-                "operationId": "717938ec99b553178d2e05304a9f361c",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Product ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "colors"
-                                ],
-                                "properties": {
-                                    "colors": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": "1"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Colors set",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Color"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Product not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Product not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "colors": [
-                                                    "The colors field is required."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/dgush-backend/public/api/product/setSizes/{id}": {
-            "put": {
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Set sizes",
-                "operationId": "11a60ba38d1dca46fa346038d61aadf6",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Product ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "sizes"
-                                ],
-                                "properties": {
-                                    "sizes": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": "1"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Sizes set",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Size"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Product not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Product not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "sizes": [
-                                                    "The sizes field is required."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/dgush-backend/public/api/productdetails": {
             "get": {
                 "tags": [
@@ -6953,6 +6945,42 @@
     },
     "components": {
         "schemas": {
+            "ValidationError": {
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "The pagination must be an integer."
+                    }
+                },
+                "type": "object"
+            },
+            "Unauthenticated": {
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "Unauthenticated."
+                    }
+                },
+                "type": "object"
+            },
+            "Banner": {
+                "title": "Banner",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Verano"
+                    },
+                    "route": {
+                        "type": "string",
+                        "example": "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/verano.png"
+                    }
+                },
+                "type": "object"
+            },
             "OrderResource": {
                 "title": "OrderResource",
                 "description": "Order resource",
@@ -7610,23 +7638,6 @@
                 },
                 "type": "object"
             },
-            "ProductColor": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "product_id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "color_id": {
-                        "type": "integer",
-                        "example": "1"
-                    }
-                },
-                "type": "object"
-            },
             "ProductDetails": {
                 "title": "ProductDetails",
                 "description": "ProductDetails model",
@@ -7659,23 +7670,6 @@
                     },
                     "size": {
                         "$ref": "#/components/schemas/Size"
-                    }
-                },
-                "type": "object"
-            },
-            "ProductSize": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "product_id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "size_id": {
-                        "type": "integer",
-                        "example": "1"
                     }
                 },
                 "type": "object"
