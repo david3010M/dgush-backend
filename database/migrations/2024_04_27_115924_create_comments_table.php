@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->text('description');
             $table->integer('score');
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('product_id')->constrained('product');
+            $table->foreignId('product_id')->constrained('product')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

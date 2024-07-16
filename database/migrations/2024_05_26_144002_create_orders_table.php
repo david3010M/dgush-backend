@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->decimal('quantity', 10);
             $table->timestamp('date');
 //            $table->string('numberPayment');
-            $table->string('status')->default('generated');
+            $table->string('status')->default('verificado');
             $table->string('description')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('coupon_id')->nullable()->constrained('coupon');

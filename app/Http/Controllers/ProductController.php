@@ -203,7 +203,11 @@ class ProductController extends Controller
         }
 
         $validator = validator()->make($request->all(), [
-            'name' => 'required|string|unique:product',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('product', 'name')->whereNull('deleted_at')
+            ],
             'description' => 'required|string',
             'detailweb' => 'required|string',
             'price1' => 'required|numeric',
@@ -217,12 +221,6 @@ class ProductController extends Controller
             'product_details.*.size_id' => 'required|integer|exists:size,id',
             'images' => 'required|array',
             'images.*' => 'required|image',
-//            'images.*' => [
-//                'required',
-//                'image',
-//                Rule::unique('image', 'name')->where('product_id', $request->product_id)
-//            ]
-
         ]);
 
         if ($validator->fails()) {
@@ -361,18 +359,12 @@ class ProductController extends Controller
      *         )
      *     ),
      *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *              required={"name", "description", "detailweb", "price1", "price2", "score", "subcategory_id"},
-     *              @OA\Property(property="name", type="string", example="Product 1"),
-     *              @OA\Property(property="description", type="string", example="Description of product 1"),
-     *              @OA\Property(property="detailweb", type="string", example="Detail of product 1"),
-     *              @OA\Property(property="price1", type="number", example="100.00"),
-     *              @OA\Property(property="price2", type="number", example="90.00"),
-     *              @OA\Property(property="score", type="integer", example="5"),
-     *              @OA\Property(property="subcategory_id", type="integer", example="1"),
-     *         )
-     *     ),
+     *          required=true,
+     *          @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(ref="#/components/schemas/ProductRequest")
+     *          )
+     *      ),
      *     @OA\Response(
      *         response=200,
      *         description="Product updated",
@@ -404,35 +396,90 @@ class ProductController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        //        FIND PRODUCT
+        if (auth()->user()->typeuser_id != 1) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $product = Product::find($id);
-        if ($product) {
-            //            VALIDATE DATA
-            $request->validate(
-                [
-                    'name' => 'required|string|unique:product,name,' . $id,
-                    'description' => 'required|string',
-                    'detailweb' => 'required|string',
-                    'price1' => 'required|numeric',
-                    'price2' => 'required|numeric',
-                    'score' => 'required|integer',
-                    'subcategory_id' => 'required|integer',
-                ]
-            );
 
-            //            VALIDATE CATEGORY
-            $category = Subcategory::find($request->subcategory_id);
-            if (!$category) {
-                return response()->json(['message' => 'Subcategory not found'], 404);
-            }
-
-            //            UPDATE PRODUCT
-            $product->update($request->all());
-            return response()->json($product);
-        } else {
-            //            PRODUCT NOT FOUND
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
+
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'nullable',
+                'string',
+                Rule::unique('product')->whereNull('deleted_at')->ignore($id),
+            ],
+            'description' => 'nullable|string',
+            'detailweb' => 'nullable|string',
+            'price1' => 'nullable|numeric',
+            'price2' => 'nullable|numeric',
+            'status' => 'nullable|string|in:onsale,new',
+            'subcategory_id' => 'nullable|integer|exists:subcategory,id',
+            'product_details' => 'nullable|array',
+            'product_details.*.stock' => 'required|numeric',
+            'product_details.*.color_id' => 'required|integer|exists:color,id',
+            'product_details.*.size_id' => 'required|integer|exists:size,id',
+            'images' => 'nullable|array',
+            'images.*' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'name' => $request->input('name') ?? $product->name,
+            'description' => $request->input('description') ?? $product->description,
+            'detailweb' => $request->input('detailweb') ?? $product->detailweb,
+            'price1' => $request->input('price1') ?? $product->price1,
+            'price2' => $request->input('price2') ?? $product->price2,
+            'status' => $request->input('status') ?? $product->status,
+            'subcategory_id' => $request->input('subcategory_id') ?? $product->subcategory_id,
+        ];
+
+        $product->update($data);
+        $id = $product->id;
+
+        $images = $request->file('images');
+        $productDetails = $request->input('product_details');
+
+        if ($productDetails) {
+            ProductDetails::where('product_id', $id)->delete();
+
+            foreach ($productDetails as $productDetail) {
+                $dataProductDetail = [
+                    'stock' => $productDetail['stock'],
+                    'color_id' => $productDetail['color_id'],
+                    'size_id' => $productDetail['size_id'],
+                    'product_id' => $id
+                ];
+                ProductDetails::create($dataProductDetail);
+            }
+        }
+
+        if ($images) {
+            Storage::disk('spaces')->deleteDirectory("/" . $request->id . "/");
+            Image::where('product_id', $id)->delete();
+
+            foreach ($images as $image) {
+                $fileName = $id . '/' . $image->getClientOriginalName();
+                Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+                $imageUrl = Storage::disk('spaces')->url($fileName);
+
+                Image::create([
+                    'name' => $fileName,
+                    'url' => $imageUrl,
+                    'product_id' => $id
+                ]);
+            }
+        }
+
+        $product = Product::with('productDetails', 'imagesProduct')->find($id);
+        return response()->json($product);
     }
 
     /**
@@ -483,198 +530,13 @@ class ProductController extends Controller
      */
     public function destroy(int $id)
     {
-        //        FIND PRODUCT
         $product = Product::find($id);
         if ($product) {
-            //            VALIDATE PRODUCT NOT HAS COMMENTS
-            if ($product->comments()->count() > 0) {
-                return response()->json(['message' => 'Product has comments'], 409);
-            }
-
-            //            VALIDATE PRODUCT NOT HAS PRODUCT SIZE
-            //            if ($product->productSize()->count() > 0) {
-            //                return response()->json(['message' => 'Product has product size'], 409);
-            //            }
-
-            //            VALIDATE PRODUCT NOT HAS PRODUCT COLOR
-            //            if ($product->productColor()->count() > 0) {
-            //                return response()->json(['message' => 'Product has product color'], 409);
-            //            }
-
-            //            DELETE PRODUCT
             $product->delete();
             return response()->json(['message' => 'Product deleted']);
         } else {
-            //            PRODUCT NOT FOUND
             return response()->json(['message' => 'Product not found'], 404);
         }
     }
 
-    /**
-     * @OA\Put(
-     *     path="/dgush-backend/public/api/product/setColors/{id}",
-     *     tags={"Product"},
-     *     summary="Set colors",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Product ID",
-     *         @OA\Schema(
-     *             type="integer"
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *              required={"colors"},
-     *              @OA\Property(property="colors", type="array", @OA\Items(type="integer", example="1")),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Colors set",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Color"),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Product not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object", example={"colors": {"The colors field is required."}})
-     *         )
-     *     )
-     * )
-     */
-    public function setColors(Request $request, int $id)
-    {
-        $request->validate([
-            'colors' => 'required|array',
-            'colors.*' => 'required|integer'
-        ]);
-
-        $product = Product::find($id);
-
-        if ($product) {
-            //           VALIDATE COLORS EXIST
-            $colors = Color::whereIn('id', $request->colors)->get();
-            if ($colors->count() != count($request->colors)) {
-                return response()->json(['message' => 'Color not found'], 404);
-            }
-
-
-            //           DELETE COLORS
-            $product->productColors()->detach();
-
-            //            SET COLORS
-            $product->productColors()->attach($request->colors);
-
-            //            RETURN COLORS
-            return response()->json($product->getColors($product->id));
-        } else {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
-    }
-
-    /**
-     * @OA\Put(
-     *     path="/dgush-backend/public/api/product/setSizes/{id}",
-     *     tags={"Product"},
-     *     summary="Set sizes",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Product ID",
-     *         @OA\Schema(
-     *             type="integer"
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *              required={"sizes"},
-     *              @OA\Property(property="sizes", type="array", @OA\Items(type="integer", example="1")),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Sizes set",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Size"),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Product not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object", example={"sizes": {"The sizes field is required."}})
-     *         )
-     *     )
-     * )
-     */
-    public function setSizes(Request $request, int $id)
-    {
-        $request->validate([
-            'sizes' => 'required|array',
-            'sizes.*' => 'required|integer'
-        ]);
-
-        //        FIND PRODUCT
-        $product = Product::find($id);
-
-        if ($product) {
-            //            VALIDATE SIZES EXIST
-            $sizes = Size::whereIn('id', $request->sizes)->get();
-            if ($sizes->count() != count($request->sizes)) {
-                return response()->json(['message' => 'Size not found'], 404);
-            }
-
-            //           DELETE SIZES
-            $product->productSizes()->detach();
-
-            //            SET SIZES
-            $product->productSizes()->attach($request->sizes);
-
-            //            RETURN SIZES
-            return response()->json($product->getSizes($product->id));
-        } else {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
-    }
 }

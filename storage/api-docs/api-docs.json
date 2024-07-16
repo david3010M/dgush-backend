@@ -4259,48 +4259,9 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "name",
-                                    "description",
-                                    "detailweb",
-                                    "price1",
-                                    "price2",
-                                    "score",
-                                    "subcategory_id"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Product 1"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Description of product 1"
-                                    },
-                                    "detailweb": {
-                                        "type": "string",
-                                        "example": "Detail of product 1"
-                                    },
-                                    "price1": {
-                                        "type": "number",
-                                        "example": "100.00"
-                                    },
-                                    "price2": {
-                                        "type": "number",
-                                        "example": "90.00"
-                                    },
-                                    "score": {
-                                        "type": "integer",
-                                        "example": "5"
-                                    },
-                                    "subcategory_id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/ProductRequest"
                             }
                         }
                     }

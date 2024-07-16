@@ -211,10 +211,27 @@ class Product extends Model
             ->join('color', 'product_details.color_id', '=', 'color.id')
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
-            ->select('product_details.id', 'product_details.stock', 'color.id as color_id', 'color.name as color_name', 'color.value as color_value', 'size.id as size_id', 'size.name as size_name', 'size.value as size_value')
+            ->select(
+                'product_details.id',
+                'product_details.stock',
+                'color.id as color_id',
+                'color.name as color_name',
+                'color.value as color_value',
+                'size.id as size_id',
+                'size.name as size_name',
+                'size.value as size_value'
+            )
             ->orderBy('color.id')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->id = (int)$item->id;
+                $item->color_id = (int)$item->color_id;
+                $item->size_id = (int)$item->size_id;
+                $item->stock = round($item->stock, 2);
+                return $item;
+            });
     }
+
 
     public function productDetails()
     {
@@ -268,6 +285,19 @@ class Product extends Model
             ->orderBy('score', 'desc')
             ->limit(6)
             ->get();
+    }
 
+
+    public static function setProductDetails($id, $productDetails)
+    {
+        $product = Product::find($id);
+        $product->productDetails()->delete();
+        foreach ($productDetails as $productDetail) {
+            $product->productDetails()->create([
+                'color_id' => $productDetail['color_id'],
+                'size_id' => $productDetail['size_id'],
+                'stock' => $productDetail['stock'],
+            ]);
+        }
     }
 }

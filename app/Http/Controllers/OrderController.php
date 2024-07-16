@@ -532,7 +532,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($order->status !== 'pending') {
+        if ($order->status !== 'verificado') {
             return response()->json(['error' => 'Order has already been confirmed'], 422);
         }
 
@@ -619,7 +619,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($order->status !== 'pending') {
+        if ($order->status !== 'verificado') {
             return response()->json(['error' => 'Order has already been confirmed'], 422);
         }
 

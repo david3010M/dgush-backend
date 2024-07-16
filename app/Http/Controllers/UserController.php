@@ -100,6 +100,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->typeuser_id != 1) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         // Validar los datos
         $request->validate([
             'names' => 'required|string',
@@ -257,6 +261,9 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id): User|JsonResponse
     {
+        if (auth()->user()->typeuser_id != 1) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 //        Find a user by ID
         $user = User::find($id);
 
@@ -347,6 +354,9 @@ class UserController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
+        if (auth()->user()->typeuser_id != 1) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 //        Find a user by ID
         $user = User::find($id);
 

@@ -15,10 +15,8 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\ProductColorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailsController;
-use App\Http\Controllers\ProductSizeController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\SendInformationController;
 use App\Http\Controllers\SizeController;
@@ -169,18 +167,15 @@ Route::group(
         );
         //    PRODUCT
         Route::resource('product', ProductController::class)->only(
-            ['store', 'update', 'destroy']
+            ['store', 'destroy']
         )->names(
             [
                 'store' => 'product.store',
-                'update' => 'product.update',
                 'destroy' => 'product.destroy',
             ]
         );
-
+        Route::post('/updateProduct/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
-        Route::put('/product/setColors/{id}', [ProductController::class, 'setColors'])->name('product.colors');
-        Route::put('/product/setSizes/{id}', [ProductController::class, 'setSizes'])->name('product.sizes');
 
         //    CATEGORY
         Route::resource('category', CategoryController::class)->only(
@@ -216,19 +211,6 @@ Route::group(
             ]
         );
 
-        //    PRODUCT COLOR
-        Route::resource('productcolor', ProductColorController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'productcolor.index',
-                'store' => 'productcolor.store',
-                'show' => 'productcolor.show',
-                'update' => 'productcolor.update',
-                'destroy' => 'productcolor.destroy',
-            ]
-        );
-
         //    SIZE
         Route::resource('size', SizeController::class)->only(
             ['show', 'store', 'update', 'destroy']
@@ -238,19 +220,6 @@ Route::group(
                 'show' => 'size.show',
                 'update' => 'size.update',
                 'destroy' => 'size.destroy',
-            ]
-        );
-
-        //    PRODUCT SIZE
-        Route::resource('productsize', ProductSizeController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'productsize.index',
-                'store' => 'productsize.store',
-                'show' => 'productsize.show',
-                'update' => 'productsize.update',
-                'destroy' => 'productsize.destroy',
             ]
         );
 
