@@ -36,7 +36,9 @@ class CommentController extends Controller
      */
     public function index()
     {
-        return Comment::all();
+        $user = auth()->user();
+        $comments = Comment::where('user_id', $user->id)->get();
+        return response()->json($comments);
     }
 
 
@@ -123,6 +125,7 @@ class CommentController extends Controller
 
 //        CREATE COMMENT
         $comment = Comment::create($request->all());
+        $comment = Comment::find($comment->id);
         return response()->json($comment);
     }
 
@@ -165,7 +168,8 @@ class CommentController extends Controller
     public function show(int $id)
     {
         $comment = Comment::find($id);
-        if ($comment) {
+        $user = auth()->user();
+        if ($comment && $comment->user_id == $user->id) {
             return response()->json($comment);
         } else {
             return response()->json(['message' => 'Comment not found'], 404);
@@ -236,7 +240,8 @@ class CommentController extends Controller
     public function update(Request $request, int $id)
     {
         $comment = Comment::find($id);
-        if (!$comment) {
+        $user = auth()->user();
+        if (!$comment || $comment->user_id != $user->id) {
             return response()->json(['message' => 'Comment not found'], 404);
         }
 
@@ -260,12 +265,7 @@ class CommentController extends Controller
         }
 
 //        VALIDATE IF USER AND PRODUCT NOT EXISTS BOTH AND NOT SAME
-        $comment = Comment::where('user_id', $request->user_id)
-            ->where('product_id', $request->product_id)
-            ->first();
-        if ($comment && $comment->id != $id) {
-            return response()->json(['message' => 'User already commented this product'], 409);
-        }
+        $comment = Comment::find($id)->where('user_id', $user->id)->first();
 
 //        UPDATE COMMENT
         $comment->update([
@@ -320,7 +320,8 @@ class CommentController extends Controller
     public function destroy(int $id)
     {
         $comment = Comment::find($id);
-        if ($comment) {
+        $user = auth()->user();
+        if ($comment && $comment->user_id == $user->id) {
             $comment->delete();
             return response()->json(['message' => 'Comment deleted']);
         } else {

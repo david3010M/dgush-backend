@@ -227,7 +227,6 @@ class AuthController extends Controller
             $typeuserAccess = $typeuser->getAccess($typeuser->id);
 
 //            PERMISSIONS IN A STRING FORMAT
-            $typeuserHasPermission = $typeuser->getHasPermission($typeuser->id);
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
@@ -487,7 +486,6 @@ class AuthController extends Controller
 
         $optionMenuAccess = $typeuser->getAccess($typeuser->id);
 
-        $permissions = $typeuser->getHasPermission($typeuser->id);
 
         // Generar un token de acceso para el nuevo usuario
         $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
@@ -501,7 +499,6 @@ class AuthController extends Controller
                 'user' => $user,
                 'typeuser' => $typeuser,
                 'optionMenuAccess' => $optionMenuAccess,
-                'permissions' => $permissions
             ]
         );
     }

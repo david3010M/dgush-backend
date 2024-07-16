@@ -142,11 +142,9 @@ class TypeUserController extends Controller
 
 //        LOAD ACCESS AND PERMISSIONS
         $access = $typeUser->getAccess($id);
-        $hasPermission = $typeUser->getHasPermission($id);
 
         $typeUser = $typeUser->toArray();
         $typeUser['access'] = $access;
-        $typeUser['hasPermission'] = $hasPermission;
 
         return $typeUser;
     }
@@ -299,13 +297,6 @@ class TypeUserController extends Controller
         if ($typeUser->access()->count() > 0) {
             return response()->json(
                 ['message' => 'Type User has accesses associated'], 409
-            );
-        }
-
-//        VALIDATE IF TYPEUSER HAS ANY PERMISSIONS ASSOCIATED
-        if ($typeUser->hasPermission()->count() > 0) {
-            return response()->json(
-                ['message' => 'Type User has permissions associated'], 409
             );
         }
 

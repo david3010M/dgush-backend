@@ -280,6 +280,17 @@ class OrderController extends Controller
 
     public function update(Request $request, int $id)
     {
+        // Encontrar la orden existente
+        $order = Order::find($id);
+        $user = auth()->user();
+        if (!$order || $order->user_id !== $user->id) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        if ($order->status !== 'verificado') {
+            return response()->json(['error' => 'Order has already been confirmed'], 422);
+        }
+
         // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
             'orderItems' => 'required|array',
@@ -294,11 +305,6 @@ class OrderController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        // Encontrar la orden existente
-        $order = Order::find($id);
-        if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
-        }
 
         // Eliminar los productos actuales de la orden y revertir el stock
         foreach ($order->orderItems as $orderItem) {
@@ -335,7 +341,7 @@ class OrderController extends Controller
                 return response()->json(['error' => 'The product is out of stock'], 422);
             }
 
-            $orderItem = OrderItem::create([
+            OrderItem::create([
                 'quantity' => $products[$key]['quantity'],
                 'product_detail_id' => $productDetail->id,
                 'order_id' => $order->id
@@ -368,7 +374,9 @@ class OrderController extends Controller
     public function destroy(int $id)
     {
         $order = Order::find($id);
-        if (!$order) {
+        $user = auth()->user();
+
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -437,7 +445,9 @@ class OrderController extends Controller
         }
 
         $order = Order::find($id);
-        if (!$order) {
+        $user = auth()->user();
+
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -528,7 +538,9 @@ class OrderController extends Controller
     public function confirmOrder(Request $request, int $id)
     {
         $order = Order::find($id);
-        if (!$order) {
+        $user = auth()->user();
+
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 

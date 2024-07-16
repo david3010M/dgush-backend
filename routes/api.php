@@ -11,15 +11,12 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
-use App\Http\Controllers\HasPermissionController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\SendInformationController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TypeUserController;
@@ -42,8 +39,6 @@ use Illuminate\Support\Facades\Route;
 // ROUTES FOR AUTHENTICATION
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-
-Route::post('/product/image/{id}', [ProductController::class, 'uploadImages'])->name('product.images');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -81,10 +76,18 @@ Route::get('/filter/product', [FilterController::class, 'product'])->name('filte
 Route::get('/color', [ColorController::class, 'index'])->name('color.index');
 Route::get('/size', [SizeController::class, 'index'])->name('size.index');
 
+// BANNER
+Route::get('/banner', [BannerController::class, 'index'])->name('banner.index');
+Route::get('/banner/{id}', [BannerController::class, 'show'])->name('banner.show');
+
+
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
-Route::group(
-    ['middleware' => ['auth:sanctum', 'checkAccess']],
-    function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    Route::group(['middleware' => ['checkAccess']], function () {
+
+        Route::post('/product/image/{id}', [ProductController::class, 'uploadImages'])->name('product.images');
+
         //        GROUPMENU
         Route::resource('groupmenu', GroupMenuController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
@@ -97,6 +100,7 @@ Route::group(
                 'destroy' => 'groupmenu.destroy',
             ]
         );
+
         //        OPTIONMENU
         Route::resource('optionmenu', OptionMenuController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
@@ -109,6 +113,7 @@ Route::group(
                 'destroy' => 'optionmenu.destroy',
             ]
         );
+
         //    TYPEUSER
         Route::resource('typeuser', TypeUserController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
@@ -121,6 +126,7 @@ Route::group(
                 'destroy' => 'typeuser.destroy',
             ]
         );
+
         //    USER
         Route::resource('user', UserController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
@@ -133,6 +139,7 @@ Route::group(
                 'destroy' => 'user.destroy',
             ]
         );
+
         //    ACCESS
         Route::resource('access', AccessController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
@@ -145,27 +152,7 @@ Route::group(
                 'destroy' => 'access.destroy',
             ]
         );
-        //    PERMISSION
-        Route::resource('permission', PermissionController::class)->only(
-            ['index', 'show']
-        )->names(
-            [
-                'index' => 'permission.index',
-                'show' => 'permission.show',
-            ]
-        );
-        //    HASPERMISSION
-        Route::resource('haspermission', HasPermissionController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'haspermission.index',
-                'store' => 'haspermission.store',
-                'show' => 'haspermission.show',
-                'update' => 'haspermission.update',
-                'destroy' => 'haspermission.destroy',
-            ]
-        );
+
         //    PRODUCT
         Route::resource('product', ProductController::class)->only(
             ['store', 'destroy']
@@ -175,6 +162,7 @@ Route::group(
                 'destroy' => 'product.destroy',
             ]
         );
+
         Route::post('/updateProduct/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
 
@@ -224,78 +212,11 @@ Route::group(
             ]
         );
 
-        //    COMMENT
-        Route::resource('comment', CommentController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'comment.index',
-                'store' => 'comment.store',
-                'show' => 'comment.show',
-                'update' => 'comment.update',
-                'destroy' => 'comment.destroy',
-            ]
-        );
-
-//        COUPON
-        Route::resource('coupon', CouponController::class)->only(
-            ['index', 'store', 'show', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'coupon.index',
-                'store' => 'coupon.store',
-                'show' => 'coupon.show',
-                'update' => 'coupon.update',
-                'destroy' => 'coupon.destroy',
-            ]
-        );
-
-//        SEND INFORMATION
-        Route::resource('sendinformation', SendInformationController::class)->only(
-            ['index', 'store', 'show', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'sendinformation.index',
-                'store' => 'sendinformation.store',
-                'show' => 'sendinformation.show',
-                'update' => 'sendinformation.update',
-                'destroy' => 'sendinformation.destroy',
-            ]
-        );
-
-        //    ORDER
-        Route::resource('order', OrderController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index' => 'order.index',
-                'show' => 'order.show',
-                'store' => 'order.store',
-                'update' => 'order.update',
-                'destroy' => 'order.destroy',
-            ]
-        );
-
+//        ORDER ADMIN
         Route::post('/order/search', [OrderController::class, 'search'])->name('order.search');
         Route::post('/order/updateStatus/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
-
-        Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
-        Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
-        Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
         Route::get('/orderStatus', [OrderController::class, 'orderStatus'])->name('order.orderStatus');
         Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
-
-//        WISH ITEM
-        Route::resource('wishitem', WishItemController::class)->only(
-            ['index', 'store', 'show', 'destroy']
-        )->names(
-            [
-                'index' => 'wishitem.index',
-                'store' => 'wishitem.store',
-                'show' => 'wishitem.show',
-                'destroy' => 'wishitem.destroy',
-            ]
-        );
 
 //        PRODUCT DETAILS
         Route::resource('productdetails', ProductDetailsController::class)->only(
@@ -318,15 +239,71 @@ Route::group(
 
 //        BANNER
         Route::resource('banner', BannerController::class)->only(
-            ['index', 'store', 'show', 'destroy']
+            ['store', 'destroy']
         )->names(
             [
-                'index' => 'banner.index',
                 'store' => 'banner.store',
-                'show' => 'banner.show',
                 'destroy' => 'banner.destroy',
             ]
         );
 
-    }
+        //        COUPON
+        Route::resource('coupon', CouponController::class)->only(
+            ['index', 'store', 'show', 'update', 'destroy']
+        )->names(
+            [
+                'index' => 'coupon.index',
+                'store' => 'coupon.store',
+                'show' => 'coupon.show',
+                'update' => 'coupon.update',
+                'destroy' => 'coupon.destroy',
+            ]
+        );
+
+    });
+
+//    ORDER CLIENT
+    Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
+    Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
+    Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+
+//    WISH ITEM
+    Route::resource('wishitem', WishItemController::class)->only(
+        ['index', 'store', 'show', 'destroy']
+    )->names(
+        [
+            'index' => 'wishitem.index',
+            'store' => 'wishitem.store',
+            'show' => 'wishitem.show',
+            'destroy' => 'wishitem.destroy',
+        ]
+    );
+
+    //    COMMENT
+    Route::resource('comment', CommentController::class)->only(
+        ['index', 'show', 'store', 'update', 'destroy']
+    )->names(
+        [
+            'index' => 'comment.index',
+            'store' => 'comment.store',
+            'show' => 'comment.show',
+            'update' => 'comment.update',
+            'destroy' => 'comment.destroy',
+        ]
+    );
+
+    //    ORDER
+    Route::resource('order', OrderController::class)->only(
+        ['index', 'show', 'store', 'update']
+    )->names(
+        [
+            'index' => 'order.index',
+            'show' => 'order.show',
+            'store' => 'order.store',
+            'update' => 'order.update',
+        ]
+    );
+
+
+}
 );

@@ -46,19 +46,6 @@ class TypeUser extends Model
         return $access;
     }
 
-    public static function getHasPermission($id)
-    {
-        $hasPermissions = HasPermission::where('typeuser_id', $id)->get();
-        $hasPermission = "";
-        foreach ($hasPermissions as $hasPerm) {
-            $hasPermission .= $hasPerm->permission_id . ",";
-        }
-//        DELETE LAST COMMA
-        $hasPermission = substr($hasPermission, 0, -1);
-
-        return $hasPermission;
-    }
-
     public function access()
     {
         return $this->hasMany(Access::class, 'typeuser_id');
@@ -67,10 +54,5 @@ class TypeUser extends Model
     public function user()
     {
         return $this->hasMany(User::class, 'typeuser_id');
-    }
-
-    public function hasPermission()
-    {
-        return $this->hasMany(HasPermission::class, 'typeuser_id');
     }
 }

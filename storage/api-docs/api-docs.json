@@ -3934,109 +3934,6 @@
                 }
             }
         },
-        "/dgush-backend/public/api/permission": {
-            "get": {
-                "tags": [
-                    "Permissions"
-                ],
-                "summary": "Get list of permissions",
-                "description": "Returns list of permissions",
-                "operationId": "df6a3d032051f50edcf7033755f7f47c",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Permission"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/dgush-backend/public/api/permission/{id}": {
-            "get": {
-                "tags": [
-                    "Permissions"
-                ],
-                "summary": "Get permission information",
-                "description": "Returns permission data",
-                "operationId": "5cef7a50ccbbdf8a919345848b1a5d51",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Permission ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Permission"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Permission not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Permission not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/dgush-backend/public/api/product": {
             "get": {
                 "tags": [
@@ -7289,23 +7186,6 @@
                 },
                 "type": "object"
             },
-            "HasPermission": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "typeuser_id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "permission_id": {
-                        "type": "integer",
-                        "example": "1"
-                    }
-                },
-                "type": "object"
-            },
             "OptionMenu": {
                 "title": "OptionMenu",
                 "properties": {
@@ -7502,23 +7382,6 @@
                     },
                     "productDetail": {
                         "$ref": "#/components/schemas/ProductDetails"
-                    }
-                },
-                "type": "object"
-            },
-            "Permission": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "permission"
-                    },
-                    "route": {
-                        "type": "string",
-                        "example": "permission"
                     }
                 },
                 "type": "object"

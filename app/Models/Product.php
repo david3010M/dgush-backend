@@ -189,6 +189,7 @@ class Product extends Model
         return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
             ->join('color', 'product_details.color_id', '=', 'color.id')
             ->where('product.id', $id)
+            ->whereNull('product_details.deleted_at')
             ->select('color.id', 'color.name', 'color.value', 'color.hex')
             ->distinct()
             ->get();
@@ -199,6 +200,7 @@ class Product extends Model
         return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
+            ->whereNull('product_details.deleted_at')
             ->select('size.id', 'size.name', 'size.value')
             ->orderBy('size.id')
             ->distinct()
@@ -211,6 +213,7 @@ class Product extends Model
             ->join('color', 'product_details.color_id', '=', 'color.id')
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
+            ->whereNull('product_details.deleted_at')
             ->select(
                 'product_details.id',
                 'product_details.stock',

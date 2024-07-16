@@ -22,9 +22,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(GroupMenuSeeder::class);
         $this->call(TypeUserSeeder::class);
-        $this->call(PermissionSeeder::class);
         $this->call(OptionMenuSeeder::class);
-        $this->call(HasPermissionSeeder::class);
         $this->call(AccessSeeder::class);
         $this->call(UserSeeder::class);
 
