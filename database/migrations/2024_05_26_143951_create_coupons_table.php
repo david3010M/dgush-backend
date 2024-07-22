@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->text('description');
             $table->string('code');
             $table->string('type')->enum('percentage', 'discount')->default('discount');
+            $table->string('indicator')->enum('subtotal', 'total', 'sendCost')->default('subtotal');
             $table->boolean('active')->default(true);
             $table->decimal('value')->default(0);
             $table->timestamp('expires_at');

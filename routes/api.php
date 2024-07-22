@@ -266,6 +266,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
     Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
     Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+    Route::post('/setOrderDistrict/{id}', [OrderController::class, 'setOrderDistrict'])->name('order.setOrderDistrict');
 
 //    WISH ITEM
     Route::resource('wishitem', WishItemController::class)->only(

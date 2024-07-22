@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
 use App\Models\Coupon;
+use App\Models\District;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductDetails;
 use App\Models\SendInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use function Symfony\Component\String\s;
 
 class OrderController extends Controller
 {
@@ -179,7 +181,7 @@ class OrderController extends Controller
         $order = Order::create([
             'subtotal' => 0,
             'discount' => 0,
-            'sendCost' => 10,
+            'sendCost' => 0,
             'total' => 0,
             'quantity' => 0,
             'date' => now(),
@@ -436,19 +438,23 @@ class OrderController extends Controller
      */
     public function applyCoupon(Request $request, int $id)
     {
+        $order = Order::find($id);
+        $user = auth()->user();
+
+        if (!$order || $order->user_id !== $user->id) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        if ($order->status !== 'verificado') {
+            return response()->json(['error' => 'Order has already been verified'], 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'coupon' => 'required|exists:coupon,code'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        $order = Order::find($id);
-        $user = auth()->user();
-
-        if (!$order || $order->user_id !== $user->id) {
-            return response()->json(['error' => 'Order not found'], 404);
         }
 
         $coupon = Coupon::where('code', $request->input('coupon'))->first();
@@ -466,8 +472,16 @@ class OrderController extends Controller
 
         $discount = 0;
 
+
         if ($coupon->type === 'percentage') {
-            $discount = $order->subtotal * $coupon->value / 100;
+            if ($coupon->indicator === 'subtotal') {
+                $discount = $order->subtotal * $coupon->value / 100;
+            } else if ($coupon->indicator === 'total') {
+                $discount = $order->total * $coupon->value / 100;
+            } else if ($coupon->indicator === 'sendCost') {
+                $discount = $order->sendCost * $coupon->value / 100;
+            }
+
         } else if ($coupon->type === 'discount') {
             $discount = $coupon->value;
         }
@@ -585,8 +599,12 @@ class OrderController extends Controller
             return response()->json(['error' => 'Error creating send information'], 500);
         }
 
+        $district = District::find($request->input('district_id'));
+
         $order->update([
-            'status' => 'confirmado'
+            'status' => 'confirmado',
+            'sendCost' => $district->sendCost,
+            'total' => $order->subtotal + $district->sendCost - $order->discount
         ]);
 
         $order = Order::with('user', 'orderItems.productDetail.product.image',
@@ -658,6 +676,40 @@ class OrderController extends Controller
             'cancelado' => $cancelado
         ]);
     }
+
+    public function setOrderDistrict(Request $request, int $id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        if ($order->status !== 'verificado') {
+            return response()->json(['error' => 'Order has already been verified'], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'district_id' => 'required|exists:district,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $district = District::find($request->input('district_id'));
+
+        $order->update([
+            'sendCost' => $district->sendCost,
+            'total' => $order->subtotal + $district->sendCost - $order->discount,
+        ]);
+
+        $order = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+            ->find($order->id);
+
+        return response()->json($order);
+    }
+
 
     /**
      * @OA\Get (

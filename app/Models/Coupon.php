@@ -16,6 +16,7 @@ use Illuminate\Validation\Rule;
  *     @OA\Property(property="description",type="string", example="10% discount on all purchases."),
  *     @OA\Property(property="code",type="string", example="10OFF"),
  *     @OA\Property(property="type",type="string", example="percentage"),
+ *     @OA\Property(property="indicator", type="string", example="subtotal"),
  *     @OA\Property(property="value",type="number", example="10"),
  *     @OA\Property(property="expires_at",type="string", format="date-time", example="2022-05-26 14:39:51"),
  * )
@@ -27,6 +28,7 @@ use Illuminate\Validation\Rule;
  *     @OA\Property(property="description",type="string", example="10% discount on all purchases."),
  *     @OA\Property(property="code",type="string", example="10OFF"),
  *     @OA\Property(property="type", enum={"percentage", "discount"}, type="string", example="percentage"),
+ *     @OA\Property(property="indicator", enum={"subtotal", "total", "sendCost"}, type="string", example="subtotal"),
  *     @OA\Property(property="value",type="number", example="10"),
  *     @OA\Property(property="expires_at",type="string", format="date-time", example="2022-05-26 14:39:51"),
  * )
@@ -43,6 +45,7 @@ class Coupon extends Model
         'description',
         'code',
         'type',
+        'indicator',
         'value',
         'expires_at',
     ];

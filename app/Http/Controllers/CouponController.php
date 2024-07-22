@@ -93,6 +93,7 @@ class CouponController extends Controller
             ],
             'type' => 'required|in:discount,percentage',
             'value' => 'required|numeric',
+            'indicator' => 'nullable|in:subtotal,total,sendCost',
             'expires_at' => 'required|date',
         ]);
 
@@ -232,6 +233,7 @@ class CouponController extends Controller
                 Rule::unique('coupon', 'code')->ignore($coupon->id)->whereNull('deleted_at'),
             ],
             'type' => 'required|in:discount,percentage',
+            'indicator' => 'nullable|in:subtotal,total,sendCost',
             'value' => 'required|numeric',
             'expires_at' => 'required|date',
         ]);
