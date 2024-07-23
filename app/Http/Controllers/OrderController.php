@@ -610,7 +610,6 @@ class OrderController extends Controller
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->find($order->id);
-        $order->sendInformation->district = $district->name;
 
         return response()->json($order);
     }
@@ -708,6 +707,7 @@ class OrderController extends Controller
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->find($order->id);
 
+        $order->district = $district->name;
         return response()->json($order);
     }
 
