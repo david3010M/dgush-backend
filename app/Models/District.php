@@ -27,6 +27,7 @@ class District extends Model
     protected $fillable = [
         'name',
         'province_id',
+        'sendCost',
     ];
 
     protected $hidden = [
@@ -38,5 +39,10 @@ class District extends Model
     public function province()
     {
         return $this->belongsTo(Province::class);
+    }
+
+    public function send_information()
+    {
+        return $this->hasOne(SendInformation::class);
     }
 }

@@ -260,6 +260,17 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ]
         );
 
+//        DISTRICT
+        Route::resource('district', DistrictController::class)->only(
+            ['store', 'update', 'destroy']
+        )->names(
+            [
+                'store' => 'district.store',
+                'update' => 'district.update',
+                'destroy' => 'district.destroy',
+            ]
+        );
+
     });
 
 //    ORDER CLIENT
