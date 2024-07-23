@@ -247,6 +247,7 @@ class CouponController extends Controller
             'description' => $request->input('description'),
             'code' => $request->input('code'),
             'type' => $request->input('type'),
+            'indicator' => $request->input('indicator', 'subtotal'),
             'value' => $request->input('value'),
             'expires_at' => $request->input('expires_at'),
         ];
