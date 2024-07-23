@@ -11,6 +11,7 @@ use App\Models\ProductDetails;
 use App\Models\SendInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use function Symfony\Component\String\s;
 
 class OrderController extends Controller
@@ -570,12 +571,16 @@ class OrderController extends Controller
             'address' => 'required|string',
             'reference' => 'required|string',
             'comment' => 'nullable|string',
-            'method' => 'required|string',
-            'district_id' => 'required|exists:district,id',
+            'method' => 'required|string|in:delivery,pickup',
+            'district_id' => 'nullable|integer|exists:district,id'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        if ($request->input('method') === 'delivery' && !$request->input('district_id')) {
+            return response()->json(['error' => 'The district field is required'], 422);
         }
 
         $data = [
@@ -601,11 +606,19 @@ class OrderController extends Controller
 
         $district = District::find($request->input('district_id'));
 
-        $order->update([
-            'status' => 'confirmado',
-            'sendCost' => $district->sendCost,
-            'total' => $order->subtotal + $district->sendCost - $order->discount
-        ]);
+        if ($request->input('method') === 'delivery') {
+            $order->update([
+                'status' => 'confirmado',
+                'sendCost' => $district->sendCost,
+                'total' => $order->subtotal + $district->sendCost - $order->discount
+            ]);
+        } else {
+            $order->update([
+                'status' => 'confirmado',
+                'sendCost' => 0,
+                'total' => $order->subtotal - $order->discount
+            ]);
+        }
 
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
@@ -689,25 +702,40 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'district_id' => 'required|exists:district,id',
+            'method' => 'required|string|in:delivery,pickup',
+            'district_id' => 'nullable|integer|exists:district,id'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
+        if ($request->input('method') === 'delivery' && !$request->input('district_id')) {
+            return response()->json(['error' => 'The district field is required'], 422);
+        }
+
         $district = District::find($request->input('district_id'));
 
-        $order->update([
-            'sendCost' => $district->sendCost,
-            'total' => $order->subtotal + $district->sendCost - $order->discount,
-        ]);
+        if ($request->input('method') === 'delivery') {
+            $order->update([
+                'sendCost' => $district->sendCost,
+                'total' => $order->subtotal + $district->sendCost - $order->discount
+            ]);
+        } else {
+            $order->update([
+                'sendCost' => 0,
+                'total' => $order->subtotal - $order->discount
+            ]);
+        }
 
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->find($order->id);
 
-        $order->district = $district->name;
+        if ($request->input('method') === 'delivery') {
+            $order->district = $district->name;
+        }
+
         return response()->json($order);
     }
 
