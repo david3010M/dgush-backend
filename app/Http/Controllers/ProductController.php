@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
-use App\Http\Resources\ProductSearchResource;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductDetails;
@@ -115,8 +114,7 @@ class ProductController extends Controller
             request('sort', 'id'),
             request('direction', 'desc'),
         );
-
-        return response()->json(ProductSearchResource::collection($products));
+        return response()->json($products);
     }
 
     /**
