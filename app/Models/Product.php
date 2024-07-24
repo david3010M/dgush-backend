@@ -279,14 +279,20 @@ class Product extends Model
     public static function getRelatedProducts($id)
     {
         $product = Product::find($id);
-        return Product::where('subcategory_id', $product->subcategory_id)
+
+        // Obtener el id de la categoría a partir de la subcategoría del producto
+        $categoryId = Subcategory::find($product->subcategory_id)->category_id;
+
+        return Product::whereHas('subcategory', function ($query) use ($categoryId) {
+            $query->where('category_id', $categoryId);
+        })
             ->where('id', '!=', $id)
             ->addSelect(['image' => Image::select('url')
                 ->whereColumn('product_id', 'product.id')
                 ->orderBy('id')
                 ->limit(1)])
             ->orderBy('score', 'desc')
-            ->limit(6)
+            ->limit(4)
             ->get();
     }
 
