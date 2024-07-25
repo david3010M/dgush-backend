@@ -235,6 +235,47 @@ class Product extends Model
             });
     }
 
+    public static function getProductDetailsWithSizes($id)
+    {
+        // Consulta para obtener colores y tallas
+        $productDetails = Product::join('product_details', 'product.id', '=', 'product_details.product_id')
+            ->join('color', 'product_details.color_id', '=', 'color.id')
+            ->join('size', 'product_details.size_id', '=', 'size.id')
+            ->where('product.id', $id)
+            ->whereNull('product_details.deleted_at')
+            ->select(
+                'color.id as color_id',
+                'color.name as color_name',
+                'color.value as color_value',
+                'size.id as size_id',
+                'size.name as size_name',
+                'size.value as size_value',
+                'product_details.stock'
+            )
+            ->orderBy('color.id')
+            ->get();
+
+        // Agrupar resultados por color
+        $groupedDetails = $productDetails->groupBy('color_id')->map(function ($items) {
+            $color = [
+                'id' => $items->first()->color_id,
+                'name' => $items->first()->color_name,
+                'value' => $items->first()->color_value,
+                'sizes' => $items->map(function ($item) {
+                    return [
+                        'id' => $item->size_id,
+                        'name' => $item->size_name,
+                        'value' => $item->size_value,
+                        'stock' => round($item->stock, 2)
+                    ];
+                })->toArray()
+            ];
+            return $color;
+        })->values();
+
+        return $groupedDetails;
+    }
+
 
     public function productDetails()
     {

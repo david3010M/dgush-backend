@@ -50,6 +50,7 @@ Route::get('/product', [ProductController::class, 'index'])->name('product.index
 //Route::post('/product', [ProductController::class, 'store'])->name('product.store');
 Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/productShow/{id}', [ProductController::class, 'productShow'])->name('product.productShow');
 Route::get('/product/subcategoryRelated/{id}', [ProductController::class, 'subcategoryRelated'])->name('product.subcategoryRelated');
 
 Route::get('/category', [CategoryController::class, 'index'])->name('category.index');

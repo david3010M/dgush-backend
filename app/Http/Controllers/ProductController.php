@@ -338,6 +338,35 @@ class ProductController extends Controller
         }
     }
 
+    public function productShow(int $id)
+    {
+        // VALIDATE ID IS INTEGER
+        if (!is_int($id)) {
+            return response()->json(['message' => 'ID must be an integer'], 422);
+        }
+
+        // FIND PRODUCT
+        $product = Product::find($id);
+        if ($product) {
+            // GET PRODUCT DETAILS
+            $productDetails = $product->getProductDetailsWithSizes($id);
+            $comments = $product->comments($id);
+            $images = $product->images($id);
+            $productRelated = $product->getRelatedProducts($id);
+
+            return response()->json([
+                'product' => $product,
+                'productDetails' => $productDetails,
+                'comments' => $comments,
+                'images' => $images,
+                'productRelated' => $productRelated
+            ]);
+        } else {
+            // PRODUCT NOT FOUND
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+    }
+
     /**
      * UPDATE PRODUCT
      * @OA\Put(
