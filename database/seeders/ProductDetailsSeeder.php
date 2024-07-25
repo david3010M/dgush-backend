@@ -33,7 +33,7 @@ class ProductDetailsSeeder extends Seeder
                 foreach ($selectedSizes as $size) {
                     // Crea un registro en productDetails con stock de 10
                     ProductDetails::create([
-                        'stock' => 10000,
+                        'stock' => 100,
                         'product_id' => $product->id,
                         'color_id' => $color->id,
                         'size_id' => $size->id,
