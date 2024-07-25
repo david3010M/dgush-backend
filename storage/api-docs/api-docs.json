@@ -5606,11 +5606,48 @@
                     "Subcategory"
                 ],
                 "summary": "Search subcategories",
-                "description": "SEARCH SUBCATEGORIES",
                 "operationId": "8fdf57f27354c56428723e27596b79f0",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "T-Shirts"
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "name"
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "asc"
+                    },
+                    {
+                        "name": "all",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": "false"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Search subcategories",
+                        "description": "Subcategories found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5618,6 +5655,22 @@
                                     "items": {
                                         "$ref": "#/components/schemas/Subcategory"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subcategories not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Subcategories not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -7717,6 +7770,10 @@
                     "image": {
                         "type": "string",
                         "example": "t-shirts.jpg"
+                    },
+                    "isHome": {
+                        "type": "boolean",
+                        "example": "false"
                     },
                     "category_id": {
                         "type": "integer",

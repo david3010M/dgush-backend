@@ -41,27 +41,18 @@ class SubcategoryController extends Controller
     }
 
     /**
-     * SEARCH SUBCATEGORIES
-     * @OA\Get(
+     * @OA\Get (
      *     path="/dgush-backend/public/api/subcategory/search",
-     *     summary="Search subcategories",
      *     tags={"Subcategory"},
+     *     summary="Search subcategories",
      *     security={{"bearerAuth": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Search subcategories",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Subcategory")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
-     *        )
-     *     )
+     *     @OA\Parameter (name="search", in="query", required=false, @OA\Schema(type="string"), example="T-Shirts"),
+     *     @OA\Parameter (name="sort", in="query", required=false, @OA\Schema(type="string"), example="name"),
+     *     @OA\Parameter (name="direction", in="query", required=false, @OA\Schema(type="string"), example="asc"),
+     *     @OA\Parameter (name="all", in="query", required=false, @OA\Schema(type="boolean"), example="false"),
+     *     @OA\Response (response="200", description="Subcategories found", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Subcategory"))),
+     *     @OA\Response (response="404", description="Subcategories not found", @OA\JsonContent(@OA\Property(property="message", type="string", example="Subcategories not found"))),
+     *     @OA\Response (response="401", description="Unauthorized", @OA\JsonContent(@OA\Property(property="message", type="string", example="Unauthenticated."))),
      * )
      */
     public function search()
@@ -69,7 +60,8 @@ class SubcategoryController extends Controller
         $subcategories = Subcategory::search(
             request('search'),
             request('sort', 'score'),
-            request('direction', 'desc')
+            request('direction', 'desc'),
+            request('all', false)
         );
         return response()->json($subcategories);
     }
@@ -251,6 +243,7 @@ class SubcategoryController extends Controller
                     'string',
                     Rule::unique('subcategory', 'name')->ignore($subcategory->id)->whereNull('deleted_at')
                 ],
+                'isHome' => 'nullable|boolean',
                 'category_id' => 'nullable|integer|exists:category,id',
             ]);
 
@@ -264,6 +257,7 @@ class SubcategoryController extends Controller
             $data = [
                 'name' => $name,
                 'value' => $value,
+                'isHome' => (boolean)$request->input('isHome') ?? $subcategory->isHome,
                 'category_id' => $request->input('category_id') ?? $subcategory->category_id
             ];
 

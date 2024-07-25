@@ -107,7 +107,7 @@ class ProductController extends Controller
             request('search'),
             request('status'),
             request('score'),
-            request('subcategory'), // SUBCATEGORY IS AN ARRAY OF STRING
+            request('category'), // SUBCATEGORY IS AN ARRAY OF STRING
             request('price'),
             request('color'), // COLOR IS AN ARRAY OF STRING
             request('size'), // SIZE IS AN ARRAY OF STRING

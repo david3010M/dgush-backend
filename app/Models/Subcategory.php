@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="value", type="string", example="t-shirts"),
  *     @OA\Property(property="score", type="number", example="5.0"),
  *     @OA\Property(property="image", type="string", example="t-shirts.jpg"),
+ *     @OA\Property(property="isHome", type="boolean", example="false"),
  *     @OA\Property(property="category_id", type="integer", example="1")
  * )
  *
@@ -39,6 +40,7 @@ class Subcategory extends Model
         'value',
         'score',
         'image',
+        'isHome',
         'category_id',
     ];
 
@@ -48,8 +50,11 @@ class Subcategory extends Model
         'deleted_at',
     ];
 
-//    SEARCH
-    public static function search($search, $sort, $direction)
+    protected $casts = [
+        'isHome' => 'boolean',
+    ];
+
+    public static function search($search, $sort, $direction, $all)
     {
         $query = Subcategory::query();
 
@@ -57,8 +62,15 @@ class Subcategory extends Model
             $query->where('name', 'like', '%' . $search . '%');
         }
 
-        return $query->orderBy($sort, $direction)->simplePaginate(12);
+        if ($sort == 'isHome') {
+            return $query->orderBy($sort, $direction)->limit(10)->get();
+        }
 
+        if ($all == 'true') {
+            return $query->orderBy($sort, $direction)->get();
+        }
+
+        return $query->orderBy($sort, $direction)->simplePaginate(12);
     }
 
     public function category()
