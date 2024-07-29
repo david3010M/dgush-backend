@@ -54,7 +54,8 @@ class BannerController extends Controller
                 'string',
                 Rule::unique('banners', 'name')->whereNull('deleted_at')
             ],
-            'image' => 'required|image'
+            'videoURL' => 'nullable|string',
+            'image' => 'nullable|image'
         ]);
 
         if ($validator->fails()) {
@@ -62,26 +63,41 @@ class BannerController extends Controller
         }
 
         $image = $request->file('image');
+        $video = $request->input('videoURL');
 
-        $fileName = 'banner/' . $image->getClientOriginalName();
-        Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
-        $imageUrl = Storage::disk('spaces')->url($fileName);
+        if ($image && $video) {
+            return response()->json(['error' => 'No se puede subir una imagen y un video al mismo tiempo'], 422);
+        }
 
-        $image = Image::create([
-            'name' => $fileName,
-            'url' => $imageUrl,
-        ]);
+        if ($image) {
+            $fileName = 'banner/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+            $imageUrl = Storage::disk('spaces')->url($fileName);
 
-        $data = [
-            'name' => $request->input('name'),
-            'route' => $image->url,
-            'image_id' => $image->id
-        ];
+            $image = Image::create([
+                'name' => $fileName,
+                'url' => $imageUrl,
+            ]);
 
-        $banner = Banner::create($data);
+            $data = [
+                'name' => $request->input('name'),
+                'route' => $image->url,
+                'image_id' => $image->id
+            ];
+            $banner = Banner::create($data);
+            return response()->json(new BannerResource($banner));
+        }
 
+        if ($video) {
+            $data = [
+                'name' => $request->input('name'),
+                'route' => $video,
+            ];
+            $banner = Banner::create($data);
+            return response()->json(new BannerResource($banner));
+        }
 
-        return response()->json(new BannerResource($banner));
+        return response()->json(['error' => 'No se ha subido ninguna imagen'], 422);
     }
 
     /**

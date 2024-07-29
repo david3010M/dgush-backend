@@ -247,6 +247,7 @@ class Product extends Model
                 'color.id as color_id',
                 'color.name as color_name',
                 'color.value as color_value',
+                'color.hex as color_hex',
                 'size.id as size_id',
                 'size.name as size_name',
                 'size.value as size_value',
@@ -261,6 +262,7 @@ class Product extends Model
                 'id' => $items->first()->color_id,
                 'name' => $items->first()->color_name,
                 'value' => $items->first()->color_value,
+                'hex' => $items->first()->color_hex,
                 'sizes' => $items->map(function ($item) {
                     return [
                         'id' => $item->size_id,

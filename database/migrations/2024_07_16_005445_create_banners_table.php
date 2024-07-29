@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('route');
-            $table->foreignId('image_id')->constrained('image');
+            $table->foreignId('image_id')->nullable()->constrained('image');
             $table->timestamps();
             $table->softDeletes();
         });
