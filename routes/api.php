@@ -247,6 +247,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'destroy' => 'banner.destroy',
             ]
         );
+        Route::post('/banner-video', [BannerController::class, 'storeVideo'])->name('banner.video');
 
         //        COUPON
         Route::resource('coupon', CouponController::class)->only(

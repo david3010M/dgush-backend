@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('banners', function (Blueprint $table) {
             $table->id();
+            $table->string('type');
             $table->string('name');
             $table->string('route');
             $table->foreignId('image_id')->nullable()->constrained('image');

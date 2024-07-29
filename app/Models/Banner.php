@@ -12,6 +12,7 @@ class Banner extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'type',
         'name',
         'route',
         'image_id'

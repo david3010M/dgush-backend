@@ -54,8 +54,7 @@ class BannerController extends Controller
                 'string',
                 Rule::unique('banners', 'name')->whereNull('deleted_at')
             ],
-            'videoURL' => 'nullable|string',
-            'image' => 'nullable|image'
+            'image' => 'required|image'
         ]);
 
         if ($validator->fails()) {
@@ -63,41 +62,76 @@ class BannerController extends Controller
         }
 
         $image = $request->file('image');
-        $video = $request->input('videoURL');
 
-        if ($image && $video) {
-            return response()->json(['error' => 'No se puede subir una imagen y un video al mismo tiempo'], 422);
+        $fileName = 'banner/' . $image->getClientOriginalName();
+        Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+        $imageUrl = Storage::disk('spaces')->url($fileName);
+
+        $image = Image::create([
+            'name' => $fileName,
+            'url' => $imageUrl,
+        ]);
+
+        $data = [
+            'type' => 'image',
+            'name' => $request->input('name'),
+            'route' => $image->url,
+            'image_id' => $image->id
+        ];
+
+        $banner = Banner::create($data);
+
+
+        return response()->json(new BannerResource($banner));
+    }
+
+    /**
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/banner-video",
+     *     tags={"Banner"},
+     *     summary="Crear un banner de video",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(property="name", type="string", example="Banner de video"),
+     *                 @OA\Property(property="videoURL", type="string", example="https://www.youtube.com/watch?v=videoID")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response="200", description="Banner de video creado correctamente", @OA\JsonContent(ref="#/components/schemas/Banner")),
+     *     @OA\Response(response="422", description="Error de validación", @OA\JsonContent(ref="#/components/schemas/ValidationError")),
+     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
+     * )
+     *
+     */
+    public function storeVideo(Request $request)
+    {
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('banners', 'name')->whereNull('deleted_at')
+            ],
+            'videoURL' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        if ($image) {
-            $fileName = 'banner/' . $image->getClientOriginalName();
-            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
-            $imageUrl = Storage::disk('spaces')->url($fileName);
+        $data = [
+            'type' => 'video',
+            'name' => $request->input('name'),
+            'route' => $request->input('videoURL'),
+            'image_id' => null
+        ];
 
-            $image = Image::create([
-                'name' => $fileName,
-                'url' => $imageUrl,
-            ]);
+        $banner = Banner::create($data);
 
-            $data = [
-                'name' => $request->input('name'),
-                'route' => $image->url,
-                'image_id' => $image->id
-            ];
-            $banner = Banner::create($data);
-            return response()->json(new BannerResource($banner));
-        }
-
-        if ($video) {
-            $data = [
-                'name' => $request->input('name'),
-                'route' => $video,
-            ];
-            $banner = Banner::create($data);
-            return response()->json(new BannerResource($banner));
-        }
-
-        return response()->json(['error' => 'No se ha subido ninguna imagen'], 422);
+        return response()->json(new BannerResource($banner));
     }
 
     /**

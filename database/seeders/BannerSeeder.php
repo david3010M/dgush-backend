@@ -15,9 +15,9 @@ class BannerSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['name' => "Verano", "route" => "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/verano.png", "image_id" => ""],
-            ['name' => "Remate", "route" => "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/remate.png", "image_id" => ""],
-            ['name' => "Cincuenta", "route" => "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/50.png", "image_id" => ""]
+            ['type' => "image", 'name' => "Verano", "route" => "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/verano.png", "image_id" => ""],
+            ['type' => "image", 'name' => "Remate", "route" => "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/remate.png", "image_id" => ""],
+            ['type' => "image", 'name' => "Cincuenta", "route" => "https://dgush-storage.sfo3.digitaloceanspaces.com/banner/50.png", "image_id" => ""]
         ];
 
         foreach ($data as $banner) {
