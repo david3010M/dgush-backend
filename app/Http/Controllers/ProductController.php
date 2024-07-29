@@ -441,7 +441,7 @@ class ProductController extends Controller
             'detailweb' => 'nullable|string',
             'price1' => 'nullable|numeric',
             'price2' => 'nullable|numeric',
-            'status' => 'nullable|string|in:onsale,new',
+            'status' => 'nullable|string|in:onsale,new,none',
             'subcategory_id' => 'nullable|integer|exists:subcategory,id',
             'product_details' => 'nullable|array',
             'product_details.*.stock' => 'required|numeric',
@@ -461,7 +461,7 @@ class ProductController extends Controller
             'detailweb' => $request->input('detailweb') ?? $product->detailweb,
             'price1' => $request->input('price1') ?? $product->price1,
             'price2' => $request->input('price2') ?? $product->price2,
-            'status' => $request->input('status') ?? $product->status,
+            'status' => $request->input('status') === 'none' ? "" : $request->input('status') ?? $product->status,
             'subcategory_id' => $request->input('subcategory_id') ?? $product->subcategory_id,
         ];
 
@@ -562,6 +562,54 @@ class ProductController extends Controller
         } else {
             return response()->json(['message' => 'Product not found'], 404);
         }
+    }
+
+    /**
+     * UPDATE PRODUCT ON SALE
+     * @OA\Post(
+     *     path="/dgush-backend/public/api/productsOnSale",
+     *     tags={"Product"},
+     *     summary="Update products on sale",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *              required={"products"},
+     *              @OA\Property(property="products", type="array", @OA\Items(
+     *                  @OA\Property(property="id", type="integer", example="1")
+     *              ))
+     *         )
+     *     ),
+     *     @OA\Response( response=422 , description="Validation error", @OA\JsonContent( @OA\Property(property="error", type="string", example="The given data was invalid.") ) ),
+     *     @OA\Response( response=200, description="Products updated", @OA\JsonContent( @OA\Property(property="message", type="string", example="Products updated") ) )
+     * )
+     */
+    public function updateProductsOnSale(Request $request)
+    {
+        $validator = validator()->make($request->all(), [
+            'products' => 'required|array',
+            'products.*' => 'required|array',
+            'products.*.id' => 'required|integer|exists:product,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $products = $request->input('products');
+
+        $productsCurrentOnSale = Product::where('status', 'onsale')->get();
+
+        foreach ($productsCurrentOnSale as $product) {
+            $product->update(['status' => '']);
+        }
+
+        foreach ($products as $product) {
+            $product = Product::find($product['id']);
+            $product->update(['status' => 'onsale']);
+        }
+
+        return response()->json(['message' => 'Products updated']);
     }
 
 }

@@ -164,6 +164,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ]
         );
 
+        Route::post('/productsOnSale', [ProductController::class, 'updateProductsOnSale'])->name('product.productsOnSale');
         Route::post('/updateProduct/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
 

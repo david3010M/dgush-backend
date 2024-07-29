@@ -4622,6 +4622,82 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/productsOnSale": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update products on sale",
+                "description": "UPDATE PRODUCT ON SALE",
+                "operationId": "1e4332ae8118abb53da50a0443d760d3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "products"
+                                ],
+                                "properties": {
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Products updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Products updated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/dgush-backend/public/api/productdetails": {
             "get": {
                 "tags": [
@@ -6985,6 +7061,10 @@
                     "id": {
                         "type": "integer",
                         "example": "1"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "image"
                     },
                     "name": {
                         "type": "string",
