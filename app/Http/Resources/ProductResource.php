@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'price2' => $this->price2,
             'score' => $this->score,
             'status' => $this->status,
+            'liquidacion' => $this->liquidacion,
             'subcategory_id' => $this->subcategory_id,
             'image' => (new ImageResource($this->image))->url
         ];

@@ -63,8 +63,13 @@ class Product extends Model
         'price2',
         'score',
         'status',
+        'liquidacion',
         'subcategory_id',
         'image',
+    ];
+
+    protected $casts = [
+        'liquidacion' => 'boolean',
     ];
 
     protected $hidden = [
@@ -117,7 +122,7 @@ class Product extends Model
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
 
-    public static function search($search, $status, $score, $subcategory, $price, $color, $size, $sort, $direction)
+    public static function search($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction)
     {
         $query = Product::query();
         if ($search) {
@@ -130,6 +135,10 @@ class Product extends Model
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+        if ($liquidacion) {
+            $query->where('liquidacion', $liquidacion);
         }
 
         if ($score) {

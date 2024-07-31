@@ -90,6 +90,8 @@ class ProductController extends Controller
         request()->validate([
             'search' => 'nullable|string',
             'score' => 'nullable|integer',
+            'status' => 'nullable|string|in:onsale,new',
+            'liquidacion' => 'nullable|boolean',
             'category' => 'nullable|array',
             'category.*' => 'nullable|string',
             'price' => 'nullable|array|size:2',
@@ -106,6 +108,7 @@ class ProductController extends Controller
         $products = Product::search(
             request('search'),
             request('status'),
+            request('liquidacion'),
             request('score'),
             request('category'), // SUBCATEGORY IS AN ARRAY OF STRING
             request('price'),
@@ -442,6 +445,7 @@ class ProductController extends Controller
             'price1' => 'nullable|numeric',
             'price2' => 'nullable|numeric',
             'status' => 'nullable|string|in:onsale,new,none',
+            'liquidacion' => 'nullable|boolean',
             'subcategory_id' => 'nullable|integer|exists:subcategory,id',
             'product_details' => 'nullable|array',
             'product_details.*.stock' => 'required|numeric',
@@ -462,6 +466,7 @@ class ProductController extends Controller
             'price1' => $request->input('price1') ?? $product->price1,
             'price2' => $request->input('price2') ?? $product->price2,
             'status' => $request->input('status') === 'none' ? "" : $request->input('status') ?? $product->status,
+            'liquidacion' => $request->input('liquidacion') ?? $product->liquidacion,
             'subcategory_id' => $request->input('subcategory_id') ?? $product->subcategory_id,
         ];
 

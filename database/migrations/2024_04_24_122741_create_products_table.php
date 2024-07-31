@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->decimal('score', 8, 1)->default(0);
 //            $table->string('condition')->values(['new', 'used'])->default('new');
             $table->string('status')->values(['onsale', 'new', ''])->default('');
+            $table->boolean('liquidacion')->default(false);
             $table->foreignId('subcategory_id')->constrained('subcategory');
             $table->softDeletes();
             $table->timestamps();
