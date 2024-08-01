@@ -21,6 +21,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WishItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -80,6 +81,10 @@ Route::get('/size', [SizeController::class, 'index'])->name('size.index');
 // BANNER
 Route::get('/banner', [BannerController::class, 'index'])->name('banner.index');
 Route::get('/banner/{id}', [BannerController::class, 'show'])->name('banner.show');
+
+//VIDEO
+Route::get('/video', [VideoController::class, 'index'])->name('video.index');
+Route::post('/video', [VideoController::class, 'update'])->name('video.update');
 
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS

@@ -85,54 +85,6 @@ class BannerController extends Controller
         return response()->json(new BannerResource($banner));
     }
 
-    /**
-     * @OA\Post (
-     *     path="/dgush-backend/public/api/banner-video",
-     *     tags={"Banner"},
-     *     summary="Crear un banner de video",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 @OA\Property(property="name", type="string", example="Banner de video"),
-     *                 @OA\Property(property="videoURL", type="string", example="https://www.youtube.com/watch?v=videoID")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response="200", description="Banner de video creado correctamente", @OA\JsonContent(ref="#/components/schemas/Banner")),
-     *     @OA\Response(response="422", description="Error de validación", @OA\JsonContent(ref="#/components/schemas/ValidationError")),
-     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
-     * )
-     *
-     */
-    public function storeVideo(Request $request)
-    {
-        $validator = validator()->make($request->all(), [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('banners', 'name')->whereNull('deleted_at')
-            ],
-            'videoURL' => 'required|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        $data = [
-            'type' => 'video',
-            'name' => $request->input('name'),
-            'route' => $request->input('videoURL'),
-            'image_id' => null
-        ];
-
-        $banner = Banner::create($data);
-
-        return response()->json(new BannerResource($banner));
-    }
 
     /**
      * @OA\Get (
