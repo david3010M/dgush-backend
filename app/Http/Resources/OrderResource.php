@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     title="OrderResource",
  *     description="Order resource",
  *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="number", type="string", example="00000001"),
  *     @OA\Property(property="subtotal", type="decimal", example="100.00"),
  *     @OA\Property(property="discount", type="decimal", example="10.00"),
  *     @OA\Property(property="sendCost", type="decimal", example="5.00"),
@@ -36,6 +37,7 @@ class OrderResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'number' => $this->number,
             'subtotal' => $this->subtotal,
             'discount' => $this->discount,
             'sendCost' => $this->sendCost,

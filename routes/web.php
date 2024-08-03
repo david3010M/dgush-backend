@@ -1,7 +1,5 @@
 <?php
 
-use App\Mail\ForgetPassword;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,11 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/mail', function () {
-    Mail::to('hvaldiviezos@unprg.edu.pe')
-        ->send(new ForgetPassword());
 });
 
 Route::get('/mailPrueba', function () {

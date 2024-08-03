@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ForgetPassword;
+use App\Models\ForgetPasswordCode;
 use App\Models\TypeUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -199,34 +202,22 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validar las credenciales del usuario
         $credentials = $request->only('email', 'password');
         $validator = Validator::make($credentials, [
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Verificar si las credenciales son válidas
         if ($validator->fails()) {
             return response()->json(['error' => 'Invalid credentials'], 400);
         }
 
-        // Intentar autenticar al usuario
         if (Auth::attempt($credentials)) {
-            // Obtener el usuario autenticado
             $user = Auth::user();
 
-            // Generar un token de acceso para el usuario
-//            $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
             $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
-
-//            TYPEUSER
             $typeuser = $user->typeuser()->first();
-
-//            ACCESS IN A STRING FORMAT
             $typeuserAccess = $typeuser->getAccess($typeuser->id);
-
-//            PERMISSIONS IN A STRING FORMAT
 
             return response()->json([
                 'access_token' => $token->plainTextToken,
@@ -461,6 +452,7 @@ class AuthController extends Controller
             'lastnames' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
+            'confirm_password' => 'required|same:password',
             'accept_terms' => 'required|boolean'
         ]);
 
@@ -501,6 +493,97 @@ class AuthController extends Controller
                 'optionMenuAccess' => $optionMenuAccess,
             ]
         );
+    }
+
+
+    public function forgetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        $code = random_int(100000, 999999);
+
+        ForgetPasswordCode::where('email', $request->email)->update(['used' => true]);
+
+        ForgetPasswordCode::create([
+            'email' => $request->email,
+            'code' => Hash::make($code),
+            'expires_at' => now()->addMinutes(10),
+            'user_id' => $user->id,
+        ]);
+
+        Mail::to($request->input('email'))
+            ->send(new ForgetPassword($code, $user->names));
+
+        $response = [
+            'message' => 'El código ha sido enviado a tu correo electrónico',
+            'email' => $request->input('email')
+        ];
+
+        return response()->json($response);
+    }
+
+    public function validateCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+            'code' => 'required|numeric',
+            'password' => 'required|min:8'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $code = ForgetPasswordCode::where('email', $request->email)
+            ->where('used', false)
+            ->where('expires_at', '>=', now())
+            ->first();
+
+        if ($code && Hash::check($request->code, $code->code)) {
+            $user = User::find($code->user_id);
+            $user->password = bcrypt($request->password);
+            $user->save();
+
+            $code->used = true;
+            $code->used_at = now();
+            $code->save();
+
+            return response()->json(['message' => 'Contraseña actualizada correctamente']);
+        } else {
+            return response()->json(['error' => 'Código inválido o expirado'], 422);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required|min:8',
+            'confirm_password' => 'required|same:new_password'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $user = auth('sanctum')->user();
+
+        if (Hash::check($request->current_password, $user->password)) {
+            $user->password = bcrypt($request->new_password);
+            $user->save();
+
+            return response()->json(['message' => 'Contraseña actualizada correctamente']);
+        } else {
+            return response()->json(['error' => 'Contraseña actual incorrecta'], 422);
+        }
     }
 
 

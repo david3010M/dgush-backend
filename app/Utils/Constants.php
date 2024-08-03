@@ -4,6 +4,7 @@ namespace App\Utils;
 
 class Constants
 {
-    const DEFAULT_PAGE_SIZE = 12;
+    const DEFAULT_PER_PAGE = 10;
     const CREATE = 'CREATE';
+
 }

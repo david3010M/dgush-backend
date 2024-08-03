@@ -55,6 +55,7 @@ class SendInformation extends Model
         'comment',
         'method',
         'district_id',
+        'sede_id',
         'order_id',
     ];
 
@@ -72,6 +73,11 @@ class SendInformation extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function sede()
+    {
+        return $this->belongsTo(Sede::class);
     }
 
 

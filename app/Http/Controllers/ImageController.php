@@ -64,7 +64,7 @@ class ImageController extends Controller
         return response()->json(['message' => 'Directorio eliminado correctamente']);
     }
 
-    public function uploadImages(Request $request, int $id)
+    public function uploadImages(Request $request, $id)
     {
         //        VALIDATE DATA
         $request->validate(
@@ -75,42 +75,39 @@ class ImageController extends Controller
         );
 
         //        FIND PRODUCT
-        $product = Product::find($id);
+//        $product = Product::find($id);
 
-        if ($product) {
-            $images = $request->file('images');
-            $imagesResponse = [];
+//        if ($product) {
+        $images = $request->file('images');
+        $imagesResponse = [];
 
-            //            VALIDATE IMAGE NAME MUST BE UNIQUE IN TABLE IMAGE WITH THE SAME PRODUCT_ID
+        //            VALIDATE IMAGE NAME MUST BE UNIQUE IN TABLE IMAGE WITH THE SAME PRODUCT_ID
 
-            foreach ($images as $image) {
-                $imageValidate = Image::where('name', $image->getClientOriginalName())
-                    ->where('product_id', $id)
-                    ->first();
-                if ($imageValidate) {
-                    return response()->json(['message' => 'Image is already uploaded'], 409);
-                }
+        foreach ($images as $image) {
+            $imageValidate = Image::where('name', $image->getClientOriginalName())->first();
+            if ($imageValidate) {
+                return response()->json(['message' => 'Image is already uploaded'], 409);
             }
-
-            foreach ($images as $image) {
-                //                UPLOAD IMAGE
-                $fileName = $id . '/' . $image->getClientOriginalName();
-                Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
-
-                //                GET IMAGE URLs
-                $imageUrl = Storage::disk('spaces')->url($fileName);
-
-                $image = Image::create([
-                    'name' => $fileName,
-                    'url' => $imageUrl,
-                    'product_id' => $id
-                ]);
-
-                $imagesResponse[] = $image;
-            }
-            return response()->json($imagesResponse);
-        } else {
-            return response()->json(['message' => 'Product not found'], 404);
         }
+
+        foreach ($images as $image) {
+            //                UPLOAD IMAGE
+            $fileName = $id . '/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+            //                GET IMAGE URLs
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            $image = Image::create([
+                'name' => $fileName,
+                'url' => $imageUrl,
+            ]);
+
+            $imagesResponse[] = $image;
+        }
+        return response()->json($imagesResponse);
+//        } else {
+//            return response()->json(['message' => 'Product not found'], 404);
+//        }
     }
 }

@@ -21,7 +21,8 @@ return new class extends Migration {
             $table->string('comment')->nullable();
             $table->string('method');
             $table->foreignId('order_id')->constrained('order')->unique();
-            $table->foreignId('district_id')->constrained('district');
+            $table->foreignId('district_id')->nullable()->constrained('district');
+            $table->foreignId('sede_id')->nullable()->constrained('sedes');
             $table->timestamps();
             $table->softDeletes();
         });

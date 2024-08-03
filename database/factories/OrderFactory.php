@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,6 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $coupon = $this->faker->randomElement([1, 2]);
         $subtotal = $this->faker->randomFloat(2, 100, 1000);
         $sendCost = $this->faker->randomFloat(2, 10, 30);
         $discount = $this->faker->randomFloat(2, 0, $subtotal - $sendCost);

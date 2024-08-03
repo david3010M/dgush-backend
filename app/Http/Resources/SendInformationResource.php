@@ -37,7 +37,7 @@ class SendInformationResource extends JsonResource
             'comment' => $this->comment,
             'method' => $this->method,
             'district_id' => $this->district_id,
-            'district' => (new DistrictResource($this->district))->name,
+            'district' => $this->district ? (new DistrictResource($this->district))->name : null,
             'order_id' => $this->order_id,
         ];
     }

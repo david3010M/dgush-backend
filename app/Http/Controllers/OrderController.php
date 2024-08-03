@@ -9,10 +9,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductDetails;
 use App\Models\SendInformation;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use function Symfony\Component\String\s;
 
 class OrderController extends Controller
 {
@@ -178,8 +178,13 @@ class OrderController extends Controller
             }
         }
 
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(number AS SIGNED)), 0) + 1 AS siguienteNum FROM orders')[0]->siguienteNum;
+        $siguienteNum = (int)$resultado;
+
+
         // Crear la orden
         $order = Order::create([
+            'number' => $siguienteNum,
             'subtotal' => 0,
             'discount' => 0,
             'sendCost' => 0,
@@ -271,10 +276,12 @@ class OrderController extends Controller
     {
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
-            ->where('user_id', auth()->user()->id)
             ->find($id);
 
-        if (!$order) {
+        $user = auth()->user();
+        $user = User::find($user->id);
+
+        if (!$order || $order->user_id !== $user->id && $user->typeuser->name !== 'Admin') {
             return response()->json(['error' => 'Order not found'], 404);
         }
 

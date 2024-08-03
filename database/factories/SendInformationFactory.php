@@ -9,18 +9,17 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class SendInformationFactory extends Factory
 {
-//    'names',
-//        'dni',
-//        'email',
-//        'phone',
-//        'address',
-//        'reference',
-//        'comment',
-//        'method',
-//        'district_id',
-//        'order_id',
     public function definition(): array
     {
+        $method = $this->faker->randomElement(['delivery', 'pickup']);
+        $district_id = null;
+        $sede_id = null;
+        if ($method === 'delivery') {
+            $district_id = $this->faker->randomElement([1, 2, 3]);
+        } else {
+            $sede_id = $this->faker->randomElement([1, 2]);
+        }
+
         return [
             'names' => $this->faker->name(),
             'dni' => $this->faker->randomNumber(8),
@@ -29,9 +28,10 @@ class SendInformationFactory extends Factory
             'address' => $this->faker->address(),
             'reference' => $this->faker->sentence(),
             'comment' => $this->faker->sentence(),
-            'method' => $this->faker->randomElement(['delivery', 'recoger en tienda']),
-            'district_id' => 1,
-            'order_id' => 1
+            'method' => $method,
+            'district_id' => $district_id,
+            'sede_id' => $sede_id,
+            'order_id' => 1,
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -13,12 +14,16 @@ class ForgetPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $code;
+    public $user;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(int $code, string $user)
     {
-
+        $this->code = $code;
+        $this->user = $user;
     }
 
     /**
@@ -27,7 +32,8 @@ class ForgetPassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Forget Password',
+            from: new Address('dgush@gmail.com', 'DGush'),
+            subject: 'Recuperar contraseña',
         );
     }
 

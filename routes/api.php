@@ -17,12 +17,14 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\SedeController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WishItemController;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,10 +42,13 @@ use Illuminate\Support\Facades\Route;
 // ROUTES FOR AUTHENTICATION
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/forgetPassword', [AuthController::class, 'forgetPassword'])->name('forgetPassword');
+Route::post('/validateCode', [AuthController::class, 'validateCode'])->name('validateCode');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/changePassword', [AuthController::class, 'changePassword'])->name('changePassword');
 });
 
 // PUBLIC ROUTES
@@ -90,9 +95,10 @@ Route::post('/video', [VideoController::class, 'update'])->name('video.update');
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+//    ROUTES JUST FOR ADMIN USERS
     Route::group(['middleware' => ['checkAccess']], function () {
 
-        Route::post('/product/image/{id}', [ProductController::class, 'uploadImages'])->name('product.images');
+        Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
 
         //        GROUPMENU
         Route::resource('groupmenu', GroupMenuController::class)->only(
@@ -276,6 +282,19 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'store' => 'district.store',
                 'update' => 'district.update',
                 'destroy' => 'district.destroy',
+            ]
+        );
+
+//        SEDE
+        Route::resource('sede', SedeController::class)->only(
+            ['index', 'show', 'store', 'update', 'destroy']
+        )->names(
+            [
+                'index' => 'sede.index',
+                'store' => 'sede.store',
+                'show' => 'sede.show',
+                'update' => 'sede.update',
+                'destroy' => 'sede.destroy',
             ]
         );
 
