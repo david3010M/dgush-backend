@@ -38,6 +38,8 @@ class SendInformationResource extends JsonResource
             'method' => $this->method,
             'district_id' => $this->district_id,
             'district' => $this->district ? (new DistrictResource($this->district))->name : null,
+            'sede_id' => $this->sede_id,
+            'sede' => $this->sede ? (new SedeResource($this->sede))->name : null,
             'order_id' => $this->order_id,
         ];
     }
