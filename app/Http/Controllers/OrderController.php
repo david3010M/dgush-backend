@@ -178,13 +178,14 @@ class OrderController extends Controller
             }
         }
 
-        $resultado = DB::select('SELECT COALESCE(MAX(CAST(number AS SIGNED)), 0) + 1 AS siguienteNum FROM orders')[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $lastOrder = Order::orderBy('number', 'desc')->first();
+        $lastNumber = $lastOrder ? (int)$lastOrder->number : 0;
+        $number = str_pad($lastNumber + 1, 9, "0", STR_PAD_LEFT);
 
 
         // Crear la orden
         $order = Order::create([
-            'number' => $siguienteNum,
+            'number' => $number,
             'subtotal' => 0,
             'discount' => 0,
             'sendCost' => 0,
@@ -206,7 +207,7 @@ class OrderController extends Controller
                 return response()->json(['error' => 'The product is out of stock'], 422);
             }
 
-            $orderItem = OrderItem::create([
+            OrderItem::create([
                 'quantity' => $products[$key]['quantity'],
                 'product_detail_id' => $productDetail->id,
                 'order_id' => $order->id
