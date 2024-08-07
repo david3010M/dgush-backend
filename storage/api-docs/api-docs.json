@@ -7019,6 +7019,10 @@
                         "type": "integer",
                         "example": "1"
                     },
+                    "number": {
+                        "type": "string",
+                        "example": "00000001"
+                    },
                     "subtotal": {
                         "type": "decimal",
                         "example": "100.00"
@@ -7369,6 +7373,10 @@
                     "id": {
                         "type": "integer",
                         "example": "1"
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "123456"
                     },
                     "subtotal": {
                         "type": "decimal",

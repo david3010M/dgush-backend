@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Image;
+use App\Models\SizeGuide;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
@@ -32,7 +35,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Category::all()->load('subcategories');
+        return Category::with('subcategories', 'sizeGuides')->get();
     }
 
     /**
@@ -77,7 +80,8 @@ class CategoryController extends Controller
                 'required',
                 'string',
                 Rule::unique('category', 'name')->whereNull('deleted_at')
-            ]
+            ],
+            'sizeGuideImage' => 'nullable|image'
         ]);
 
         if ($validator->fails()) {
@@ -93,7 +97,20 @@ class CategoryController extends Controller
         ];
 
         $category = Category::create($data);
-        $category = Category::find($category->id);
+
+        $image = $request->file('sizeGuideImage');
+        $fileName = 'GuiaTallas/' . $image->getClientOriginalName();
+        Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+        $imageUrl = Storage::disk('spaces')->url($fileName);
+
+        SizeGuide::create([
+            'name' => $fileName,
+            'route' => $imageUrl,
+            'category_id' => $category->id
+        ]);
+
+        $category = Category::with('sizeGuides')->find($category->id);
 
         return response()->json($category);
     }
@@ -137,8 +154,7 @@ class CategoryController extends Controller
      */
     public function show(int $id)
     {
-        $category = Category::find($id);
-
+        $category = Category::with('subcategories', 'sizeGuides')->find($id);
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
@@ -208,10 +224,11 @@ class CategoryController extends Controller
 
         $validator = validator()->make($request->all(), [
             'name' => [
-                'required',
+                'nullable',
                 'string',
                 Rule::unique('category', 'name')->ignore($category->id)->whereNull('deleted_at')
-            ]
+            ],
+            'sizeGuideImage' => 'nullable|image'
         ]);
 
         if ($validator->fails()) {
@@ -227,8 +244,24 @@ class CategoryController extends Controller
         ];
 
         $category->update($data);
-        $category = Category::find($category->id);
-        
+
+        $image = $request->file('sizeGuideImage');
+
+        if ($image) {
+            $fileName = 'GuiaTallas/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            $sizeGuide = SizeGuide::where('category_id', $category->id)->first();
+            $sizeGuide->update([
+                'name' => $fileName,
+                'route' => $imageUrl
+            ]);
+        }
+
+        $category = Category::with('sizeGuides')->find($category->id);
+
         return response()->json($category);
     }
 

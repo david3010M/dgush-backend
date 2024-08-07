@@ -37,4 +37,9 @@ class Category extends Model
     {
         return $this->hasMany(Subcategory::class);
     }
+
+    public function sizeGuides()
+    {
+        return $this->hasOne(SizeGuide::class);
+    }
 }

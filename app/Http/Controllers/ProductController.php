@@ -326,6 +326,7 @@ class ProductController extends Controller
             $images = $product->images($id);
             $productDetails = $product->getProductDetails($id);
             $productRelated = $product->getRelatedProducts($id);
+            $sizeGuide = $product->sizeGuide($product->id);
             return response()->json([
                 'product' => $product,
                 'colors' => $colors,
@@ -333,7 +334,8 @@ class ProductController extends Controller
                 'comments' => $comments,
                 'productDetails' => $productDetails,
                 'images' => $images,
-                'productRelated' => $productRelated
+                'productRelated' => $productRelated,
+                'sizeGuide' => $sizeGuide
             ]);
         } else {
             //            PRODUCT NOT FOUND
@@ -356,13 +358,15 @@ class ProductController extends Controller
             $comments = $product->comments($id);
             $images = $product->images($id);
             $productRelated = $product->getRelatedProducts($id);
+            $sizeGuide = $product->sizeGuide($id);
 
             return response()->json([
                 'product' => $product,
                 'productDetails' => $productDetails,
                 'comments' => $comments,
                 'images' => $images,
-                'productRelated' => $productRelated
+                'productRelated' => $productRelated,
+                'sizeGuide' => $sizeGuide
             ]);
         } else {
             // PRODUCT NOT FOUND

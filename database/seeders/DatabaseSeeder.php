@@ -7,6 +7,7 @@ use App\Models\Access;
 use App\Models\Category;
 use App\Models\GroupMenu;
 use App\Models\OptionMenu;
+use App\Models\SizeGuide;
 use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SendInformationSeeder::class);
         $this->call(BannerSeeder::class);
         $this->call(VideoSeeder::class);
+        $this->call(SizeGuideSeeder::class);
 
     }
 }
