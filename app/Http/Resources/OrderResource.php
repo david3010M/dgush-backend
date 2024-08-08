@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,6 +35,13 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         $orderItems = OrderItemResource::collection($this->orderItems);
+        $statusDictionary = [
+            'verificado' => 0,
+            'confirmado' => 1,
+            'enviado' => 2,
+            'entregado' => 3,
+            'cancelado' => 4,
+        ];
 
         return [
             'id' => $this->id,
@@ -43,13 +51,17 @@ class OrderResource extends JsonResource
             'sendCost' => $this->sendCost,
             'total' => $this->total,
             'status' => $this->status,
+            'statusNumber' => $statusDictionary[$this->status],
             'description' => $this->description ?? '-',
+            'image' => $this->orderItems[0]->productDetail->product->image->url,
 //            'quantity' => $this->quantity,
             'date' => $this->date,
+            'shippingDate' => Carbon::parse($this->date)->format('Y-m-d'), // change to shippingDate
+            'deliveryDate' => Carbon::parse($this->date)->format('Y-m-d'), // change to deliveryDate
+            'coupon_id' => $this->coupon_id,
 //            'user_id' => $this->user_id,
-//            'coupon_id' => $this->coupon_id,
-            'order_items' => $this->orderItems,
-//            'coupon' => new CouponResource($this->whenLoaded('coupon')),
+            'order_items' => OrderItemResource::collection($this->orderItems),
+            'coupon' => new CouponResource($this->coupon),
             'send_information' => new SendInformationResource($this->sendInformation),
             'user' => new UserResource($this->user),
         ];

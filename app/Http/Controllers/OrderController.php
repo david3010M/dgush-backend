@@ -200,7 +200,16 @@ class OrderController extends Controller
         $quantity = 0;
         $subtotal = 0;
 
-        foreach ($productDetails as $key => $productDetail) {
+        $productDetailsValidate = [];
+        foreach ($productDetails as $detail) {
+            if (array_key_exists($detail['product_detail_id'], $productDetailsValidate)) {
+                $productDetailsValidate[$detail['product_detail_id']]['quantity'] += $detail['quantity'];
+            } else {
+                $productDetailsValidate[$detail['product_detail_id']] = $detail;
+            }
+        }
+
+        foreach ($productDetailsValidate as $key => $productDetail) {
 //            DECIMAL STOCK
             $stock = (float)$productDetail->stock;
             if ($stock <= $products[$key]['quantity']) {
@@ -209,6 +218,7 @@ class OrderController extends Controller
 
             OrderItem::create([
                 'quantity' => $products[$key]['quantity'],
+                'price' => $products[$key]['quantity'] >= 3 ? $productDetail->product->price2 : $productDetail->product->price1,
                 'product_detail_id' => $productDetail->id,
                 'order_id' => $order->id
             ]);
@@ -286,7 +296,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        return response()->json($order);
+        return response()->json(new OrderResource($order));
     }
 
     public function update(Request $request, int $id)

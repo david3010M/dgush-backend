@@ -27,13 +27,19 @@ class OrderFactory extends Factory
         $countUsers = User::count();
         $countCoupons = Coupon::count();
 
+        $date = $this->faker->dateTimeThisYear();
+        $deliveryDate = $date->modify('+4 days');
+        $shippingDate = $date->modify('+2 days');
+
         return [
             'subtotal' => $subtotal,
             'discount' => $discount,
             'sendCost' => $sendCost,
             'total' => $total,
             'quantity' => 2,
-            'date' => $this->faker->dateTimeThisYear(),
+            'date' => $date,
+            'deliveryDate' => $deliveryDate,
+            'shippingDate' => $shippingDate,
             'status' => $this->faker->randomElement(['verificado', 'confirmado', 'enviado', 'entregado', 'cancelado']),
             'user_id' => $this->faker->numberBetween(1, $countUsers),
             'coupon_id' => $this->faker->numberBetween(1, $countCoupons)

@@ -19,10 +19,13 @@ class OrderItemFactory extends Factory
     public function definition(): array
     {
         $countProductDetails = ProductDetails::count();
+        $productDetailId = $this->faker->numberBetween(1, $countProductDetails);
+        $productDetail = ProductDetails::find($productDetailId);
 
         return [
             'quantity' => 1,
-            'product_detail_id' => $this->faker->numberBetween(1, $countProductDetails),
+            'product_detail_id' => $productDetailId,
+            'price' => $productDetail->product->price1,
             'order_id' => 1
         ];
     }

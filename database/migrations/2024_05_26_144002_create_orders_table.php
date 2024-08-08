@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->decimal('total', 10);
             $table->decimal('quantity', 10);
             $table->timestamp('date');
+            $table->date('deliveryDate')->nullable();
+            $table->date('shippingDate')->nullable();
 //            $table->string('numberPayment');
             $table->string('status')->default('verificado');
             $table->string('description')->nullable();
