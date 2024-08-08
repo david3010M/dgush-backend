@@ -271,6 +271,7 @@ class Product extends Model
                 'product_details.stock'
             )
             ->orderBy('color.id')
+            ->orderBy('size.id')
             ->get();
 
         // Agrupar resultados por color
