@@ -164,8 +164,20 @@ class OrderController extends Controller
 
         // Encontrar los detalles del producto
         $products = $request->input('orderItems');
-        $productDetails = [];
+        $productDetailsValidate = [];
+
         foreach ($products as $product) {
+            $key = $product['product_id'] . '-' . $product['color_id'] . '-' . $product['size_id'];
+
+            if (array_key_exists($key, $productDetailsValidate)) {
+                $productDetailsValidate[$key]['quantity'] += $product['quantity'];
+            } else {
+                $productDetailsValidate[$key] = $product;
+            }
+        }
+
+        $productDetails = [];
+        foreach ($productDetailsValidate as $product) {
             $productDetail = ProductDetails::where('product_id', $product['product_id'])
                 ->where('color_id', $product['color_id'])
                 ->where('size_id', $product['size_id'])
@@ -200,45 +212,49 @@ class OrderController extends Controller
         $quantity = 0;
         $subtotal = 0;
 
-        $productDetailsValidate = [];
-        foreach ($productDetails as $detail) {
-            if (array_key_exists($detail['product_detail_id'], $productDetailsValidate)) {
-                $productDetailsValidate[$detail['product_detail_id']]['quantity'] += $detail['quantity'];
-            } else {
-                $productDetailsValidate[$detail['product_detail_id']] = $detail;
-            }
-        }
 
-        foreach ($productDetailsValidate as $key => $productDetail) {
-//            DECIMAL STOCK
+        foreach ($productDetails as $productDetail) {
+            $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
+
+            if (!array_key_exists($key, $productDetailsValidate)) {
+                return response()->json(['error' => 'Product details mismatch'], 422);
+            }
+
+            $quantityOfProduct = $productDetailsValidate[$key]['quantity'];
             $stock = (float)$productDetail->stock;
-            if ($stock <= $products[$key]['quantity']) {
+
+            if ($stock <= $quantityOfProduct) {
                 return response()->json(['error' => 'The product is out of stock'], 422);
             }
 
             OrderItem::create([
-                'quantity' => $products[$key]['quantity'],
-                'price' => $products[$key]['quantity'] >= 3 ? $productDetail->product->price2 : $productDetail->product->price1,
+                'quantity' => $quantityOfProduct,
+                'price' => $quantityOfProduct >= 3 ? $productDetail->product->price2 : $productDetail->product->price1,
                 'product_detail_id' => $productDetail->id,
                 'order_id' => $order->id
             ]);
 
+            $stockResult = $stock - (float)$quantityOfProduct;
+
             $productDetail->update([
-                'stock' => $stock - $products[$key]['quantity']
+                'stock' => $stockResult
             ]);
 
-            $quantity += $products[$key]['quantity'];
+            $quantity += $quantityOfProduct;
         }
 
         if ($quantity >= 3) {
-            foreach ($productDetails as $key => $productDetail) {
-                $subtotal += $productDetail->product->price2 * $products[$key]['quantity'];
+            foreach ($productDetails as $productDetail) {
+                $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
+                $subtotal += $productDetail->product->price2 * $productDetailsValidate[$key]['quantity'];
             }
         } else {
-            foreach ($productDetails as $key => $productDetail) {
-                $subtotal += $productDetail->product->price1 * $products[$key]['quantity'];
+            foreach ($productDetails as $productDetail) {
+                $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
+                $subtotal += $productDetail->product->price1 * $productDetailsValidate[$key]['quantity'];
             }
         }
+
 
         // Actualizar la orden con el subtotal y la cantidad total
         $order->update([
@@ -251,7 +267,7 @@ class OrderController extends Controller
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
             ->find($order->id);
 
-        return response()->json($order);
+        return response()->json(new OrderResource($order));
     }
 
     public function updateStatus(Request $request, int $id)
