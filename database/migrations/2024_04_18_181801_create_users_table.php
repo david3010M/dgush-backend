@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('password');
             $table->boolean('accept_terms')->default(true);
             $table->foreignId('typeuser_id')->constrained('typeuser');
+            $table->foreignId('person_id')->constrained('people');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

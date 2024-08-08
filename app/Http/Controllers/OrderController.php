@@ -13,10 +13,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
-
     /**
      * Orders from the authenticated user
      * @OA\Get (
@@ -267,7 +267,7 @@ class OrderController extends Controller
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
             ->find($order->id);
 
-        return response()->json(new OrderResource($order));
+        return response()->json($order);
     }
 
     public function updateStatus(Request $request, int $id)
@@ -606,8 +606,20 @@ class OrderController extends Controller
             'reference' => 'required|string',
             'comment' => 'nullable|string',
             'method' => 'required|string|in:delivery,pickup',
-            'district_id' => 'nullable|integer|exists:district,id'
+            'district_id' => 'required_if:method,delivery|integer',
+            'sede_id' => 'required_if:method,pickup|integer'
         ]);
+
+        if ($request->input('method') === 'pickup') {
+            $validator->addRules([
+                'sede_id' => 'required|exists:sedes,id'
+            ]);
+        } else {
+            $validator->addRules([
+                'district_id' => 'required|exists:district,id'
+            ]);
+
+        }
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -617,6 +629,8 @@ class OrderController extends Controller
             return response()->json(['error' => 'The district field is required'], 422);
         }
 
+        $method = $request->input('method');
+
         $data = [
             'names' => $request->input('names'),
             'dni' => $request->input('dni'),
@@ -625,8 +639,9 @@ class OrderController extends Controller
             'address' => $request->input('address'),
             'reference' => $request->input('reference'),
             'comment' => $request->input('comment'),
-            'method' => $request->input('method'),
-            'district_id' => $request->input('district_id'),
+            'method' => $method,
+            'district_id' => $method === 'delivery' ? $request->input('district_id') : null,
+            'sede_id' => $method === 'pickup' ? $request->input('sede_id') : null,
             'order_id' => $id,
 //            NUMBER OF PAYMENT
 //            'payment' => $request->input('payment')
@@ -642,10 +657,40 @@ class OrderController extends Controller
 
         if ($request->input('method') === 'delivery') {
             $order->update([
-                'status' => 'confirmado',
                 'sendCost' => $district->sendCost,
-                'total' => $order->subtotal + $district->sendCost - $order->discount
+                'total' => $order->subtotal + $district->sendCost
             ]);
+
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                $discount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    if ($coupon->indicator === 'subtotal') {
+                        $discount = $order->subtotal * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'total') {
+                        $discount = $order->total * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'sendCost') {
+                        $discount = $order->sendCost * $coupon->value / 100;
+                    }
+
+                } else if ($coupon->type === 'discount') {
+                    $discount = $coupon->value;
+                }
+
+                $order->update([
+                    'status' => 'confirmado',
+                    'sendCost' => $district->sendCost,
+                    'discount' => $discount,
+                    'total' => $order->subtotal + $district->sendCost - $discount
+                ]);
+            } else {
+                $order->update([
+                    'status' => 'confirmado',
+                    'sendCost' => $district->sendCost,
+                    'total' => $order->subtotal + $district->sendCost
+                ]);
+            }
         } else {
             $order->update([
                 'status' => 'confirmado',
@@ -753,8 +798,38 @@ class OrderController extends Controller
         if ($request->input('method') === 'delivery') {
             $order->update([
                 'sendCost' => $district->sendCost,
-                'total' => $order->subtotal + $district->sendCost - $order->discount
+                'total' => $order->subtotal + $district->sendCost
             ]);
+
+//            VALIDAR EL CUPON
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                $discount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    if ($coupon->indicator === 'subtotal') {
+                        $discount = $order->subtotal * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'total') {
+                        $discount = $order->total * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'sendCost') {
+                        $discount = $order->sendCost * $coupon->value / 100;
+                    }
+
+                } else if ($coupon->type === 'discount') {
+                    $discount = $coupon->value;
+                }
+
+                $order->update([
+                    'sendCost' => $district->sendCost,
+                    'discount' => $discount,
+                    'total' => $order->subtotal + $district->sendCost - $discount
+                ]);
+            } else {
+                $order->update([
+                    'sendCost' => $district->sendCost,
+                    'total' => $order->subtotal + $district->sendCost
+                ]);
+            }
         } else {
             $order->update([
                 'sendCost' => 0,

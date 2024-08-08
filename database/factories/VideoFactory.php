@@ -13,7 +13,7 @@ class VideoFactory extends Factory
     {
         return [
             'name' => "Video Home",
-            'value' => "https://youtu.be/06wZsa-55UE",
+            'value' => "https://www.youtube.com/embed/06wZsa-55UE?si=oAHZA5JVGNDVynZV",
             'active' => true,
         ];
     }
