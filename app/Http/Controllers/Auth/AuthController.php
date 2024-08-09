@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 
 class AuthController extends Controller
@@ -451,8 +452,18 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'lastnames' => 'required|string',
-            'dni' => 'required|string',
-            'email' => 'required|email|unique:users,email',
+            'dni' => [
+                'required',
+                'string',
+                'min:8',
+                'max:8',
+                Rule::unique('people', 'dni')->whereNull('deleted_at')
+            ],
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('people', 'email')->whereNull('deleted_at')
+            ],
             'password' => 'required|min:8',
             'confirm_password' => 'required|same:password',
             'accept_terms' => 'required|boolean'
@@ -474,7 +485,7 @@ class AuthController extends Controller
             'dni' => $request->dni,
             'names' => $request->name,
             'fatherSurname' => $lastnames[0],
-            'motherSurname' => $lastnames[1],
+            'motherSurname' => $lastnames[1] ?? '',
             'email' => $request->email,
             'phone' => '123456789',
             'address' => 'address',
@@ -489,6 +500,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'typeuser_id' => 2,
+            'person_id' => $person->id,
         ]);
 
         $typeuser = TypeUser::find(2);
