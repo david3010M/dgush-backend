@@ -194,14 +194,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         //    SUBCATEGORY
         Route::resource('subcategory', SubcategoryController::class)->only(
-            ['store', 'update', 'destroy']
+            ['store', 'destroy']
         )->names(
             [
-                'store' => 'subcategory.store',
                 'update' => 'subcategory.update',
                 'destroy' => 'subcategory.destroy',
             ]
         );
+        Route::post('/subcategory/{id}', [SubcategoryController::class, 'update'])->name('subcategory.update');
 
         //    COLOR
         Route::resource('color', ColorController::class)->only(

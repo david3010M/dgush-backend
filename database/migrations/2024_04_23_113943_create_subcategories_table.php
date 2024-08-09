@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('value')->unique();
             $table->decimal('score', 8, 1)->default(0);
             $table->string('image')->nullable();
-            $table->boolean('isHome')->default(0);
+            $table->string('isHome')->default('false');
             $table->foreignId('category_id')->constrained('category');
             $table->softDeletes();
             $table->timestamps();

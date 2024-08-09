@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Image;
+use App\Models\SizeGuide;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class SubcategoryController extends Controller
@@ -118,6 +121,7 @@ class SubcategoryController extends Controller
                 Rule::unique('subcategory', 'name')->whereNull('deleted_at')
             ],
             'category_id' => 'required|integer|exists:category,id',
+            'image' => 'required|image'
         ]);
 
         if ($validator->fails()) {
@@ -133,10 +137,27 @@ class SubcategoryController extends Controller
             'category_id' => $request->category_id
         ];
 
-        $color = Subcategory::create($data);
-        $color = Subcategory::find($color->id);
+        $subcategory = Subcategory::create($data);
 
-        return response()->json($color);
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $fileName = 'Subcategories/' . $subcategory->id . '/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            Image::create([
+                'name' => $fileName,
+                'url' => $imageUrl,
+                'subcategory_id' => $subcategory->id
+            ]);
+
+            $subcategory->image = $imageUrl;
+            $subcategory->save();
+        }
+
+        $subcategory = Subcategory::find($subcategory->id);
+
+        return response()->json($subcategory);
     }
 
     /**
@@ -243,8 +264,9 @@ class SubcategoryController extends Controller
                     'string',
                     Rule::unique('subcategory', 'name')->ignore($subcategory->id)->whereNull('deleted_at')
                 ],
-                'isHome' => 'nullable|boolean',
+                'isHome' => 'nullable|in:true,false',
                 'category_id' => 'nullable|integer|exists:category,id',
+                'image' => 'nullable|image'
             ]);
 
             if ($validator->fails()) {
@@ -262,6 +284,26 @@ class SubcategoryController extends Controller
             ];
 
             $subcategory->update($data);
+
+            if ($request->hasFile('image')) {
+                Storage::disk('spaces')->deleteDirectory('Subcategories/' . $id . "/");
+                Image::where('subcategory_id', $id)->delete();
+
+                $image = $request->file('image');
+                $fileName = 'Subcategories/' . $subcategory->id . '/' . $image->getClientOriginalName();
+                Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+                $imageUrl = Storage::disk('spaces')->url($fileName);
+
+                Image::create([
+                    'name' => $fileName,
+                    'url' => $imageUrl,
+                    'subcategory_id' => $subcategory->id
+                ]);
+
+                $subcategory->image = $imageUrl;
+                $subcategory->save();
+            }
+
             $subcategory = Subcategory::find($subcategory->id);
 
             return response()->json($subcategory);

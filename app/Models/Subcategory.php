@@ -63,7 +63,7 @@ class Subcategory extends Model
         }
 
         if ($sort == 'isHome') {
-            return $query->orderBy($sort, $direction)->limit(10)->get();
+            return $query->orderBy($sort, $direction)->limit(6)->get();
         }
 
         if ($all == 'true') {

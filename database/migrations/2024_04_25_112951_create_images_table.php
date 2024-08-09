@@ -15,7 +15,9 @@ return new class extends Migration {
             $table->string('name');
             $table->string('url');
             $table->foreignId('product_id')->nullable()->constrained('product');
+            $table->foreignId('subcategory_id')->nullable()->constrained('subcategory');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

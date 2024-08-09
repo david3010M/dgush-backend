@@ -110,7 +110,6 @@ class Product extends Model
         }
     }
 
-
     public static function withImage()
     {
         $query = Product::query();

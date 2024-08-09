@@ -16,17 +16,24 @@ class Image extends Model
     protected $fillable = [
         'name',
         'url',
-        'product_id'
+        'product_id',
+        'subcategory_id'
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
+        'deleted_at'
     ];
 
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class);
     }
 
     public function uploadImage(Request $request)
