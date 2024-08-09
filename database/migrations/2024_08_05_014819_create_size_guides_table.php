@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('route');
-            $table->foreignId('category_id')->constrained('category');
+            $table->foreignId('product_id')->constrained('product');
             $table->timestamps();
             $table->softDeletes();
         });

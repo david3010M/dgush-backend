@@ -14,6 +14,7 @@ class PersonSeeder extends Seeder
     public function run(): void
     {
         Person::factory()->create([
+            'dni' => '12345678',
             'names' => 'D Gush',
             'fatherSurname' => 'Admin',
             'motherSurname' => 'Root',

@@ -2,65 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IndexPersonRequest;
+use App\Http\Resources\PersonResource;
 use App\Models\Person;
-use App\Http\Requests\StorePersonRequest;
 use App\Http\Requests\UpdatePersonRequest;
+use App\Models\User;
 
 class PersonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(IndexPersonRequest $request)
     {
-        //
+        return $this->getFilteredResults(
+            Person::class,
+            $request,
+            Person::filters,
+            Person::sorts,
+            PersonResource::class
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show()
     {
-        //
+        $personId = auth()->user()->id;
+        $person = Person::find($personId);
+        if (!$person) return response()->json(['message' => 'Person not found'], 404);
+        return response()->json(new PersonResource($person));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePersonRequest $request)
+    public function update(UpdatePersonRequest $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Person $person)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Person $person)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePersonRequest $request, Person $person)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Person $person)
-    {
-        //
+        $personId = auth()->user()->id;
+        $person = Person::find($personId);
+        if (!$person) return response()->json(['message' => 'Person not found'], 404);
+        $person->update($request->all());
+        $person = Person::find($personId);
+        $user = User::find(auth()->user()->id);
+        $dataUser = [
+            'names' => $person->names,
+            'lastnames' => $person->fatherSurname . ' ' . $person->motherSurname,
+            'email' => $person->email,
+        ];
+        $user->update($dataUser);
+        return response()->json(new PersonResource($person));
     }
 }

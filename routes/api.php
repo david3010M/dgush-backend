@@ -14,6 +14,7 @@ use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\ProvinceController;
@@ -298,7 +299,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'destroy' => 'sede.destroy',
             ]
         );
-
     });
 
 //    ORDER CLIENT
@@ -343,6 +343,31 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             'update' => 'order.update',
         ]
     );
+
+    //    COUPON
+    Route::resource('coupon', CouponController::class)->only(
+        ['index', 'show']
+    )->names(
+        [
+            'index' => 'coupon.index',
+            'show' => 'coupon.show',
+        ]
+    );
+
+    //    WISH ITEM
+    Route::resource('wishitem', WishItemController::class)->only(
+        ['index', 'show', 'destroy']
+    )->names(
+        [
+            'index' => 'wishitem.index',
+            'show' => 'wishitem.show',
+            'destroy' => 'wishitem.destroy',
+        ]
+    );
+
+    //    PERSON
+    Route::get('/person', [PersonController::class, 'show'])->name('person.show');
+    Route::put('/person', [PersonController::class, 'update'])->name('person.update');
 
 
 }

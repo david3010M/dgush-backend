@@ -12,12 +12,12 @@ return new class extends Migration {
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->string('dni', 8)->unique()->nullable();
+            $table->string('dni')->unique();
+            $table->string('names')->nullable();
             $table->string('fatherSurname')->nullable();
             $table->string('motherSurname')->nullable();
-            $table->string('names')->nullable();
-            $table->string('phone', 9)->nullable();
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('reference')->nullable();
             $table->foreignId('district_id')->nullable()->constrained('district');

@@ -14,7 +14,7 @@ class SizeGuide extends Model
     protected $fillable = [
         'name',
         'route',
-        'category_id'
+        'product_id'
     ];
 
     protected $hidden = [
@@ -23,9 +23,9 @@ class SizeGuide extends Model
         'deleted_at',
     ];
 
-    public function category()
+    public function product()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Product::class);
     }
 
 }

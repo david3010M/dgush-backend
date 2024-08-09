@@ -2,25 +2,21 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
+use App\Models\Product;
 use App\Models\SizeGuide;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SizeGuideSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $categories = Category::all();
+        $products = Product::all();
 
-        foreach ($categories as $category) {
+        foreach ($products as $product) {
             SizeGuide::factory()->create([
-                'name' => 'Guía de Tallas',
+                'name' => 'Size Guide - ' . $product->id,
                 'route' => 'https://dgush-storage.sfo3.digitaloceanspaces.com/GuiaTallas/faldas.jpg',
-                'category_id' => $category->id
+                'product_id' => $product->id
             ]);
         }
 

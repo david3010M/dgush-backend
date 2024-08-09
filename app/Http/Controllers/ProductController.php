@@ -6,6 +6,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductDetails;
+use App\Models\SizeGuide;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -220,6 +221,7 @@ class ProductController extends Controller
             'product_details.*.size_id' => 'required|integer|exists:size,id',
             'images' => 'required|array',
             'images.*' => 'required|image',
+            'sizeGuideImage' => 'nullable|image'
         ]);
 
         if ($validator->fails()) {
@@ -264,6 +266,21 @@ class ProductController extends Controller
                 'url' => $imageUrl,
                 'product_id' => $id
             ]);
+        }
+
+        if ($request->hasFile('sizeGuideImage')) {
+            $guideSize = $request->file('sizeGuideImage');
+            $fileName = 'SizeGuides/' . $id . '/' . $guideSize->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($guideSize), 'public');
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            SizeGuide::create([
+                'name' => $fileName,
+                'route' => $imageUrl,
+                'product_id' => $id
+            ]);
+
+            $product->update(['guideSize' => $imageUrl]);
         }
 
         $product = Product::with('productDetails', 'imagesProduct')->find($id);

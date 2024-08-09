@@ -32,6 +32,14 @@ class Sede extends Model
         'email' => 'like',
     ];
 
+    const sorts = [
+        'id',
+        'name',
+        'address',
+        'phone',
+        'email',
+    ];
+
     public function district()
     {
         return $this->belongsTo(District::class);

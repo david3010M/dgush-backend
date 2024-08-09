@@ -19,6 +19,7 @@ class SedeController extends Controller
             Sede::class,
             $request,
             Sede::filters,
+            Sede::sorts,
             SedeResource::class
         );
     }

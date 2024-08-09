@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\ForgetPassword;
 use App\Models\ForgetPasswordCode;
+use App\Models\Person;
 use App\Models\TypeUser;
 use App\Models\User;
 use Carbon\Carbon;
@@ -450,6 +451,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'lastnames' => 'required|string',
+            'dni' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'confirm_password' => 'required|same:password',
@@ -465,10 +467,25 @@ class AuthController extends Controller
             return response()->json(['error' => 'You must accept the terms and conditions'], 400);
         }
 
+        $lastnames = explode(' ', $request->lastnames);
+
+//        PERSON
+        $person = Person::create([
+            'dni' => $request->dni,
+            'names' => $request->name,
+            'fatherSurname' => $lastnames[0],
+            'motherSurname' => $lastnames[1],
+            'email' => $request->email,
+            'phone' => '123456789',
+            'address' => 'address',
+            'reference' => 'reference',
+            'district_id' => 1,
+        ]);
+
         // Crear un nuevo usuario
         $user = User::create([
-            'names' => $request->name,
-            'lastnames' => $request->lastnames,
+            'names' => $person->names,
+            'lastnames' => $person->fatherSurname . ' ' . $person->motherSurname,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'typeuser_id' => 2,
@@ -478,10 +495,8 @@ class AuthController extends Controller
 
         $optionMenuAccess = $typeuser->getAccess($typeuser->id);
 
-
         // Generar un token de acceso para el nuevo usuario
         $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
-
 
         // Devolver el usuario completo junto con el token en la respuesta
         return response()->json(
@@ -494,7 +509,6 @@ class AuthController extends Controller
             ]
         );
     }
-
 
     public function forgetPassword(Request $request)
     {
