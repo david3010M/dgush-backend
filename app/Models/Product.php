@@ -122,12 +122,14 @@ class Product extends Model
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
 
-    public static function sizeGuide($id)
+    public function SizeGuide($id)
     {
-        $product = Product::find($id);
-        $subcategory = Subcategory::find($product->subcategory_id);
-        $category = Category::find($subcategory->category_id);
-        return SizeGuide::where('category_id', $category->id)->first();
+        return SizeGuide::where('product_id', $id)->first();
+    }
+
+    public function guideSize()
+    {
+        return $this->hasOne(SizeGuide::class);
     }
 
     public static function search($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction)

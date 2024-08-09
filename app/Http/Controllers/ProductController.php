@@ -279,11 +279,9 @@ class ProductController extends Controller
                 'route' => $imageUrl,
                 'product_id' => $id
             ]);
-
-            $product->update(['guideSize' => $imageUrl]);
         }
 
-        $product = Product::with('productDetails', 'imagesProduct')->find($id);
+        $product = Product::with('productDetails', 'imagesProduct', 'guideSize')->find($id);
         return response()->json($product);
     }
 
@@ -343,7 +341,7 @@ class ProductController extends Controller
             $images = $product->images($id);
             $productDetails = $product->getProductDetails($id);
             $productRelated = $product->getRelatedProducts($id);
-            $sizeGuide = $product->sizeGuide($product->id);
+            $sizeGuide = $product->SizeGuide($id);
             return response()->json([
                 'product' => $product,
                 'colors' => $colors,
@@ -375,7 +373,7 @@ class ProductController extends Controller
             $comments = $product->comments($id);
             $images = $product->images($id);
             $productRelated = $product->getRelatedProducts($id);
-            $sizeGuide = $product->sizeGuide($id);
+            $sizeGuide = $product->SizeGuide($id);
 
             return response()->json([
                 'product' => $product,
@@ -383,7 +381,7 @@ class ProductController extends Controller
                 'comments' => $comments,
                 'images' => $images,
                 'productRelated' => $productRelated,
-                'sizeGuide' => $sizeGuide
+                'sizeGuide' => $sizeGuide->route
             ]);
         } else {
             // PRODUCT NOT FOUND
@@ -474,6 +472,7 @@ class ProductController extends Controller
             'product_details.*.size_id' => 'required|integer|exists:size,id',
             'images' => 'nullable|array',
             'images.*' => 'required|image',
+            'sizeGuideImage' => 'nullable|image'
         ]);
 
         if ($validator->fails()) {
@@ -512,7 +511,7 @@ class ProductController extends Controller
         }
 
         if ($images) {
-            Storage::disk('spaces')->deleteDirectory("/" . $request->id . "/");
+            Storage::disk('spaces')->deleteDirectory("/" . $id . "/");
             Image::where('product_id', $id)->delete();
 
             foreach ($images as $image) {
@@ -529,7 +528,23 @@ class ProductController extends Controller
             }
         }
 
-        $product = Product::with('productDetails', 'imagesProduct')->find($id);
+        if ($request->hasFile('sizeGuideImage')) {
+            Storage::disk('spaces')->deleteDirectory('SizeGuides/' . $id . "/");
+            SizeGuide::where('product_id', $id)->delete();
+
+            $guideSize = $request->file('sizeGuideImage');
+            $fileName = 'SizeGuides/' . $id . '/' . $guideSize->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($guideSize), 'public');
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            SizeGuide::create([
+                'name' => $fileName,
+                'route' => $imageUrl,
+                'product_id' => $id
+            ]);
+        }
+
+        $product = Product::with('productDetails', 'imagesProduct', 'guideSize')->find($id);
         return response()->json($product);
     }
 
