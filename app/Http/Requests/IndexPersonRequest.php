@@ -2,27 +2,25 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 
-class IndexPersonRequest extends FormRequest
+use App\Models\Person;
+
+class IndexPersonRequest extends IndexRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $sorts = Person::sorts;
         return [
-            //
+            'dni' => 'nullable|string',
+            'names' => 'nullable|string',
+            'fatherSurname' => 'nullable|string',
+            'motherSurname' => 'nullable|string',
+            'phone' => 'nullable|string',
+            'email' => 'nullable|string',
+            'address' => 'nullable|string',
+            'reference' => 'nullable|string',
+            'district_id' => 'nullable|integer',
+            'sort' => 'nullable|string|in:' . implode(',', $sorts),
         ];
     }
 }

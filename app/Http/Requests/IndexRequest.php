@@ -19,6 +19,7 @@ class IndexRequest extends FormRequest
             'all' => 'nullable|string|in:true,false',
             'page' => 'nullable|integer',
             'per_page' => 'nullable|integer',
+            'direction' => 'nullable|string|in:asc,desc',
         ];
     }
 

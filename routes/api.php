@@ -99,6 +99,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 //    ROUTES JUST FOR ADMIN USERS
     Route::group(['middleware' => ['checkAccess']], function () {
 
+        Route::get('/clients', [PersonController::class, 'index'])->name('person.index');
         Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
 
         //        GROUPMENU
