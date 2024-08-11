@@ -20,7 +20,10 @@ class PersonResource extends JsonResource
             'address' => $this->address,
             'reference' => $this->reference,
             'district_id' => $this->district_id,
-            'district' => (new DistrictResource($this->district))->name,
+            'district' => $this->district->name,
+            'provice_id' => $this->district->province_id,
+            'province' => $this->district->province->name,
+
         ];
     }
 }
