@@ -12,6 +12,7 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PersonController;
@@ -99,6 +100,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 //    ROUTES JUST FOR ADMIN USERS
     Route::group(['middleware' => ['checkAccess']], function () {
+        Route::get('/logs', [LogController::class, 'index']);
+
 
         Route::get('/clients', [PersonController::class, 'index'])->name('person.index');
         Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
