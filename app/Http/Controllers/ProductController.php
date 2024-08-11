@@ -117,9 +117,54 @@ class ProductController extends Controller
             request('size'), // SIZE IS AN ARRAY OF STRING
             request('sort', 'id'),
             request('direction', 'desc'),
+            null,
+            null
         );
         return response()->json($products);
     }
+
+    public function searchPaginate(Request $request)
+    {
+        //        VALIDATE DATA
+        request()->validate([
+            'search' => 'nullable|string',
+            'score' => 'nullable|integer',
+            'status' => 'nullable|string|in:onsale,new',
+            'liquidacion' => 'nullable|boolean',
+            'category' => 'nullable|array',
+            'category.*' => 'nullable|string',
+            'price' => 'nullable|array|size:2',
+            'price.*' => 'nullable|numeric',
+            'color' => 'nullable|array',
+            'color.*' => 'nullable|string',
+            'size' => 'nullable|array',
+            'size.*' => 'nullable|string',
+            'sort' => 'nullable|string|in:none,price-asc,price-desc,score',
+            'direction' => 'nullable|string',
+            'per_page' => 'nullable|integer',
+            'page' => 'nullable|integer'
+        ]);
+
+        $per_page = $request->input('per_page', 9);
+
+        $products = Product::search(
+            request('search'),
+            request('status'),
+            request('liquidacion'),
+            request('score'),
+            request('category'), // SUBCATEGORY IS AN ARRAY OF STRING
+            request('price'),
+            request('color'), // COLOR IS AN ARRAY OF STRING
+            request('size'), // SIZE IS AN ARRAY OF STRING
+            request('sort', 'id'),
+            request('direction', 'desc'),
+            $per_page,
+            request('page', 1)
+        );
+
+        return response()->json($products);
+    }
+
 
     /**
      * GET ALL PRODUCTS WITH TRASHED

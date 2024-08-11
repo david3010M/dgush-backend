@@ -131,7 +131,7 @@ class Product extends Model
         return $this->hasOne(SizeGuide::class);
     }
 
-    public static function search($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction)
+    public static function search($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction, $per_page, $page)
     {
         $query = Product::query();
         if ($search) {
@@ -199,7 +199,12 @@ class Product extends Model
             $direction = 'desc';
         }
 
-        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+//        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+        if ($per_page && $page) {
+            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+        } else {
+            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+        }
     }
 
     public static function getColorsByProduct($id)
