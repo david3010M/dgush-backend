@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->string('detailweb');
+            $table->string('detailweb', 1000);
             $table->decimal('price1');
             $table->decimal('price2');
             $table->decimal('score', 8, 1)->default(0);
