@@ -95,6 +95,6 @@ class ProductDetails extends Model
             $direction = 'desc';
         }
 
-        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate();
     }
 }

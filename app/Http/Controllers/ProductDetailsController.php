@@ -338,6 +338,8 @@ class ProductDetailsController extends Controller
             'category.*' => 'string|exists:subcategory,value',
             'sort' => 'nullable|string',
             'direction' => 'nullable|string|in:asc,desc',
+            'page' => 'nullable|integer',
+            'perPage' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -352,7 +354,8 @@ class ProductDetailsController extends Controller
             $request->input('sort') ?? 'id',
             $request->input('direction') ?? 'desc'
         );
+        ProductDetailsResource::collection($productDetails);
 
-        return response()->json(ProductDetailsResource::collection($productDetails));
+        return response()->json($productDetails);
     }
 }
