@@ -448,7 +448,6 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // Validar los datos de registro del usuario
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'lastnames' => 'required|string',
@@ -469,7 +468,6 @@ class AuthController extends Controller
             'accept_terms' => 'required|boolean'
         ]);
 
-        // Verificar si los datos son válidos
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
@@ -480,25 +478,24 @@ class AuthController extends Controller
 
         $lastnames = explode(' ', $request->lastnames);
 
-//        PERSON
         $person = Person::create([
-            'dni' => $request->dni,
-            'names' => $request->name,
+            'dni' => $request->input('dni'),
+            'names' => $request->input('name'),
             'fatherSurname' => $lastnames[0],
             'motherSurname' => $lastnames[1] ?? '',
-            'email' => $request->email,
-            'phone' => '123456789',
-            'address' => 'address',
-            'reference' => 'reference',
-            'district_id' => 1,
+            'email' => $request->input('email'),
+            'phone' => '',
+            'address' => '',
+            'reference' => '',
+            'district_id' => null,
+            'typeuser_id' => 2,
         ]);
 
-        // Crear un nuevo usuario
         $user = User::create([
             'names' => $person->names,
             'lastnames' => $person->fatherSurname . ' ' . $person->motherSurname,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'email' => $person->email,
+            'password' => bcrypt($request->input('password')),
             'typeuser_id' => 2,
             'person_id' => $person->id,
         ]);
@@ -507,10 +504,8 @@ class AuthController extends Controller
 
         $optionMenuAccess = $typeuser->getAccess($typeuser->id);
 
-        // Generar un token de acceso para el nuevo usuario
         $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
 
-        // Devolver el usuario completo junto con el token en la respuesta
         return response()->json(
             [
                 'access_token' => $token->plainTextToken,

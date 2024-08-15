@@ -338,8 +338,6 @@ class ProductDetailsController extends Controller
             'category.*' => 'string|exists:subcategory,value',
             'sort' => 'nullable|string',
             'direction' => 'nullable|string|in:asc,desc',
-            'page' => 'nullable|integer',
-            'perPage' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -352,10 +350,50 @@ class ProductDetailsController extends Controller
             $request->input('size'),
             $request->input('category'),
             $request->input('sort') ?? 'id',
-            $request->input('direction') ?? 'desc'
+            $request->input('direction') ?? 'desc',
+            null,
+            null
         );
         ProductDetailsResource::collection($productDetails);
 
+        return response()->json($productDetails);
+    }
+
+    public function searchPaginate(Request $request)
+    {
+        $validator = validator()->make($request->all(), [
+            'product' => 'nullable|array',
+            'product.*' => 'integer|exists:product,id',
+            'color' => 'nullable|array',
+            'color.*' => 'string|exists:color,value',
+            'size' => 'nullable|array',
+            'size.*' => 'string|exists:size,value',
+            'category' => 'nullable|array',
+            'category.*' => 'string|exists:subcategory,value',
+            'sort' => 'nullable|string',
+            'direction' => 'nullable|string|in:asc,desc',
+            'per_page' => 'nullable|integer',
+            'page' => 'nullable|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $per_page = $request->input('per_page', 10);
+
+        $productDetails = ProductDetails::search(
+            $request->input('product'),
+            $request->input('color'),
+            $request->input('size'),
+            $request->input('category'),
+            $request->input('sort') ?? 'id',
+            $request->input('direction') ?? 'desc',
+            $per_page,
+            $request->input('page', 1)
+        );
+
+        ProductDetailsResource::collection($productDetails);
         return response()->json($productDetails);
     }
 }

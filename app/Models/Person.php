@@ -21,6 +21,7 @@ class Person extends Model
         'address',
         'reference',
         'district_id',
+        'typeuser_id',
     ];
 
     protected $hidden = [
@@ -39,6 +40,7 @@ class Person extends Model
         'address' => 'like',
         'reference' => 'like',
         'district_id' => 'like',
+        'typeuser_id' => 'like',
     ];
 
     const sorts = [
@@ -52,11 +54,17 @@ class Person extends Model
         'address',
         'reference',
         'district_id',
+        'typeuser_id',
     ];
 
     public function district()
     {
         return $this->belongsTo(District::class);
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
     }
 
 }

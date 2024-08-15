@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('names');
             $table->string('lastnames');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->boolean('login')->default(false);
             $table->string('password');
             $table->boolean('accept_terms')->default(true);

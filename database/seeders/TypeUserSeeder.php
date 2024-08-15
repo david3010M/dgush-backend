@@ -14,9 +14,9 @@ class TypeUserSeeder extends Seeder
     public function run(): void
     {
         $array = [
-            'Admin',
-            'Client',
-            'Guest',
+            'Administrador',
+            'Cliente',
+            'Invitado',
         ];
 
         foreach ($array as $item) {

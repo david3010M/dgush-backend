@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IndexPersonRequest;
+use App\Http\Requests\StorePersonRequest;
 use App\Http\Resources\PersonResource;
 use App\Models\Person;
 use App\Http\Requests\UpdatePersonRequest;

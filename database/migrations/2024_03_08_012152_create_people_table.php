@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->string('dni')->unique();
+            $table->string('dni');
             $table->string('names')->nullable();
             $table->string('fatherSurname')->nullable();
             $table->string('motherSurname')->nullable();
@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('address')->nullable();
             $table->string('reference')->nullable();
             $table->foreignId('district_id')->nullable()->constrained('district');
+            $table->foreignId('typeuser_id')->nullable()->constrained('typeuser');
             $table->timestamps();
             $table->softDeletes();
         });

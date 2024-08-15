@@ -23,6 +23,7 @@ class PersonSeeder extends Seeder
             'address' => 'Calle 123',
             'reference' => 'Calle 123',
             'district_id' => 1,
+            'typeuser_id' => 1,
         ]);
     }
 }

@@ -60,7 +60,7 @@ class ProductDetails extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public static function search($product, $color, $size, $subcategory, $sort, $direction)
+    public static function search($product, $color, $size, $subcategory, $sort, $direction, $per_page, $page)
     {
         $query = ProductDetails::query();
 
@@ -95,6 +95,10 @@ class ProductDetails extends Model
             $direction = 'desc';
         }
 
-        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate();
+        if ($per_page && $page) {
+            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+        } else {
+            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+        }
     }
 }

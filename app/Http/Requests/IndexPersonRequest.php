@@ -20,6 +20,7 @@ class IndexPersonRequest extends IndexRequest
             'address' => 'nullable|string',
             'reference' => 'nullable|string',
             'district_id' => 'nullable|integer',
+            'typeuser_id' => 'nullable|integer',
             'sort' => 'nullable|string|in:' . implode(',', $sorts),
         ];
     }

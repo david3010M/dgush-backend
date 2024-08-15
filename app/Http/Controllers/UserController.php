@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Person;
 use App\Models\TypeUser;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -99,33 +101,56 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Validar los datos
-        $request->validate([
-            'names' => 'required|string',
+        $validator = validator()->make($request->all(), [
+            'name' => 'required|string',
             'lastnames' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string',
+            'dni' => [
+                'required',
+                'string',
+                'min:8',
+                'max:8',
+                Rule::unique('people', 'dni')->whereNull('deleted_at'),
+            ],
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('people', 'email')->whereNull('deleted_at')
+            ],
+            'password' => 'required|min:8',
+            'confirm_password' => 'required|same:password',
             'typeuser_id' => 'required|integer'
         ]);
 
-        // Validar typeuser_id
-        if (!Typeuser::find($request->typeuser_id)) {
-            return response()->json(
-                ['message' => 'Typeuser not found'], 404
-            );
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        // Cifrar la contraseña
-        $hashedPassword = Hash::make($request->password);
+        $lastnames = explode(' ', $request->lastnames);
 
-        // Crear un nuevo usuario con la contraseña cifrada
-        return User::create([
-            'names' => $request->names,
-            'lastnames' => $request->lastnames,
-            'email' => $request->email,
-            'password' => $hashedPassword,
-            'typeuser_id' => $request->typeuser_id
+        $person = Person::create([
+            'dni' => $request->input('dni'),
+            'names' => $request->input('name'),
+            'fatherSurname' => $lastnames[0],
+            'motherSurname' => $lastnames[1] ?? '',
+            'email' => $request->input('email'),
+            'phone' => '',
+            'address' => '',
+            'reference' => '',
+            'district_id' => null,
+            'typeuser_id' => $request->input('typeuser_id')
         ]);
+
+        $user = User::create([
+            'names' => $person->names,
+            'lastnames' => $person->fatherSurname . ' ' . $person->motherSurname,
+            'email' => $person->email,
+            'password' => bcrypt($request->input('password')),
+            'typeuser_id' => $request->input('typeuser_id'),
+            'person_id' => $person->id,
+        ]);
+
+        $user = User::find($user->id);
+        return response()->json($user);
     }
 
     /**
@@ -168,19 +193,9 @@ class UserController extends Controller
      */
     public function show(string $id): User|JsonResponse
     {
-        auth()->user()->typeuser_id;
-
-//        Find a user by ID
+        if (auth()->user()->typeuser_id != 1) return response()->json(['message' => 'Unauthorized'], 401);
         $user = User::find($id);
-
-//        If the user is not found, return a 404 response
-        if (!$user) {
-            return response()->json(
-                ['message' => 'User not found'], 404
-            );
-        }
-
-//        Return the user
+        if (!$user) return response()->json(['message' => 'User not found'], 404);
         return $user;
     }
 
@@ -259,17 +274,14 @@ class UserController extends Controller
         if (auth()->user()->typeuser_id != 1) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-//        Find a user by ID
         $user = User::find($id);
 
-//        If the user is not found, return a 404 response
         if (!$user) {
             return response()->json(
                 ['message' => 'User not found'], 404
             );
         }
 
-//        Validate data
         $request->validate([
             'names' => 'required|string',
             'lastnames' => 'required|string',
@@ -278,17 +290,14 @@ class UserController extends Controller
             'typeuser_id' => 'required|integer'
         ]);
 
-        // Cifrar la contraseña
         $hashedPassword = Hash::make($request->password);
 
-//        Validate typeuser_id
         if (!Typeuser::find($request->typeuser_id)) {
             return response()->json(
                 ['message' => 'Typeuser not found'], 404
             );
         }
 
-//        Update with password hashed
         $user->update([
             'names' => $request->names,
             'email' => $request->email,
@@ -296,7 +305,6 @@ class UserController extends Controller
             'typeuser_id' => $request->typeuser_id
         ]);
 
-//        Return the user
         return $user;
     }
 
@@ -349,33 +357,14 @@ class UserController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        if (auth()->user()->typeuser_id != 1) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-//        Find a user by ID
+        if (auth()->user()->typeuser_id != 1) return response()->json(['message' => 'Unauthorized'], 401);
         $user = User::find($id);
-
-//        If the user is not found, return a 404 response
-        if (!$user) {
-            return response()->json(
-                ['message' => 'User not found'], 404
-            );
-        }
-
-//        If the user is an admin, return a 400 response
-        if ($user->typeuser_id === 1) {
-            return response()->json(
-                ['message' => 'You cannot delete the admin user'], 400
-            );
-        }
-
-//        Delete the user
+        if (!$user) return response()->json(['message' => 'User not found'], 404);
+        $person = Person::find($user->person_id);
+        if (!$person) return response()->json(['message' => 'Person not found'], 404);
+        if ($user->typeuser_id === 1) return response()->json(['message' => 'You cannot delete the admin user'], 400);
+        $person->delete();
         $user->delete();
-
-//        Return a 204 response
-        return response()->json(
-            ['message' => 'User deleted']
-        );
-
+        return response()->json(['message' => 'User deleted']);
     }
 }

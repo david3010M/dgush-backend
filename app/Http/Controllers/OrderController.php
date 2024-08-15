@@ -11,9 +11,7 @@ use App\Models\ProductDetails;
 use App\Models\SendInformation;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -113,6 +111,43 @@ class OrderController extends Controller
         }
 
         return response()->json(OrderResource::collection($orders->get()));
+    }
+
+    public function searchPaginate(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado',
+            'sort' => 'nullable|string|in:none,date-asc,date-desc',
+            'direction' => 'nullable|string|in:asc,desc',
+            'date' => 'nullable|date_format:Y-m-d',
+            'per_page' => 'nullable|integer',
+            'page' => 'nullable|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $orders = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
+            ->where('status', 'like', '%' . $request->input('status') . '%')
+            ->whereDate('date', 'like', '%' . $request->input('date') . '%')
+            ->where('user_id', auth()->user()->id);
+
+        $sort = $request->input('sort', 'none');
+        $direction = $request->input('direction', 'desc');
+
+        if ($sort === 'date-asc') {
+            $orders->orderBy('date');
+        } else if ($sort === 'date-desc') {
+            $orders->orderBy('date', 'desc');
+        }
+
+        $per_page = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+        $orders = $orders->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+        OrderResource::collection($orders);
+        return response()->json($orders);
     }
 
     /**

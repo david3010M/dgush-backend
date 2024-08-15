@@ -26,8 +26,6 @@ use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WishItemController;
-use App\Models\Image;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -234,11 +232,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 //        ORDER ADMIN
         Route::post('/order/search', [OrderController::class, 'search'])->name('order.search');
+        Route::post('/order/searchPaginate', [OrderController::class, 'searchPaginate'])->name('order.searchPaginate');
         Route::post('/order/updateStatus/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
         Route::get('/orderStatus', [OrderController::class, 'orderStatus'])->name('order.orderStatus');
         Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
 
 //        PRODUCT DETAILS
+        Route::post('/productdetails/search', [ProductDetailsController::class, 'search'])->name('productdetails.search');
+        Route::post('/productdetails/searchPaginate', [ProductDetailsController::class, 'searchPaginate'])->name('productdetails.searchPaginate');
+
         Route::resource('productdetails', ProductDetailsController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
@@ -250,8 +252,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'destroy' => 'productdetails.destroy',
             ]
         );
-
-        Route::post('/productdetails/search', [ProductDetailsController::class, 'search'])->name('productdetails.search');
 
 //        IMAGES
         Route::get('/images', [ImageController::class, 'listImages'])->name('images.all');
