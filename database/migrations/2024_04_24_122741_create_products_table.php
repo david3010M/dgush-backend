@@ -17,6 +17,9 @@ return new class extends Migration {
             $table->string('detailweb', 1000);
             $table->decimal('price1');
             $table->decimal('price2');
+            $table->decimal('priceOferta')->nullable();
+            $table->decimal('priceLiquidacion')->nullable();
+            $table->decimal('percentageDiscount')->nullable();
             $table->decimal('score', 8, 1)->default(0);
 //            $table->string('condition')->values(['new', 'used'])->default('new');
             $table->string('status')->values(['onsale', 'new', ''])->default('');

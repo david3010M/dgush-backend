@@ -23,6 +23,7 @@ class OrderItemResource extends JsonResource
 //            PARA LOS PEDIDOS DE LA TIENDA
             'description' => $this->productDetail->product->description,
             'image' => $this->productDetail->product->image->url,
+            'product_id' => $this->productDetail->product->id,
         ];
     }
 }

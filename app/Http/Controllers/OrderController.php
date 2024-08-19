@@ -247,7 +247,6 @@ class OrderController extends Controller
         $quantity = 0;
         $subtotal = 0;
 
-
         foreach ($productDetails as $productDetail) {
             $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
 
@@ -262,34 +261,40 @@ class OrderController extends Controller
                 return response()->json(['error' => 'The product is out of stock'], 422);
             }
 
+            $quantity += $quantityOfProduct;
+        }
+
+        foreach ($productDetails as $productDetail) {
+            $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
+            $quantityOfProduct = $productDetailsValidate[$key]['quantity'];
+//            PRICE TO CHOSE
+            $prices = [];
+            if ($productDetail->product->priceLiquidacion && ($productDetail->product->liquidacion == true)) $prices[] = $productDetail->product->priceLiquidacion;
+            if ($productDetail->product->priceOferta && ($productDetail->product->status == 'onsale')) $prices[] = $productDetail->product->priceOferta;
+            $prices[] = $productDetail->product->price1;
+            $prices[] = $productDetail->product->price2;
+            $minPrice = min($prices);
+
+            $priceChose = ($productDetail->product->liquidacion == true) ? $productDetail->product->priceLiquidacion :
+                ($productDetail->product->status == 'onsale' ? $productDetail->product->priceOferta :
+                    ($quantity >= 3 ? $minPrice : $productDetail->product->price1));
+
             OrderItem::create([
                 'quantity' => $quantityOfProduct,
-                'price' => $quantityOfProduct >= 3 ? $productDetail->product->price2 : $productDetail->product->price1,
+                'price' => $priceChose,
                 'product_detail_id' => $productDetail->id,
                 'order_id' => $order->id
             ]);
 
+            $stock = (float)$productDetail->stock;
             $stockResult = $stock - (float)$quantityOfProduct;
 
             $productDetail->update([
                 'stock' => $stockResult
             ]);
 
-            $quantity += $quantityOfProduct;
+            $subtotal += $priceChose * $quantityOfProduct;
         }
-
-        if ($quantity >= 3) {
-            foreach ($productDetails as $productDetail) {
-                $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
-                $subtotal += $productDetail->product->price2 * $productDetailsValidate[$key]['quantity'];
-            }
-        } else {
-            foreach ($productDetails as $productDetail) {
-                $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
-                $subtotal += $productDetail->product->price1 * $productDetailsValidate[$key]['quantity'];
-            }
-        }
-
 
         // Actualizar la orden con el subtotal y la cantidad total
         $order->update([
@@ -413,8 +418,14 @@ class OrderController extends Controller
                 return response()->json(['error' => 'The product is out of stock'], 422);
             }
 
+            $quantityOfProduct = $products[$key]['quantity'];
+            $priceChose = ($productDetail->product->liquidacion == true) ? $productDetail->product->priceLiquidacion :
+                ($productDetail->product->status == 'onsale' ? $productDetail->product->priceOferta :
+                    ($quantityOfProduct >= 3 ? $productDetail->product->price2 : $productDetail->product->price1));
+
             OrderItem::create([
-                'quantity' => $products[$key]['quantity'],
+                'quantity' => $quantityOfProduct,
+                'price' => $priceChose,
                 'product_detail_id' => $productDetail->id,
                 'order_id' => $order->id
             ]);

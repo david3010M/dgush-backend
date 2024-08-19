@@ -165,6 +165,12 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    public function getProductLiquidacion()
+    {
+        $products = Product::where('liquidacion', true)->get();
+        return response()->json($products);
+    }
+
 
     /**
      * GET ALL PRODUCTS WITH TRASHED
@@ -257,7 +263,8 @@ class ProductController extends Controller
             'detailweb' => 'required|string',
             'price1' => 'required|numeric',
             'price2' => 'required|numeric',
-//            'condition' => 'nullable|string|in:new,used',
+            'priceLiquidacion' => 'nullable|numeric',
+            'priceOferta' => 'nullable|numeric',
             'status' => 'nullable|string|in:onsale,new',
             'subcategory_id' => 'required|integer|exists:subcategory,id',
             'product_details' => 'required|array',
@@ -508,8 +515,10 @@ class ProductController extends Controller
             'detailweb' => 'nullable|string',
             'price1' => 'nullable|numeric',
             'price2' => 'nullable|numeric',
+            'priceLiquidacion' => 'nullable|numeric',
+            'priceOferta' => 'nullable|numeric',
             'status' => 'nullable|string|in:onsale,new,none',
-            'liquidacion' => 'nullable|boolean',
+            'liquidacion' => 'nullable',
             'subcategory_id' => 'nullable|integer|exists:subcategory,id',
             'product_details' => 'nullable|array',
             'product_details.*.stock' => 'required|numeric',
@@ -530,8 +539,10 @@ class ProductController extends Controller
             'detailweb' => $request->input('detailweb') ?? $product->detailweb,
             'price1' => $request->input('price1') ?? $product->price1,
             'price2' => $request->input('price2') ?? $product->price2,
+            'priceLiquidacion' => $request->input('priceLiquidacion') ?? $product->priceLiquidacion,
+            'priceOferta' => $request->input('priceOferta') ?? $product->priceOferta,
             'status' => $request->input('status') === 'none' ? "" : $request->input('status') ?? $product->status,
-            'liquidacion' => $request->input('liquidacion') ?? $product->liquidacion,
+            'liquidacion' => $request->input('liquidacion') == 'true' ?? $product->liquidacion,
             'subcategory_id' => $request->input('subcategory_id') ?? $product->subcategory_id,
         ];
 

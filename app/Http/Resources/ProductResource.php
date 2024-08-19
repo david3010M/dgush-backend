@@ -21,6 +21,8 @@ class ProductResource extends JsonResource
             'detailweb' => $this->detailweb,
             'price1' => $this->price1,
             'price2' => $this->price2,
+            'priceOferta' => $this->priceOferta,
+            'priceLiquidacion' => $this->priceLiquidacion,
             'score' => $this->score,
             'status' => $this->status,
             'liquidacion' => $this->liquidacion,
