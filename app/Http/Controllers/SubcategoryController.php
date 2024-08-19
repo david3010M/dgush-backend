@@ -264,7 +264,7 @@ class SubcategoryController extends Controller
                     'string',
                     Rule::unique('subcategory', 'name')->ignore($subcategory->id)->whereNull('deleted_at')
                 ],
-                'isHome' => 'nullable|in:true,false',
+                'isHome' => 'nullable',
                 'category_id' => 'nullable|integer|exists:category,id',
                 'image' => 'nullable|image'
             ]);
@@ -279,7 +279,7 @@ class SubcategoryController extends Controller
             $data = [
                 'name' => $name,
                 'value' => $value,
-                'isHome' => (boolean)$request->input('isHome') ?? $subcategory->isHome,
+                'isHome' => $request->input('isHome') == 'true' ?? $subcategory->isHome,
                 'category_id' => $request->input('category_id') ?? $subcategory->category_id
             ];
 
