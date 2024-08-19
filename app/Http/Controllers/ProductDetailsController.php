@@ -354,8 +354,7 @@ class ProductDetailsController extends Controller
             null,
             null
         );
-        ProductDetailsResource::collection($productDetails);
-
+        $productDetails = ProductDetailsResource::collection($productDetails);
         return response()->json($productDetails);
     }
 
