@@ -7,11 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         $percentageDiscount = 0;
@@ -20,7 +15,7 @@ class ProductResource extends JsonResource
         } else if ($this->status == 'onsale') {
             $percentageDiscount = ($this->price1 - $this->priceOferta) * 100 / $this->price1;
         }
-        $percentageDiscount = round($percentageDiscount, 0);
+        $percentageDiscount = round($percentageDiscount);
         return [
             'id' => $this->id,
             'name' => $this->name,

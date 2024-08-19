@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\ProductResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -187,13 +188,6 @@ class Product extends Model
             });
         }
 
-        //        ADD COLUMN IMAGE WITCH IS THE FIRST IMAGE OF THE PRODUCT IN TABLE IMAGE
-        $query->addSelect(['image' => Image::select('url')
-            ->whereColumn('product_id', 'product.id')
-            ->orderBy('id')
-            ->limit(1)]);
-
-//        SORT: none, price-asc, price-desc
         if ($sort == 'price-asc') {
             $sort = 'price1';
             $direction = 'asc';
@@ -202,11 +196,13 @@ class Product extends Model
             $direction = 'desc';
         }
 
-//        return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
         if ($per_page && $page) {
-            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+            $data = $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+            ProductResource::collection($data);
+            return $data;
         } else {
-            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+            $data = $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+            return ProductResource::collection($data);
         }
     }
 
