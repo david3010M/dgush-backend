@@ -14,6 +14,13 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $percentageDiscount = 0;
+        if ($this->liquidacion == true) {
+            $percentageDiscount = ($this->price1 - $this->priceLiquidacion) * 100 / $this->price1;
+        } else if ($this->status == 'onsale') {
+            $percentageDiscount = ($this->price1 - $this->priceOferta) * 100 / $this->price1;
+        }
+        $percentageDiscount = round($percentageDiscount, 0);
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -23,6 +30,7 @@ class ProductResource extends JsonResource
             'price2' => $this->price2,
             'priceOferta' => $this->priceOferta,
             'priceLiquidacion' => $this->priceLiquidacion,
+            'percentageDiscount' => $percentageDiscount != 0 ? $percentageDiscount . '%' : null,
             'score' => $this->score,
             'status' => $this->status,
             'liquidacion' => $this->liquidacion,
