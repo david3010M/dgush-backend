@@ -19,7 +19,7 @@ class UpdatePersonRequest extends UpdateRequest
                 Rule::unique('people', 'email')->ignore(auth()->user()->id),
                 Rule::unique('users', 'email')->ignore(auth()->user()->id),
             ],
-            'phone' => 'nullable|string',
+            'phone' => 'nullable|string|min:9|max:9',
             'address' => 'nullable|string',
             'reference' => 'nullable|string',
             'district_id' => 'nullable|integer|exists:district,id',

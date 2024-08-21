@@ -19,7 +19,7 @@ class PersonSeeder extends Seeder
             'fatherSurname' => 'Admin',
             'motherSurname' => 'Root',
             'email' => 'dgush@gmail.com',
-            'phone' => '123456789',
+            'phone' => '925531983',
             'address' => 'Calle 123',
             'reference' => 'Calle 123',
             'district_id' => 1,

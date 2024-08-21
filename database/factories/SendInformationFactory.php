@@ -24,7 +24,7 @@ class SendInformationFactory extends Factory
             'names' => $this->faker->name(),
             'dni' => $this->faker->randomNumber(8),
             'email' => $this->faker->email(),
-            'phone' => $this->faker->phoneNumber(),
+            'phone' => $this->faker->randomNumber(9),
             'address' => $this->faker->address(),
             'reference' => $this->faker->sentence(),
             'comment' => $this->faker->sentence(),

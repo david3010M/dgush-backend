@@ -647,7 +647,7 @@ class OrderController extends Controller
             'names' => 'required|string',
             'dni' => 'required|string|size:8',
             'email' => 'required|string',
-            'phone' => 'required|string',
+            'phone' => 'required|string|min:9|max:9',
             'address' => 'required|string',
             'reference' => 'required|string',
             'comment' => 'nullable|string',

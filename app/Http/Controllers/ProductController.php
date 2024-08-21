@@ -147,7 +147,7 @@ class ProductController extends Controller
 
         $per_page = $request->input('per_page', 9);
 
-        $products = Product::search(
+        $products = Product::searchNoLiquidacion(
             request('search'),
             request('status'),
             request('liquidacion'),

@@ -206,6 +206,75 @@ class Product extends Model
         }
     }
 
+    public static function searchNoLiquidacion($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction, $per_page, $page)
+    {
+        $query = Product::query();
+        if ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('detailweb', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $query->where('liquidacion', false);
+
+        if ($score) {
+            $query->where('score', '>=', $score);
+            $sort = 'score';
+            $direction = 'desc';
+        }
+
+        if ($subcategory) {
+            $subcategory = Subcategory::whereIn('value', $subcategory)->pluck('id');
+            $query->whereIn('subcategory_id', $subcategory);
+        }
+
+        if ($price !== null && $price[1] > 0) {
+            $query->where(function ($query) use ($price) {
+                $query->whereBetween('price1', $price)
+                    ->orWhereBetween('price2', $price);
+            });
+        }
+
+        //        COLOR
+        if ($color) {
+            $color = Color::whereIn('value', $color)->pluck('id');
+            $query->whereHas('productColors', function ($query) use ($color) {
+                $query->whereIn('color_id', $color);
+            });
+        }
+
+        //        SIZE
+        if ($size) {
+            $size = Size::whereIn('value', $size)->pluck('id');
+            $query->whereHas('productSizes', function ($query) use ($size) {
+                $query->whereIn('size_id', $size);
+            });
+        }
+
+        if ($sort == 'price-asc') {
+            $sort = 'price1';
+            $direction = 'asc';
+        } elseif ($sort == 'price-desc') {
+            $sort = 'price1';
+            $direction = 'desc';
+        }
+
+        if ($per_page && $page) {
+            $data = $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+            ProductResource::collection($data);
+            return $data;
+        } else {
+            $data = $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+            return ProductResource::collection($data);
+        }
+    }
+
     public static function getColorsByProduct($id)
     {
         return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
