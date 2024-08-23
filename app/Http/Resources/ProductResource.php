@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'detailweb' => $this->detailweb,
             'price1' => $this->price1,
             'price2' => $this->price2,
+            'price12' => $this->price12,
             'priceOferta' => $this->priceOferta,
             'priceLiquidacion' => $this->priceLiquidacion,
             'percentageDiscount' => $percentageDiscount != 0 ? $percentageDiscount . '%' : null,

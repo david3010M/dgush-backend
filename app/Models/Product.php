@@ -62,6 +62,7 @@ class Product extends Model
         'detailweb',
         'price1',
         'price2',
+        'price12',
         'priceOferta',
         'priceLiquidacion',
         'percentageDiscount',
@@ -168,7 +169,8 @@ class Product extends Model
         if ($price !== null && $price[1] > 0) {
             $query->where(function ($query) use ($price) {
                 $query->whereBetween('price1', $price)
-                    ->orWhereBetween('price2', $price);
+                    ->orWhereBetween('priceLiquidacion', $price)
+                    ->orWhereBetween('priceOferta', $price);
             });
         }
 
@@ -237,7 +239,8 @@ class Product extends Model
         if ($price !== null && $price[1] > 0) {
             $query->where(function ($query) use ($price) {
                 $query->whereBetween('price1', $price)
-                    ->orWhereBetween('price2', $price);
+                    ->orWhereBetween('priceLiquidacion', $price)
+                    ->orWhereBetween('priceOferta', $price);
             });
         }
 

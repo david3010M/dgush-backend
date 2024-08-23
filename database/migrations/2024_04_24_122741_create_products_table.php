@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('detailweb', 1000);
             $table->decimal('price1');
             $table->decimal('price2');
+            $table->decimal('price12')->nullable();
             $table->decimal('priceOferta')->nullable();
             $table->decimal('priceLiquidacion')->nullable();
             $table->decimal('percentageDiscount')->nullable();

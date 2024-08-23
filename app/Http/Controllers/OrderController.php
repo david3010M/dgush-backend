@@ -269,15 +269,22 @@ class OrderController extends Controller
             $quantityOfProduct = $productDetailsValidate[$key]['quantity'];
 //            PRICE TO CHOSE
             $prices = [];
-            if ($productDetail->product->priceLiquidacion && ($productDetail->product->liquidacion == true)) $prices[] = $productDetail->product->priceLiquidacion;
-            if ($productDetail->product->priceOferta && ($productDetail->product->status == 'onsale')) $prices[] = $productDetail->product->priceOferta;
-            $prices[] = $productDetail->product->price1;
-            $prices[] = $productDetail->product->price2;
-            $minPrice = min($prices);
 
-            $priceChose = ($productDetail->product->liquidacion == true) ? $productDetail->product->priceLiquidacion :
-                ($productDetail->product->status == 'onsale' ? $productDetail->product->priceOferta :
-                    ($quantity >= 3 ? $minPrice : $productDetail->product->price1));
+            if ($productDetail->product->priceLiquidacion && $productDetail->product->liquidacion == true) {
+                $prices[] = $productDetail->product->priceLiquidacion;
+            }
+            if ($productDetail->product->priceOferta && $productDetail->product->status == 'onsale') {
+                $prices[] = $productDetail->product->priceOferta;
+            }
+            if ($quantity >= 12 && $productDetail->product->price12) {
+                $prices[] = $productDetail->product->price12;
+            }
+            if ($quantity >= 3 && $productDetail->product->price2) {
+                $prices[] = $productDetail->product->price2;
+            }
+
+            $prices[] = $productDetail->product->price1;
+            $priceChose = min($prices);
 
             OrderItem::create([
                 'quantity' => $quantityOfProduct,
@@ -421,7 +428,9 @@ class OrderController extends Controller
             $quantityOfProduct = $products[$key]['quantity'];
             $priceChose = ($productDetail->product->liquidacion == true) ? $productDetail->product->priceLiquidacion :
                 ($productDetail->product->status == 'onsale' ? $productDetail->product->priceOferta :
-                    ($quantityOfProduct >= 3 ? $productDetail->product->price2 : $productDetail->product->price1));
+                    ($quantityOfProduct >= 12 ? $productDetail->product->price12 :
+                        ($quantityOfProduct >= 3 ? $productDetail->product->price2 :
+                            $productDetail->product->price1)));
 
             OrderItem::create([
                 'quantity' => $quantityOfProduct,
