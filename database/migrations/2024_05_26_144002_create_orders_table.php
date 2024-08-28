@@ -21,9 +21,10 @@ return new class extends Migration {
             $table->timestamp('date');
             $table->date('deliveryDate')->nullable();
             $table->date('shippingDate')->nullable();
-//            $table->string('numberPayment');
             $table->string('status')->default('verificado');
             $table->string('description')->nullable();
+            $table->string('numberPayment')->nullable();
+            $table->string('paymentId')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('coupon_id')->nullable()->constrained('coupon');
             $table->timestamps();

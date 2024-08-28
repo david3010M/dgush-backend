@@ -699,7 +699,8 @@ class OrderController extends Controller
             'sede_id' => $method === 'pickup' ? $request->input('sede_id') : null,
             'order_id' => $id,
 //            NUMBER OF PAYMENT
-//            'payment' => $request->input('payment')
+            'paymentId' => $request->input('paymentId'),
+            'paymentNumber' => $request->input('paymentNumber'),
         ];
 
         $sendInformation = SendInformation::create($data);
@@ -749,6 +750,8 @@ class OrderController extends Controller
         } else {
             $order->update([
                 'status' => 'confirmado',
+                'paymentId' => $request->input('paymentId'),
+                'paymentNumber' => $request->input('paymentNumber'),
                 'sendCost' => 0,
                 'total' => $order->subtotal - $order->discount
             ]);

@@ -12,6 +12,7 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GroupMenuController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\IziPayController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\OptionMenuController;
 use App\Http\Controllers\OrderController;
@@ -306,6 +307,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ]
         );
     });
+
+//    IZI PAY
+    Route::post('/izipay/createPaymentToken/{id}', [IziPayController::class, 'createPaymentToken'])->name('izipay.createPaymentToken');
 
 //    ORDER CLIENT
     Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
