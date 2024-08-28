@@ -9,7 +9,7 @@ class IziPayController extends Controller
     /**
      * Create a payment token for an order
      * @OA\Post(
-     *     path="/dgush-backend/public/api/izipay/izipay/createPaymentToken/{orderId}",
+     *     path="/dgush-backend/public/api/izipay/createPaymentToken/{orderId}",
      *     tags={"IziPay"},
      *     summary="Create a payment token for an order",
      *     description="Create a payment token for an order",
@@ -18,7 +18,7 @@ class IziPayController extends Controller
      *     @OA\Response(response="200", description="Payment token created",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="integer", example="200"),
-     *              @OA\Property(property="formToken", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+     *              @OA\Property(property="formToken", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
      *          ),
      *     ),
      *     @OA\Response(response="404", description="Order not found",

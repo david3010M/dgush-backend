@@ -3380,14 +3380,14 @@
                 ]
             }
         },
-        "/dgush-backend/public/api/izipay/izipay/createPaymentToken/{orderId}": {
+        "/dgush-backend/public/api/izipay/createPaymentToken/{orderId}": {
             "post": {
                 "tags": [
                     "IziPay"
                 ],
                 "summary": "Create a payment token for an order",
                 "description": "Create a payment token for an order",
-                "operationId": "892498834fe9493c905a5e69d8bb5d08",
+                "operationId": "7e48528ac3a9e03db92a9b091cfc0956",
                 "parameters": [
                     {
                         "name": "orderId",
@@ -3412,7 +3412,7 @@
                                         },
                                         "formToken": {
                                             "type": "string",
-                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                                         }
                                     },
                                     "type": "object"
@@ -4092,7 +4092,7 @@
                                     "reference",
                                     "comment",
                                     "method",
-                                    "district_id"
+                                    "paymentId"
                                 ],
                                 "properties": {
                                     "names": {
@@ -4130,6 +4130,18 @@
                                     "district_id": {
                                         "type": "integer",
                                         "example": "1"
+                                    },
+                                    "sede_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "paymentId": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "paymentNumber": {
+                                        "type": "string",
+                                        "example": "123456"
                                     }
                                 },
                                 "type": "object"
