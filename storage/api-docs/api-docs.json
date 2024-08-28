@@ -775,11 +775,19 @@
                                         "type": "string",
                                         "example": "Gush"
                                     },
+                                    "dni": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
                                     "email": {
                                         "type": "string",
                                         "example": "dgush123@gmail.com"
                                     },
                                     "password": {
+                                        "type": "string",
+                                        "example": "abcd1234"
+                                    },
+                                    "confirm_password": {
                                         "type": "string",
                                         "example": "abcd1234"
                                     },
@@ -3372,6 +3380,114 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/izipay/izipay/createPaymentToken/{orderId}": {
+            "post": {
+                "tags": [
+                    "IziPay"
+                ],
+                "summary": "Create a payment token for an order",
+                "description": "Create a payment token for an order",
+                "operationId": "892498834fe9493c905a5e69d8bb5d08",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment token created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "formToken": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "0"
+                                        },
+                                        "formToken": {
+                                            "type": "string",
+                                            "example": "Order not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Order must be verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "0"
+                                        },
+                                        "formToken": {
+                                            "type": "string",
+                                            "example": "Order must be verified"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "0"
+                                        },
+                                        "formToken": {
+                                            "type": "string",
+                                            "example": "Order must be verified"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/dgush-backend/public/api/order": {
             "get": {
                 "tags": [
@@ -3458,7 +3574,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3530,7 +3651,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/dgush-backend/public/api/order/search": {
@@ -3574,6 +3700,247 @@
                                     "items": {
                                         "$ref": "#/components/schemas/OrderResource"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/order/searchPaginate": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Search orders",
+                "operationId": "0408a27ac364956c47212bc38ce2cda8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "verificado"
+                                    },
+                                    "sort": {
+                                        "type": "string",
+                                        "example": "date-asc"
+                                    },
+                                    "direction": {
+                                        "type": "string",
+                                        "example": "asc"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "2024-05-26"
+                                    },
+                                    "per_page": {
+                                        "type": "integer",
+                                        "example": "10"
+                                    },
+                                    "page": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrderResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/order/updateStatus/{id}": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Search orders",
+                "operationId": "14f3ac72c6b7633caa240b9d63724bb4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "verificado"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Order has been verified"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrderResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/order/{id}": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Search orders",
+                "operationId": "272cc00831958412e01d109ab8b40327",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Orders retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
                                 }
                             }
                         }
@@ -7977,5 +8344,95 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Access",
+            "description": "Access"
+        },
+        {
+            "name": "TypeUser Accesses",
+            "description": "TypeUser Accesses"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Banner",
+            "description": "Banner"
+        },
+        {
+            "name": "Category",
+            "description": "Category"
+        },
+        {
+            "name": "Color",
+            "description": "Color"
+        },
+        {
+            "name": "Comment",
+            "description": "Comment"
+        },
+        {
+            "name": "Coupon",
+            "description": "Coupon"
+        },
+        {
+            "name": "Department",
+            "description": "Department"
+        },
+        {
+            "name": "District",
+            "description": "District"
+        },
+        {
+            "name": "Filter",
+            "description": "Filter"
+        },
+        {
+            "name": "Group Menus",
+            "description": "Group Menus"
+        },
+        {
+            "name": "Images",
+            "description": "Images"
+        },
+        {
+            "name": "IziPay",
+            "description": "IziPay"
+        },
+        {
+            "name": "Order",
+            "description": "Order"
+        },
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "Product Details",
+            "description": "Product Details"
+        },
+        {
+            "name": "Province",
+            "description": "Province"
+        },
+        {
+            "name": "Size",
+            "description": "Size"
+        },
+        {
+            "name": "Subcategory",
+            "description": "Subcategory"
+        },
+        {
+            "name": "Type User",
+            "description": "Type User"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        }
+    ]
 }

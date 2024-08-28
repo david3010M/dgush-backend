@@ -20,6 +20,7 @@ class OrderController extends Controller
      * @OA\Get (
      *     path="/dgush-backend/public/api/order",
      *     summary="Get all orders",
+     *     security={{"bearerAuth": {}}},
      *     tags={"Order"},
      *     @OA\Parameter(name="page", in="query", description="Page number", required=false, @OA\Schema(type="integer")),
      *     @OA\Response(
@@ -57,11 +58,6 @@ class OrderController extends Controller
 
         return $pageSize ? OrderResource::collection($orders->simplePaginate($pageSize))
             : response()->json(OrderResource::collection($orders->get()));
-//        return response()->json(OrderResource::collection($orders));
-//        return response()->json(Order::with('user', 'orderItems.productDetail.product.image',
-//            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
-//            ->where('user_id', auth()->user()->id)->get());
-//            ->simplePaginate($pageSize));
     }
 
     /**
@@ -113,6 +109,29 @@ class OrderController extends Controller
         return response()->json(OrderResource::collection($orders->get()));
     }
 
+    /**
+     * @OA\Post  (
+     *     path="/dgush-backend/public/api/order/searchPaginate",
+     *     summary="Search orders",
+     *     tags={"Order"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="verificado"),
+     *             @OA\Property(property="sort", type="string", example="date-asc"),
+     *             @OA\Property(property="direction", type="string", example="asc"),
+     *             @OA\Property(property="date", type="string", example="2024-05-26"),
+     *             @OA\Property(property="per_page", type="integer", example="10"),
+     *             @OA\Property(property="page", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response( response=200, description="Orders retrieved successfully", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/OrderResource")) ),
+     *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string")) ),
+     *     @OA\Response( response=401, description="Unauthenticated", @OA\JsonContent(@OA\Property(property="error", type="string")) )
+     * )
+     *
+     */
     public function searchPaginate(Request $request)
     {
         $validator = validator($request->all(), [
@@ -154,6 +173,7 @@ class OrderController extends Controller
      * @OA\Post (
      *     path="/dgush-backend/public/api/order",
      *     summary="Create a new order",
+     *     security={{"bearerAuth": {}}},
      *     tags={"Order"},
      *     @OA\RequestBody(
      *         required=true,
@@ -317,6 +337,25 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
+    /**
+     * @OA\Post  (
+     *     path="/dgush-backend/public/api/order/updateStatus/{id}",
+     *     summary="Search orders",
+     *     tags={"Order"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="verificado"),
+     *             @OA\Property(property="description", type="string", example="Order has been verified")
+     *         )
+     *     ),
+     *     @OA\Response( response=200, description="Orders retrieved successfully", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/OrderResource")) ),
+     *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string")) ),
+     *     @OA\Response( response=401, description="Unauthenticated", @OA\JsonContent(@OA\Property(property="error", type="string")) )
+     * )
+     *
+     */
     public function updateStatus(Request $request, int $id)
     {
         $order = Order::find($id);
@@ -346,6 +385,19 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
+    /**
+     * @OA\Get  (
+     *     path="/dgush-backend/public/api/order/{id}",
+     *     summary="Search orders",
+     *     tags={"Order"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", required=true, description="Order ID", @OA\Schema(type="integer")),
+     *     @OA\Response( response=200, description="Orders retrieved successfully", @OA\JsonContent(ref="#/components/schemas/Order")),
+     *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string")) ),
+     *     @OA\Response( response=401, description="Unauthenticated", @OA\JsonContent(@OA\Property(property="error", type="string")) )
+     * )
+     *
+     */
     public function show(int $id)
     {
         $order = Order::with('user', 'orderItems.productDetail.product.image',
@@ -599,7 +651,7 @@ class OrderController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"names", "dni", "email", "phone", "address", "reference", "comment", "method", "district_id"},
+     *             required={"names", "dni", "email", "phone", "address", "reference", "comment", "method", "paymentId"},
      *             @OA\Property(property="names", type="string", example="John Doe"),
      *             @OA\Property(property="dni", type="string", example="12345678"),
      *             @OA\Property(property="email", type="string", example="johndoe@gmail.com"),
@@ -608,7 +660,10 @@ class OrderController extends Controller
      *             @OA\Property(property="reference", type="string", example="Near the park"),
      *             @OA\Property(property="comment", type="string", example="Please call before delivery"),
      *             @OA\Property(property="method", type="string", example="cash"),
-     *             @OA\Property(property="district_id", type="integer", example="1")
+     *             @OA\Property(property="district_id", type="integer", example="1"),
+     *             @OA\Property(property="sede_id", type="integer", example="1"),
+     *             @OA\Property(property="paymentId", type="string", example="123456"),
+     *             @OA\Property(property="paymentNumber", type="string", example="123456")
      *         )
      *     ),
      *     @OA\Response(
@@ -662,7 +717,9 @@ class OrderController extends Controller
             'comment' => 'nullable|string',
             'method' => 'required|string|in:delivery,pickup',
             'district_id' => 'required_if:method,delivery|integer',
-            'sede_id' => 'required_if:method,pickup|integer'
+            'sede_id' => 'required_if:method,pickup|integer',
+            'paymentId' => 'required|string',
+            'paymentNumber' => 'nullable|string'
         ]);
 
         if ($request->input('method') === 'pickup') {

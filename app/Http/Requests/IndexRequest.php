@@ -25,10 +25,7 @@ class IndexRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
-        $response = response()->json([
-            'message' => $validator->errors()->first(),
-        ], 422);
-
+        $response = response()->json(['message' => $validator->errors()->first(),], 422);
         throw new ValidationException($validator, $response);
     }
 }

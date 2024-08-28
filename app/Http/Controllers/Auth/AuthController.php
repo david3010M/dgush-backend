@@ -385,8 +385,10 @@ class AuthController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="name",type="string",example="D Gush"),
      *             @OA\Property(property="lastnames",type="string",example="Gush"),
+     *             @OA\Property(property="dni",type="string",example="12345678"),
      *             @OA\Property(property="email",type="string",example="dgush123@gmail.com"),
      *             @OA\Property(property="password",type="string",example="abcd1234"),
+     *             @OA\Property(property="confirm_password",type="string",example="abcd1234"),
      *             @OA\Property(property="accept_terms",type="boolean",example="true")
      *         )
      *     ),
@@ -394,11 +396,7 @@ class AuthController extends Controller
      *         response=200,
      *         description="User registered",
      *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="access_token",
-     *                 type="string",
-     *                 example="10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147",
-     *             ),
+     *             @OA\Property(property="access_token",type="string",example="10|DhvyeOsYelrCP7YXyx0RGG2E9KFG2PE9RFEjqWwwe69d7147"),
      *             @OA\Property(
      *                 property="user",
      *                 type="array",
