@@ -296,17 +296,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 //        SEDE
         Route::resource('sede', SedeController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
+            ['store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'sede.index',
                 'store' => 'sede.store',
-                'show' => 'sede.show',
                 'update' => 'sede.update',
                 'destroy' => 'sede.destroy',
             ]
         );
     });
+
+    Route::get('/sede', [SedeController::class, 'index'])->name('sede.index');
+    Route::get('/sede/{id}', [SedeController::class, 'show'])->name('sede.show');
 
 //    IZI PAY
     Route::post('/izipay/createPaymentToken/{id}', [IziPayController::class, 'createPaymentToken'])->name('izipay.createPaymentToken');
