@@ -34,13 +34,14 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $orderItems = OrderItemResource::collection($this->orderItems);
         $statusDictionary = [
             'verificado' => 0,
             'confirmado' => 1,
             'enviado' => 2,
-            'entregado' => 3,
-            'cancelado' => 4,
+            'recojoTiendaProceso' => 3,
+            'recojoTiendaListo' => 4,
+            'entregado' => 5,
+            'cancelado' => 6,
         ];
 
         return [
@@ -54,12 +55,10 @@ class OrderResource extends JsonResource
             'statusNumber' => $statusDictionary[$this->status],
             'description' => $this->description ?? '-',
             'image' => $this->orderItems[0] ? $this->orderItems[0]->productDetail->product->image : null,
-//            'quantity' => $this->quantity,
             'date' => $this->date,
             'shippingDate' => Carbon::parse($this->date)->format('Y-m-d'), // change to shippingDate
             'deliveryDate' => Carbon::parse($this->date)->format('Y-m-d'), // change to deliveryDate
             'coupon_id' => $this->coupon_id,
-//            'user_id' => $this->user_id,
             'order_items' => OrderItemResource::collection($this->orderItems),
             'coupon' => new CouponResource($this->coupon),
             'send_information' => new SendInformationResource($this->sendInformation),

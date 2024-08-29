@@ -83,7 +83,7 @@ class OrderController extends Controller
     public function search(Request $request)
     {
         $validator = validator($request->all(), [
-            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado',
+            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojoTiendaProceso,recojoTiendaListo',
             'sort' => 'nullable|string|in:none,date-asc,date-desc',
             'date' => 'nullable|date_format:Y-m-d',
         ]);
@@ -135,7 +135,7 @@ class OrderController extends Controller
     public function searchPaginate(Request $request)
     {
         $validator = validator($request->all(), [
-            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado',
+            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojoTiendaProceso,recojoTiendaListo',
             'sort' => 'nullable|string|in:none,date-asc,date-desc',
             'direction' => 'nullable|string|in:asc,desc',
             'date' => 'nullable|date_format:Y-m-d',
@@ -364,7 +364,7 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado',
+            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado,recojoTiendaProceso,recojoTiendaListo',
             'description' => 'nullable|string'
         ]);
 
@@ -814,6 +814,11 @@ class OrderController extends Controller
             ]);
         }
 
+        $order->update([
+            'deliveryDate' => $order->sendInformation->method === 'delivery' ? now()->addDays(3) : null,
+            'shippingDate' => $order->sendInformation->method === 'pickup' ? now()->addDays(3) : null
+        ]);
+
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->find($order->id);
@@ -873,14 +878,18 @@ class OrderController extends Controller
         $verificado = $orders->where('status', 'verificado')->count();
         $confirmado = $orders->where('status', 'confirmado')->count();
         $enviado = $orders->where('status', 'enviado')->count();
+        $recojoTiendaProceso = $orders->where('status', 'recojoTiendaProceso')->count();
+        $recojoTiendaListo = $orders->where('status', 'recojoTiendaListo')->count();
         $entregado = $orders->where('status', 'entregado')->count();
         $cancelado = $orders->where('status', 'cancelado')->count();
         return response()->json([
             'verificado' => $verificado,
             'confirmado' => $confirmado,
             'enviado' => $enviado,
+            'recojoTiendaProceso' => $recojoTiendaProceso,
+            'recojoTiendaListo' => $recojoTiendaListo,
             'entregado' => $entregado,
-            'cancelado' => $cancelado
+            'cancelado' => $cancelado,
         ]);
     }
 
@@ -963,7 +972,6 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-
     /**
      * @OA\Get (
      *     path="/dgush-backend/public/api/dashboardOrders",
@@ -991,6 +999,8 @@ class OrderController extends Controller
         $enviado = $orders->where('status', 'enviado')->count();
         $entregado = $orders->where('status', 'entregado')->count();
         $cancelado = $orders->where('status', 'cancelado')->count();
+        $recojoTiendaProceso = $orders->where('status', 'recojoTiendaProceso')->count();
+        $recojoTiendaListo = $orders->where('status', 'recojoTiendaListo')->count();
 
 
         return response()->json([
@@ -1011,13 +1021,21 @@ class OrderController extends Controller
                 'value' => $enviado
             ],
             [
+                'description' => 'Órdenes en Proceso para Recojo en Tienda',
+                'value' => $recojoTiendaProceso
+            ],
+            [
+                'description' => 'Órdenes Listas para Recojo en Tienda',
+                'value' => $recojoTiendaListo
+            ],
+            [
                 'description' => 'Órdenes Entregadas',
                 'value' => $entregado
             ],
             [
                 'description' => 'Órdenes Canceladas',
                 'value' => $cancelado
-            ]
+            ],
         ]);
     }
 

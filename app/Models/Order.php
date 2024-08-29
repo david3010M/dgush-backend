@@ -75,6 +75,8 @@ class Order extends Model
         'quantity',
         'date',
         'status',
+        'deliveryDate',
+        'shippingDate',
         'description',
         'user_id',
         'coupon_id'
@@ -85,38 +87,6 @@ class Order extends Model
         'updated_at',
         'deleted_at'
     ];
-//
-//    public static function boot()
-//    {
-//        parent::boot();
-//
-//        static::creating(function ($model) {
-//            $existing = ProductDetails::withTrashed()
-//                ->where('product_id', $model->product_id)
-//                ->where('color_id', $model->color_id)
-//                ->where('size_id', $model->size_id)
-//                ->whereNull('deleted_at')
-//                ->first();
-//
-//            if ($existing) {
-//                return response()->json(['error' => 'A product detail with the same product_id, color_id, and size_id already exists.'], 422);
-//            }
-//        });
-//
-//        static::updating(function ($model) {
-//            $existing = ProductDetails::withTrashed()
-//                ->where('product_id', $model->product_id)
-//                ->where('color_id', $model->color_id)
-//                ->where('size_id', $model->size_id)
-//                ->where('id', '!=', $model->id)
-//                ->whereNull('deleted_at')
-//                ->first();
-//
-//            if ($existing) {
-//                return response()->json(['error' => 'A product detail with the same product_id, color_id, and size_id already exists.'], 422);
-//            }
-//        });
-//    }
 
     public function user()
     {
