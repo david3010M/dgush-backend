@@ -38,8 +38,8 @@ class OrderResource extends JsonResource
             'verificado' => 0,
             'confirmado' => 1,
             'enviado' => 2,
-            'recojoTiendaProceso' => 3,
-            'recojoTiendaListo' => 4,
+            'recojotiendaproceso' => 3, //recojotiendaproceso
+            'recojotiendalisto' => 4, //recojotiendalisto
             'entregado' => 5,
             'cancelado' => 6,
         ];
@@ -56,8 +56,8 @@ class OrderResource extends JsonResource
             'description' => $this->description ?? '-',
             'image' => $this->orderItems[0] ? $this->orderItems[0]->productDetail->product->image : null,
             'date' => $this->date,
-            'shippingDate' => Carbon::parse($this->date)->format('Y-m-d'), // change to shippingDate
-            'deliveryDate' => Carbon::parse($this->date)->format('Y-m-d'), // change to deliveryDate
+            'shippingDate' => $this->shippingDate ? Carbon::parse($this->shippingDate)->format('Y-m-d') : null,
+            'deliveryDate' => $this->deliveryDate ? Carbon::parse($this->deliveryDate)->format('Y-m-d') : null,
             'coupon_id' => $this->coupon_id,
             'order_items' => OrderItemResource::collection($this->orderItems),
             'coupon' => new CouponResource($this->coupon),
