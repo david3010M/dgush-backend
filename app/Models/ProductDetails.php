@@ -57,7 +57,7 @@ class ProductDetails extends Model
 
     public function orderItems()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'product_detail_id');
     }
 
     public static function search($product, $color, $size, $subcategory, $sort, $direction, $per_page, $page)

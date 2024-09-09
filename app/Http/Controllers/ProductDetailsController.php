@@ -272,12 +272,17 @@ class ProductDetailsController extends Controller
     public function destroy(int $id)
     {
         $productDetails = ProductDetails::withTrashed()->find($id);
+
         if (!$productDetails) {
             return response()->json(['error' => 'Product details not found'], 404);
         }
 
         if ($productDetails->trashed()) {
             return response()->json(['error' => 'Product details already deleted'], 409);
+        }
+
+        if ($productDetails->orderItems()->exists()) {
+            return response()->json(['error' => 'Product details cannot be deleted because it has order items'], 409);
         }
 
         $productDetails->delete();
