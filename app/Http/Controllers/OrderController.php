@@ -109,6 +109,22 @@ class OrderController extends Controller
         return response()->json(OrderResource::collection($orders->get()));
     }
 
+    public function showOrder(int $id)
+    {
+        $order = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+            ->find($id);
+
+        $user = auth()->user();
+        $user = User::find($user->id);
+
+        if (!$order || $order->user_id !== $user->id && $user->typeuser->name !== 'Admin') {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        return response()->json($order);
+    }
+
     /**
      * @OA\Post  (
      *     path="/dgush-backend/public/api/order/searchPaginate",
@@ -313,13 +329,6 @@ class OrderController extends Controller
                 'order_id' => $order->id
             ]);
 
-            $stock = (float)$productDetail->stock;
-            $stockResult = $stock - (float)$quantityOfProduct;
-
-            $productDetail->update([
-                'stock' => $stockResult
-            ]);
-
             $subtotal += $priceChose * $quantityOfProduct;
         }
 
@@ -520,15 +529,14 @@ class OrderController extends Controller
         $order = Order::find($id);
         $user = auth()->user();
 
-        if (!$order || $order->user_id !== $user->id) {
+        if (!$order
+            || $order->status !== 'verificado'
+            || $order->user_id !== $user->id
+        ) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
         foreach ($order->orderItems as $orderItem) {
-            $productDetail = $orderItem->productDetail;
-            $productDetail->update([
-                'stock' => $productDetail->stock + $orderItem->quantity
-            ]);
             $orderItem->delete();
         }
 
@@ -822,6 +830,14 @@ class OrderController extends Controller
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->find($order->id);
+
+        $orderItems = OrderItem::where('order_id', $order->id)->get();
+        foreach ($orderItems as $orderItem) {
+            $productDetail = ProductDetails::find($orderItem->product_detail_id);
+            $productDetail->update([
+                'stock' => $productDetail->stock - $orderItem->quantity
+            ]);
+        }
 
         return response()->json($order);
     }

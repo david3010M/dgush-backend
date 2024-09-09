@@ -238,6 +238,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/order/updateStatus/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
         Route::get('/orderStatus', [OrderController::class, 'orderStatus'])->name('order.orderStatus');
         Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
+        Route::get('/showOrder/{id}', [OrderController::class, 'showOrder'])->name('order.showOrder');
 
 //        PRODUCT DETAILS
         Route::post('/productdetails/search', [ProductDetailsController::class, 'search'])->name('productdetails.search');
