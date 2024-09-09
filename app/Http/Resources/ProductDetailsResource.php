@@ -28,11 +28,11 @@ class ProductDetailsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => (new ProductResource($this->product))->name,
+            'name' => $this->product ? (new ProductResource($this->product))->name : null,
             'stock' => $this->stock,
             'colorName' => (new ColorResource($this->color))->name,
             'sizeName' => (new SizeResource($this->size))->name,
-            'subcategory' => (new SubcategoryResource($this->product->subcategory))->name,
+            'subcategory' => $this->product ? (new SubcategoryResource($this->product->subcategory))->name : null,
             'status' => $this->status,
             'product_id' => $this->product_id,
             'color_id' => $this->color_id,
