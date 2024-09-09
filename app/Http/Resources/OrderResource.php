@@ -59,7 +59,7 @@ class OrderResource extends JsonResource
             'shippingDate' => $this->shippingDate ? Carbon::parse($this->shippingDate)->format('Y-m-d') : null,
             'deliveryDate' => $this->deliveryDate ? Carbon::parse($this->deliveryDate)->format('Y-m-d') : null,
             'coupon_id' => $this->coupon_id,
-            'order_items' => $this->orderItems ? OrderItemResource::collection($this->orderItems) : null,
+            'order_items' => $this->orderItems->count() > 0 ? OrderItemResource::collection($this->orderItems) : null,
             'coupon' => $this->coupon ? new CouponResource($this->coupon) : null,
             'send_information' => $this->sendInformation ? new SendInformationResource($this->sendInformation) : null,
             'user' => $this->user ? new UserResource($this->user) : null,
