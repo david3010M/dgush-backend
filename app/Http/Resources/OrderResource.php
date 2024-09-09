@@ -54,15 +54,15 @@ class OrderResource extends JsonResource
             'status' => $this->status,
             'statusNumber' => $statusDictionary[$this->status],
             'description' => $this->description ?? '-',
-            'image' => $this->orderItems[0] ? $this->orderItems[0]->productDetail->product->image : null,
+            'image' => $this->orderItems[0] ? $this->orderItems[0]->productDetail ? $this->orderItems[0]->productDetail->product ? $this->orderItems[0]->productDetail->product->image : null : null : null,
             'date' => $this->date,
             'shippingDate' => $this->shippingDate ? Carbon::parse($this->shippingDate)->format('Y-m-d') : null,
             'deliveryDate' => $this->deliveryDate ? Carbon::parse($this->deliveryDate)->format('Y-m-d') : null,
             'coupon_id' => $this->coupon_id,
-            'order_items' => OrderItemResource::collection($this->orderItems),
-            'coupon' => new CouponResource($this->coupon),
-            'send_information' => new SendInformationResource($this->sendInformation),
-            'user' => new UserResource($this->user),
+            'order_items' => $this->orderItems ? OrderItemResource::collection($this->orderItems) : null,
+            'coupon' => $this->coupon ? new CouponResource($this->coupon) : null,
+            'send_information' => $this->sendInformation ? new SendInformationResource($this->sendInformation) : null,
+            'user' => $this->user ? new UserResource($this->user) : null,
         ];
     }
 }
