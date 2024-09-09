@@ -17,13 +17,13 @@ class OrderItemResource extends JsonResource
         return [
             'quantity' => $this->quantity,
             'price' => $this->price,
-            'name' => $this->productDetail->product->name,
+            'name' => $this->productDetail->product ? $this->productDetail->product->name : null,
             'color' => $this->productDetail->color->name,
             'size' => $this->productDetail->size->name,
 //            PARA LOS PEDIDOS DE LA TIENDA
-            'description' => $this->productDetail->product->description,
-            'image' => $this->productDetail->product->image->url,
-            'product_id' => $this->productDetail->product->id,
+            'description' => $this->productDetail->product ? $this->productDetail->product->description : null,
+            'image' => $this->productDetail->product ? $this->productDetail->product->image->url : null,
+            'product_id' => $this->productDetail->product ? $this->productDetail->product->id : null,
         ];
     }
 }
