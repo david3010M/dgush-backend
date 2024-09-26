@@ -27,6 +27,7 @@ use App\Http\Controllers\TypeUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WishItemController;
+use App\Http\Controllers\ZoneController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -170,6 +171,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'destroy' => 'access.destroy',
             ]
         );
+
+        //    ZONE
+        Route::resource('zone', ZoneController::class)->only(['index', 'show', 'store', 'update', 'destroy']
+        )->names(['index' => 'zone.index', 'store' => 'zone.store', 'show' => 'zone.show',
+            'update' => 'zone.update', 'destroy' => 'zone.destroy',]);
+
 
         //    PRODUCT
         Route::resource('product', ProductController::class)->only(

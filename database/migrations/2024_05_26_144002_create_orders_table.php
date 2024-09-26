@@ -27,6 +27,7 @@ return new class extends Migration {
             $table->string('paymentId')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('coupon_id')->nullable()->constrained('coupon');
+            $table->foreignId('zone_id')->nullable()->constrained('zones');
             $table->timestamps();
             $table->softDeletes();
         });

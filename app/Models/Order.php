@@ -79,7 +79,8 @@ class Order extends Model
         'shippingDate',
         'description',
         'user_id',
-        'coupon_id'
+        'coupon_id',
+        'zone_id',
     ];
 
     protected $hidden = [
@@ -106,6 +107,11 @@ class Order extends Model
     public function sendInformation()
     {
         return $this->hasOne(SendInformation::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
     }
 
 }

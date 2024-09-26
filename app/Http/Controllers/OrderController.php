@@ -723,7 +723,7 @@ class OrderController extends Controller
             'address' => 'required|string',
             'reference' => 'required|string',
             'comment' => 'nullable|string',
-            'method' => 'required|string|in:delivery,pickup',
+            'method' => 'required|string|in:delivery,pickup,send',
             'district_id' => 'required_if:method,delivery|integer',
             'sede_id' => 'required_if:method,pickup|integer',
             'paymentId' => 'required|string',

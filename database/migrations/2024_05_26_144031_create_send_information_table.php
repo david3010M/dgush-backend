@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('address');
             $table->string('reference');
             $table->string('comment')->nullable();
-            $table->string('method');
+            $table->string('method'); // + Envio
             $table->foreignId('order_id')->constrained('order')->unique();
             $table->foreignId('district_id')->nullable()->constrained('district');
             $table->foreignId('sede_id')->nullable()->constrained('sedes');
