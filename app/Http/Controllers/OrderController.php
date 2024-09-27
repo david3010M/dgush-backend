@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
 use App\Mail\ConfirmOrder;
+use App\Mail\StatusOrder;
 use App\Models\Coupon;
 use App\Models\District;
 use App\Models\Order;
@@ -392,6 +393,41 @@ class OrderController extends Controller
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
             ->find($order->id);
+
+        $dictionaryMessages = [
+            'enviado' => '¡Buenas noticias! Tu pedido ha sido enviado y está en camino. Gracias por tu paciencia. Si tienes alguna duda, no dudes en contactarnos.',
+            'entregado' => 'Queremos informarte que tu pedido ha sido entregado con éxito. Esperamos que disfrutes de tu compra. Si tienes alguna duda, no dudes en contactarnos.',
+            'recojotiendaproceso' => 'Tu pedido está en proceso de preparación para el recojo en tienda. Te informaremos cuando esté listo para que puedas pasar a retirarlo.',
+            'recojotiendalisto' => '¡Tu pedido está listo para ser recogido en nuestra tienda! Puedes pasar por él en cualquier momento dentro de nuestro horario de atención.'
+        ];
+
+        $dictonarySubject = [
+            'enviado' => ' Pedido ' . $order->number . ' Enviado',
+            'entregado' => 'Pedido ' . $order->number . ' Entregado',
+            'recojotiendaproceso' => 'Pedido ' . $order->number . ' en Proceso para Recojo en Tienda',
+            'recojotiendalisto' => 'Pedido ' . $order->number . ' Listo para Recojo en Tienda'
+        ];
+
+        $statusDictionary = [
+            'enviado' => 'Enviado',
+            'entregado' => 'Entregado',
+            'recojotiendaproceso' => 'En Proceso para Recojo en Tienda',
+            'recojotiendalisto' => 'Listo para Recojo en Tienda'
+        ];
+
+        if ($order->status !== 'verificado' &&
+            $order->status !== 'confirmado' &&
+            $order->status !== 'cancelado') {
+            Mail::to($order->user->email)->send(new StatusOrder(
+                $order,
+                $order->user,
+                $order->orderItems,
+                $order->total,
+                $dictionaryMessages[$order->status],
+                $dictonarySubject[$order->status],
+                $statusDictionary[$order->status]
+            ));
+        }
 
         return response()->json($order);
     }
@@ -883,18 +919,28 @@ class OrderController extends Controller
     {
         $order = Order::find($id);
         if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
+            return response()->json(['error' => 'Orden no encontrada'], 404);
         }
 
         if ($order->status !== 'verificado') {
-            return response()->json(['error' => 'Order has already been confirmed'], 422);
+            return response()->json(['error' => 'La orden ya ha sido confirmada'], 422);
         }
 
         $order->update([
             'status' => 'cancelado'
         ]);
 
-        return response()->json(['message' => 'Order cancelado successfully']);
+        Mail::to($order->user->email)->send(new StatusOrder(
+            $order,
+            $order->user,
+            $order->orderItems,
+            $order->total,
+            'Lamentamos informarte que tu pedido ' . $order->number . ' ha sido cancelado. Si crees que esto es un error o necesitas más información, por favor contáctanos.',
+            'Pedido ' . $order->number . ' Cancelado',
+            'Cancelado'
+        ));
+
+        return response()->json(['message' => 'Orden cancelada exitosamente']);
     }
 
     /**

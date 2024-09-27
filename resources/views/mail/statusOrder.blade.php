@@ -200,7 +200,7 @@
                                         <tr>
                                             <td class="pad">
                                                 <h1 style="margin: 0; color: #2a615b; direction: ltr; font-family: 'Merriweather', 'Georgia', serif; font-size: 38px; font-weight: 400; letter-spacing: normal; line-height: 150%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 57px;">
-                                                    <span class="tinyMce-placeholder" style="word-break: break-word;">Pedido Confirmado</span>
+                                                    <span class="tinyMce-placeholder" style="word-break: break-word;">Pedido {{$status}}</span>
                                                 </h1>
                                             </td>
                                         </tr>
@@ -213,66 +213,7 @@
                 </tr>
                 </tbody>
             </table>
-            <table class="row row-2" align="center" width="100%" border="0" cellpadding="0" cellspacing="0"
-                   role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-size: auto;">
-                <tbody>
-                <tr>
-                    <td>
-                        <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0"
-                               role="presentation"
-                               style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #e6f9f7; color: #000000; background-size: auto; border-radius: 0; width: 670px; margin: 0 auto;"
-                               width="670">
-                            <tbody>
-                            <tr>
-                                <td class="column column-1" width="66.66666666666667%"
-                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: middle; border-radius: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
-                                    <table class="heading_block block-1" width="100%" border="0" cellpadding="10"
-                                           cellspacing="0" role="presentation"
-                                           style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-                                        <tr>
-                                            <td class="pad">
-                                                <h2 style="margin: 0; color: #37474f; direction: ltr; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 36px;">
-                                                    <span class="tinyMce-placeholder" style="word-break: break-word;">Gestiona tus pedidos</span>
-                                                </h2>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                                <td class="column column-2" width="33.333333333333336%"
-                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: middle; border-radius: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
-                                    <table class="button_block block-1" width="100%" border="0" cellpadding="10"
-                                           cellspacing="0" role="presentation"
-                                           style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-                                        <tr>
-                                            <td class="pad">
-                                                <div class="alignment" align="center"><!--[if mso]>
-                                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
-                                                                 xmlns:w="urn:schemas-microsoft-com:office:word"
-                                                                 href="https://dgush-mrsoft.vercel.app/account/myOrders"
-                                                                 style="height:42px;width:152px;v-text-anchor:middle;"
-                                                                 arcsize="67%" stroke="false" fillcolor="#3f3d56">
-                                                        <w:anchorlock/>
-                                                        <v:textbox inset="0px,0px,0px,0px">
-                                                            <center dir="false"
-                                                                    style="color:#ffffff;font-family:Arial, sans-serif;font-size:16px">
-                                                    <![endif]--><a
-                                                        href="https://dgush-mrsoft.vercel.app/account/myOrders"
-                                                        target="_blank"
-                                                        style="background-color:#3f3d56;border-bottom:0px solid transparent;border-left:0px solid transparent;border-radius:28px;border-right:0px solid transparent;border-top:0px solid transparent;color:#ffffff;display:inline-block;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;mso-border-alt:none;padding-bottom:5px;padding-top:5px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;"><span
-                                                            style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 16px; display: inline-block; letter-spacing: normal;"><span
-                                                                style="word-break: break-word; line-height: 32px;">Ir a Mis pedidos</span></span></a>
-                                                    <!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+
             <table class="row row-3" align="center" width="100%" border="0" cellpadding="0" cellspacing="0"
                    role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
                 <tbody>
@@ -294,11 +235,9 @@
                                                 style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
                                                 <div
                                                     style="color:#393d47;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;font-size:16px;font-weight:500;line-height:120%;text-align:center;mso-line-height-alt:19.2px;">
-                                                    <p style="margin: 0;">Tu pedido está siendo procesado y te
-                                                        notificaremos cuando esté listo para ser enviado. Puedes hacer
-                                                        seguimiento de tu pedido en cualquier momento accediendo a la
-                                                        sección <strong>Mis
-                                                            pedidos</strong> desde tu cuenta.</p>
+                                                    <p style="margin: 0;">
+                                                        {{$messageToSend}}
+                                                    </p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -387,18 +326,20 @@
                                             </td>
                                         </tr>
                                     </table>
-                                    <table class="paragraph_block block-6" width="100%" border="0" cellpadding="10"
-                                           cellspacing="0" role="presentation"
-                                           style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
-                                        <tr>
-                                            <td class="pad">
-                                                <div
-                                                    style="color:#101112;direction:ltr;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:right;mso-line-height-alt:19.2px;">
-                                                    <p style="margin: 0;"><strong>Pagaste </strong>S/ {{$total}}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    @if($order->status !== 'cancelado')
+                                        <table class="paragraph_block block-6" width="100%" border="0" cellpadding="10"
+                                               cellspacing="0" role="presentation"
+                                               style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                            <tr>
+                                                <td class="pad">
+                                                    <div
+                                                        style="color:#101112;direction:ltr;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:right;mso-line-height-alt:19.2px;">
+                                                        <p style="margin: 0;"><strong>Pagaste </strong>S/ {{$total}}</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    @endif
                                     <table class="paragraph_block block-7" width="100%" border="0" cellpadding="0"
                                            cellspacing="0" role="presentation"
                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
@@ -412,6 +353,67 @@
                                                         respondiendo a este correo o visitando nuestro centro de
                                                         ayuda.</p>
                                                 </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="row row-2" align="center" width="100%" border="0" cellpadding="0" cellspacing="0"
+                   role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-size: auto;">
+                <tbody>
+                <tr>
+                    <td>
+                        <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0"
+                               role="presentation"
+                               style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #e6f9f7; color: #000000; background-size: auto; border-radius: 0; width: 670px; margin: 0 auto;"
+                               width="670">
+                            <tbody>
+                            <tr>
+                                <td class="column column-1" width="66.66666666666667%"
+                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: middle; border-radius: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                                    <table class="heading_block block-1" width="100%" border="0" cellpadding="10"
+                                           cellspacing="0" role="presentation"
+                                           style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                        <tr>
+                                            <td class="pad">
+                                                <h2 style="margin: 0; color: #37474f; direction: ltr; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 36px;">
+                                                    <span class="tinyMce-placeholder" style="word-break: break-word;">Gestiona tus pedidos</span>
+                                                </h2>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="column column-2" width="33.333333333333336%"
+                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: middle; border-radius: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                                    <table class="button_block block-1" width="100%" border="0" cellpadding="10"
+                                           cellspacing="0" role="presentation"
+                                           style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                        <tr>
+                                            <td class="pad">
+                                                <div class="alignment" align="center"><!--[if mso]>
+                                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+                                                                 xmlns:w="urn:schemas-microsoft-com:office:word"
+                                                                 href="https://dgush-mrsoft.vercel.app/account/myOrders"
+                                                                 style="height:42px;width:152px;v-text-anchor:middle;"
+                                                                 arcsize="67%" stroke="false" fillcolor="#3f3d56">
+                                                        <w:anchorlock/>
+                                                        <v:textbox inset="0px,0px,0px,0px">
+                                                            <center dir="false"
+                                                                    style="color:#ffffff;font-family:Arial, sans-serif;font-size:16px">
+                                                    <![endif]--><a
+                                                        href="https://dgush-mrsoft.vercel.app/account/myOrders"
+                                                        target="_blank"
+                                                        style="background-color:#3f3d56;border-bottom:0px solid transparent;border-left:0px solid transparent;border-radius:28px;border-right:0px solid transparent;border-top:0px solid transparent;color:#ffffff;display:inline-block;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;mso-border-alt:none;padding-bottom:5px;padding-top:5px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;"><span
+                                                            style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 16px; display: inline-block; letter-spacing: normal;"><span
+                                                                style="word-break: break-word; line-height: 32px;">Ir a Mis pedidos</span></span></a>
+                                                    <!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
                                             </td>
                                         </tr>
                                     </table>
