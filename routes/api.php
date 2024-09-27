@@ -315,6 +315,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         );
     });
 
+    Route::get('/downloadVoucherSend/{id}', [OrderController::class, 'downloadVoucherSend'])->name('order.downloadVoucherSend');
     Route::get('/sede', [SedeController::class, 'index'])->name('sede.index');
     Route::get('/sede/{id}', [SedeController::class, 'show'])->name('sede.show');
 
@@ -325,9 +326,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
     Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
     Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
-    Route::post('/setOrderDistrict/{id}', [OrderController::class, 'setOrderDistrict'])->name('order.setOrderDistrict');
+    Route::post('/updateMethod/{id}', [OrderController::class, 'setOrderMethod'])->name('order.setOrderMethod');
     Route::post('/updateDates/{id}', [OrderController::class, 'updateDates'])->name('order.updateDates');
-    Route::get('/downloadVoucherSend/{id}', [OrderController::class, 'downloadVoucherSend'])->name('order.downloadVoucherSend');
 
 //    WISH ITEM
     Route::resource('wishitem', WishItemController::class)->only(

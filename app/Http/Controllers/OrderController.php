@@ -101,8 +101,7 @@ class OrderController extends Controller
         $orders = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
             ->where('status', 'like', '%' . $request->input('status') . '%')
-            ->whereDate('date', 'like', '%' . $request->input('date') . '%')
-            ->where('user_id', auth()->user()->id);
+            ->whereDate('date', 'like', '%' . $request->input('date') . '%');
 
         $sort = $request->input('sort');
 
@@ -172,8 +171,7 @@ class OrderController extends Controller
         $orders = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
             ->where('status', 'like', '%' . $request->input('status') . '%')
-            ->whereDate('date', 'like', '%' . $request->input('date') . '%')
-            ->where('user_id', auth()->user()->id);
+            ->whereDate('date', 'like', '%' . $request->input('date') . '%');
 
         $sort = $request->input('sort', 'none');
         $direction = $request->input('direction', 'desc');
@@ -821,9 +819,9 @@ class OrderController extends Controller
             'reference' => 'required|string',
             'comment' => 'nullable|string',
             'method' => 'required|string|in:delivery,pickup,send',
-            'district_id' => 'required_if:method,delivery|integer',
+            'district_id' => 'required_if:method,send|integer',
             'sede_id' => 'required_if:method,pickup|integer',
-            'zone_id' => 'required_if:method,send|integer',
+            'zone_id' => 'required_if:method,delivery|integer',
             'paymentId' => 'required|string',
             'paymentNumber' => 'nullable|string'
         ]);
@@ -834,11 +832,11 @@ class OrderController extends Controller
             ]);
         } elseif ($request->input('method') === 'send') {
             $validator->addRules([
-                'zone_id' => 'required|exists:zones,id'
+                'district_id' => 'required|exists:district,id'
             ]);
         } else {
             $validator->addRules([
-                'district_id' => 'required|exists:district,id'
+                'zone_id' => 'required|exists:zones,id'
             ]);
         }
 
@@ -846,16 +844,16 @@ class OrderController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        if ($request->input('method') === 'delivery' && !$request->input('district_id')) {
-            return response()->json(['error' => 'The district field is required'], 422);
+        if ($request->input('method') === 'delivery' && !$request->input('zone_id')) {
+            return response()->json(['error' => 'The zone field is required'], 422);
         }
 
         if ($request->input('method') === 'pickup' && !$request->input('sede_id')) {
             return response()->json(['error' => 'The sede field is required'], 422);
         }
 
-        if ($request->input('method') === 'send' && !$request->input('zone_id')) {
-            return response()->json(['error' => 'The zone field is required'], 422);
+        if ($request->input('method') === 'send' && !$request->input('district_id')) {
+            return response()->json(['error' => 'The district field is required'], 422);
         }
 
         $method = $request->input('method');
@@ -869,9 +867,9 @@ class OrderController extends Controller
             'reference' => $request->input('reference'),
             'comment' => $request->input('comment'),
             'method' => $method,
-            'district_id' => $method === 'delivery' ? $request->input('district_id') : null,
+            'district_id' => $method === 'delivery' ? $request->input('zone_id') : null,
             'sede_id' => $method === 'pickup' ? $request->input('sede_id') : null,
-            'zone_id' => $method === 'send' ? $request->input('zone_id') : null,
+            'zone_id' => $method === 'send' ? $request->input('district_id') : null,
             'order_id' => $id,
 //            NUMBER OF PAYMENT
             'paymentId' => $request->input('paymentId'),
@@ -884,47 +882,9 @@ class OrderController extends Controller
             return response()->json(['error' => 'Error creating send information'], 500);
         }
 
-        $district = District::find($request->input('district_id'));
 
         if ($request->input('method') === 'delivery') {
-            $order->update([
-                'sendCost' => $district->sendCost,
-                'total' => $order->subtotal + $district->sendCost
-            ]);
-
-            if ($order->coupon_id) {
-                $coupon = Coupon::find($order->coupon_id);
-                $discount = 0;
-
-                if ($coupon->type === 'percentage') {
-                    if ($coupon->indicator === 'subtotal') {
-                        $discount = $order->subtotal * $coupon->value / 100;
-                    } else if ($coupon->indicator === 'total') {
-                        $discount = $order->total * $coupon->value / 100;
-                    } else if ($coupon->indicator === 'sendCost') {
-                        $discount = $order->sendCost * $coupon->value / 100;
-                    }
-
-                } else if ($coupon->type === 'discount') {
-                    $discount = $coupon->value;
-                }
-
-                $order->update([
-                    'status' => 'confirmado',
-                    'sendCost' => $district->sendCost,
-                    'discount' => $discount,
-                    'total' => $order->subtotal + $district->sendCost - $discount
-                ]);
-            } else {
-                $order->update([
-                    'status' => 'confirmado',
-                    'sendCost' => $district->sendCost,
-                    'total' => $order->subtotal + $district->sendCost
-                ]);
-            }
-        } elseif ($request->input('method') === 'send') {
             $zone = Zone::find($request->input('zone_id'));
-
             $order->update([
                 'sendCost' => $zone->sendCost,
                 'total' => $order->subtotal + $zone->sendCost
@@ -958,6 +918,44 @@ class OrderController extends Controller
                     'status' => 'confirmado',
                     'sendCost' => $zone->sendCost,
                     'total' => $order->subtotal + $zone->sendCost
+                ]);
+            }
+        } elseif ($request->input('method') === 'send') {
+            $district = District::find($request->input('district_id'));
+
+            $order->update([
+                'sendCost' => $district->sendCost,
+                'total' => $order->subtotal + $district->sendCost
+            ]);
+
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                $discount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    if ($coupon->indicator === 'subtotal') {
+                        $discount = $order->subtotal * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'total') {
+                        $discount = $order->total * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'sendCost') {
+                        $discount = $order->sendCost * $coupon->value / 100;
+                    }
+
+                } else if ($coupon->type === 'discount') {
+                    $discount = $coupon->value;
+                }
+
+                $order->update([
+                    'status' => 'confirmado',
+                    'sendCost' => $district->sendCost,
+                    'discount' => $discount,
+                    'total' => $order->subtotal + $district->sendCost - $discount
+                ]);
+            } else {
+                $order->update([
+                    'status' => 'confirmado',
+                    'sendCost' => $district->sendCost,
+                    'total' => $order->subtotal + $district->sendCost
                 ]);
             }
 
@@ -1154,7 +1152,7 @@ class OrderController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/dgush-backend/public/api/setOrderDistrict/{id}",
+     *     path="/dgush-backend/public/api/updateMethod/{id}",
      *     summary="Set order district",
      *     tags={"Order"},
      *     @OA\RequestBody( required=true,
@@ -1171,7 +1169,7 @@ class OrderController extends Controller
      *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string", example="The district field is required")) )
      * )
      */
-    public function setOrderDistrict(Request $request, int $id)
+    public function setOrderMethod(Request $request, int $id)
     {
         $order = Order::find($id);
         if (!$order) return response()->json(['error' => 'Order not found'], 404);

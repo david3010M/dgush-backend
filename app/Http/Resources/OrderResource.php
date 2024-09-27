@@ -27,21 +27,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class OrderResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         $statusDictionary = [
             'verificado' => 0,
             'confirmado' => 1,
             'enviado' => 2,
-            'recojotiendaproceso' => 3, //recojotiendaproceso
-            'recojotiendalisto' => 4, //recojotiendalisto
+            'recojotiendaproceso' => 3,
+            'recojotiendalisto' => 4,
             'entregado' => 5,
-            'cancelado' => 6,
+            'agencia' => 6,
+            'cancelado' => 7,
         ];
 
         return [

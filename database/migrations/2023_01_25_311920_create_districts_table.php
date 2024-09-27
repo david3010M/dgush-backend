@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('district', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('ubigeo')->nullable();
             $table->decimal('sendCost');
             $table->foreignId('province_id')->constrained('province');
             $table->timestamps();
