@@ -4509,13 +4509,13 @@
                 }
             }
         },
-        "/dgush-backend/public/api/setOrderDistrict/{id}": {
+        "/dgush-backend/public/api/updateMethod/{id}": {
             "post": {
                 "tags": [
                     "Order"
                 ],
                 "summary": "Set order district",
-                "operationId": "922ba475b76e07d644523252f8c4ff86",
+                "operationId": "4e8d6680c13057681b570276f9a07387",
                 "requestBody": {
                     "required": true,
                     "content": {
