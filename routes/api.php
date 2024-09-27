@@ -106,6 +106,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('/clients', [PersonController::class, 'index'])->name('person.index');
         Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
+        Route::post('/image', [ImageController::class, 'uploadAnyImages'])->name('product.anyImages');
 
         //        GROUPMENU
         Route::resource('groupmenu', GroupMenuController::class)->only(

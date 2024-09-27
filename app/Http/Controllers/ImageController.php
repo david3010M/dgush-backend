@@ -64,6 +64,38 @@ class ImageController extends Controller
         return response()->json(['message' => 'Directorio eliminado correctamente']);
     }
 
+    public function uploadAnyImages(Request $request)
+    {
+        //        VALIDATE DATA
+        $request->validate(
+            [
+                'name' => 'required|string',
+                'images' => 'required|array',
+                'images.*' => 'required|image'
+            ]
+        );
+
+        $images = $request->file('images');
+        $imagesResponse = [];
+
+        foreach ($images as $image) {
+            //                UPLOAD IMAGE
+            $fileName = $request->name . '/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
+
+            //                GET IMAGE URLs
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+
+            $image = Image::create([
+                'name' => $fileName,
+                'url' => $imageUrl,
+            ]);
+
+            $imagesResponse[] = $image;
+        }
+        return response()->json($imagesResponse);
+    }
+
     public function uploadImages(Request $request, $id)
     {
         //        VALIDATE DATA

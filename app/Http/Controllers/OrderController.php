@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
+use App\Mail\ConfirmOrder;
 use App\Models\Coupon;
 use App\Models\District;
 use App\Models\Order;
@@ -11,6 +12,7 @@ use App\Models\ProductDetails;
 use App\Models\SendInformation;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
@@ -839,6 +841,13 @@ class OrderController extends Controller
             ]);
         }
 
+        Mail::to($user->email)->send(new ConfirmOrder(
+            $order,
+            $order->user,
+            $order->orderItems,
+            $order->total
+        ));
+
         return response()->json($order);
     }
 
@@ -888,6 +897,22 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order cancelado successfully']);
     }
 
+    /**
+     * @OA\Get (
+     *     path="/dgush-backend/public/api/orderStatus",
+     *     summary="Get order status",
+     *     tags={"Order"},
+     *     @OA\Response( response=200, description="Order status retrieved successfully", @OA\JsonContent(
+     *     @OA\Property(property="verificado", type="integer", example="10"),
+     *     @OA\Property(property="confirmado", type="integer", example="5"),
+     *     @OA\Property(property="enviado", type="integer", example="3"),
+     *     @OA\Property(property="recojotiendaproceso", type="integer", example="1"),
+     *     @OA\Property(property="recojotiendalisto", type="integer", example="1"),
+     *     @OA\Property(property="entregado", type="integer", example="1"),
+     *     @OA\Property(property="cancelado", type="integer", example="1")
+     *    ))
+     * )
+     */
     public function orderStatus()
     {
         $orders = Order::all();
