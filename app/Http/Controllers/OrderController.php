@@ -7,13 +7,16 @@ use App\Mail\ConfirmOrder;
 use App\Mail\StatusOrder;
 use App\Models\Coupon;
 use App\Models\District;
+use App\Models\Image;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductDetails;
 use App\Models\SendInformation;
 use App\Models\User;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
@@ -355,11 +358,19 @@ class OrderController extends Controller
      *     summary="Search orders",
      *     tags={"Order"},
      *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", required=true, description="Order ID", @OA\Schema(type="integer")),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="verificado"),
-     *             @OA\Property(property="description", type="string", example="Order has been verified")
+     *         @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(
+     *                  required={"status"},
+     *                  @OA\Property(property="status", type="string", enum={"verificado", "confirmado", "enviado", "entregado", "cancelado", "recojotiendaproceso", "recojotiendalisto", "agencia"}),
+     *                  @OA\Property(property="description", type="string", example="Order confirmed"),
+     *                  @OA\Property(property="tracking", type="string", example="123456"),
+     *                  @OA\Property(property="voucher", type="string", example="123456"),
+     *                  @OA\Property(property="image", type="file", format="binary")
+     *              )
      *         )
      *     ),
      *     @OA\Response( response=200, description="Orders retrieved successfully", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/OrderResource")) ),
@@ -376,12 +387,34 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
+            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto,agencia',
             'description' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        if ($request->input('status') === 'agencia') {
+            if (!$order->sendInformation) return response()->json(['error' => 'Send information not found'], 404);
+            $validator = Validator::make($request->all(), [
+                'tracking' => 'nullable|string',
+                'voucher' => 'required|string',
+                'image' => 'required|image'
+            ]);
+            if ($validator->fails()) return response()->json(['error' => $validator->errors()->first()], 422);
+
+            $image = $request->file('image');
+            $fileName = 'vouchers_envio/' . $order->number . '/' . $image->getClientOriginalName();
+            Storage::disk('spaces')->put($fileName, file_get_contents($image), 'private');
+            $imageUrl = Storage::disk('spaces')->url($fileName);
+            $sendInformation = SendInformation::where('order_id', $order->id)->first();
+            $sendInformation->update([
+                'tracking' => $request->input('tracking'),
+                'voucher' => $request->input('voucher'),
+                'voucherUrl' => $imageUrl,
+                'voucherFileName' => $fileName
+            ]);
         }
 
         $data = [
@@ -398,21 +431,24 @@ class OrderController extends Controller
             'enviado' => '¡Buenas noticias! Tu pedido ha sido enviado y está en camino. Gracias por tu paciencia. Si tienes alguna duda, no dudes en contactarnos.',
             'entregado' => 'Queremos informarte que tu pedido ha sido entregado con éxito. Esperamos que disfrutes de tu compra. Si tienes alguna duda, no dudes en contactarnos.',
             'recojotiendaproceso' => 'Tu pedido está en proceso de preparación para el recojo en tienda. Te informaremos cuando esté listo para que puedas pasar a retirarlo.',
-            'recojotiendalisto' => '¡Tu pedido está listo para ser recogido en nuestra tienda! Puedes pasar por él en cualquier momento dentro de nuestro horario de atención.'
+            'recojotiendalisto' => '¡Tu pedido está listo para ser recogido en nuestra tienda! Puedes pasar por él en cualquier momento dentro de nuestro horario de atención.',
+            'agencia' => 'Tu pedido ha sido enviado a la agencia de transporte. Pronto te llegará a la dirección que nos proporcionaste. Si tienes alguna duda, no dudes en contactarnos.'
         ];
 
         $dictonarySubject = [
             'enviado' => ' Pedido ' . $order->number . ' Enviado',
             'entregado' => 'Pedido ' . $order->number . ' Entregado',
             'recojotiendaproceso' => 'Pedido ' . $order->number . ' en Proceso para Recojo en Tienda',
-            'recojotiendalisto' => 'Pedido ' . $order->number . ' Listo para Recojo en Tienda'
+            'recojotiendalisto' => 'Pedido ' . $order->number . ' Listo para Recojo en Tienda',
+            'agencia' => 'Pedido ' . $order->number . ' Enviado a la Agencia de Transporte'
         ];
 
         $statusDictionary = [
             'enviado' => 'Enviado',
             'entregado' => 'Entregado',
             'recojotiendaproceso' => 'En Proceso para Recojo en Tienda',
-            'recojotiendalisto' => 'Listo para Recojo en Tienda'
+            'recojotiendalisto' => 'Listo para Recojo en Tienda',
+            'agencia' => 'Enviado a la Agencia de Transporte'
         ];
 
         if ($order->status !== 'verificado' &&
@@ -430,6 +466,29 @@ class OrderController extends Controller
         }
 
         return response()->json($order);
+    }
+
+    /**
+     * @OA\Get (
+     *     path="/dgush-backend/public/api/downloadVoucherSend/{id}",
+     *     summary="Download voucher send",
+     *     tags={"Order"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", required=true, description="Order ID", @OA\Schema(type="integer")),
+     *     @OA\Response( response=200, description="Voucher retrieved successfully", @OA\JsonContent(type="file") ),
+     *     @OA\Response( response=404, description="Voucher not found", @OA\JsonContent(@OA\Property(property="error", type="string")) ),
+     *     @OA\Response( response=401, description="Unauthenticated", @OA\JsonContent(@OA\Property(property="error", type="string")) )
+     * )
+     */
+    public function downloadVoucherSend(int $id)
+    {
+        $order = Order::find($id);
+        if (!$order) return response()->json(['error' => 'Order not found'], 404);
+        $sendInformation = SendInformation::where('order_id', $order->id)->first();
+        if (!$sendInformation) return response()->json(['error' => 'Send information not found'], 404);
+        if (!$sendInformation->voucherFileName) return response()->json(['error' => 'Voucher not found'], 404);
+        $file = Storage::disk('spaces')->get($sendInformation->voucherFileName);
+        return response($file, 200)->header('Content-Type', 'image/jpeg');
     }
 
     /**
@@ -764,6 +823,7 @@ class OrderController extends Controller
             'method' => 'required|string|in:delivery,pickup,send',
             'district_id' => 'required_if:method,delivery|integer',
             'sede_id' => 'required_if:method,pickup|integer',
+            'zone_id' => 'required_if:method,send|integer',
             'paymentId' => 'required|string',
             'paymentNumber' => 'nullable|string'
         ]);
@@ -772,11 +832,14 @@ class OrderController extends Controller
             $validator->addRules([
                 'sede_id' => 'required|exists:sedes,id'
             ]);
+        } elseif ($request->input('method') === 'send') {
+            $validator->addRules([
+                'zone_id' => 'required|exists:zones,id'
+            ]);
         } else {
             $validator->addRules([
                 'district_id' => 'required|exists:district,id'
             ]);
-
         }
 
         if ($validator->fails()) {
@@ -785,6 +848,14 @@ class OrderController extends Controller
 
         if ($request->input('method') === 'delivery' && !$request->input('district_id')) {
             return response()->json(['error' => 'The district field is required'], 422);
+        }
+
+        if ($request->input('method') === 'pickup' && !$request->input('sede_id')) {
+            return response()->json(['error' => 'The sede field is required'], 422);
+        }
+
+        if ($request->input('method') === 'send' && !$request->input('zone_id')) {
+            return response()->json(['error' => 'The zone field is required'], 422);
         }
 
         $method = $request->input('method');
@@ -800,6 +871,7 @@ class OrderController extends Controller
             'method' => $method,
             'district_id' => $method === 'delivery' ? $request->input('district_id') : null,
             'sede_id' => $method === 'pickup' ? $request->input('sede_id') : null,
+            'zone_id' => $method === 'send' ? $request->input('zone_id') : null,
             'order_id' => $id,
 //            NUMBER OF PAYMENT
             'paymentId' => $request->input('paymentId'),
@@ -850,6 +922,45 @@ class OrderController extends Controller
                     'total' => $order->subtotal + $district->sendCost
                 ]);
             }
+        } elseif ($request->input('method') === 'send') {
+            $zone = Zone::find($request->input('zone_id'));
+
+            $order->update([
+                'sendCost' => $zone->sendCost,
+                'total' => $order->subtotal + $zone->sendCost
+            ]);
+
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                $discount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    if ($coupon->indicator === 'subtotal') {
+                        $discount = $order->subtotal * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'total') {
+                        $discount = $order->total * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'sendCost') {
+                        $discount = $order->sendCost * $coupon->value / 100;
+                    }
+
+                } else if ($coupon->type === 'discount') {
+                    $discount = $coupon->value;
+                }
+
+                $order->update([
+                    'status' => 'confirmado',
+                    'sendCost' => $zone->sendCost,
+                    'discount' => $discount,
+                    'total' => $order->subtotal + $zone->sendCost - $discount
+                ]);
+            } else {
+                $order->update([
+                    'status' => 'confirmado',
+                    'sendCost' => $zone->sendCost,
+                    'total' => $order->subtotal + $zone->sendCost
+                ]);
+            }
+
         } else {
             $order->update([
                 'status' => 'confirmado',
@@ -860,9 +971,17 @@ class OrderController extends Controller
             ]);
         }
 
+        $isAnyPreSale = false;
+        $orderItems = $order->orderItems;
+        foreach ($orderItems as $orderItem) {
+            if ($orderItem->productDetail->product->status === 'preventa') {
+                $isAnyPreSale = true;
+                break;
+            }
+        }
         $order->update([
-            'deliveryDate' => $order->sendInformation->method === 'delivery' ? now()->addDays(3) : null,
-            'shippingDate' => $order->sendInformation->method === 'pickup' ? now()->addDays(3) : null
+            'deliveryDate' => $order->sendInformation->method === 'delivery' || $order->sendInformation->method === 'send' ? now()->addDays($isAnyPreSale ? 12 : 3) : null,
+            'shippingDate' => $order->sendInformation->method === 'pickup' ? now()->addDays($isAnyPreSale ? 12 : 3) : null
         ]);
 
         $order = Order::with('user', 'orderItems.productDetail.product.image',
@@ -883,6 +1002,57 @@ class OrderController extends Controller
             $order->orderItems,
             $order->total
         ));
+
+        return response()->json($order);
+    }
+
+    /**
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/updateDates/{id}",
+     *     summary="Update dates of an order",
+     *     tags={"Order"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", required=true, description="Order ID", @OA\Schema(type="integer")),
+     *     @OA\RequestBody( required=true, @OA\JsonContent( required={"date"}, @OA\Property(property="date", type="string", example="2021-12-31") ) ),
+     *     @OA\Response( response=200, description="Dates updated successfully", @OA\JsonContent(ref="#/components/schemas/Order") ),
+     *     @OA\Response( response=404, description="Order not found", @OA\JsonContent(@OA\Property(property="error", type="string")) ),
+     *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string")) )
+     * )
+     */
+    public function updateDates(Request $request, int $id)
+    {
+        $order = Order::find($id);
+        $user = auth()->user();
+
+        if (!$order || $order->user_id !== $user->id) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+        ]);
+
+        if ($validator->fails()) return response()->json(['error' => $validator->errors()->first()], 422);
+
+        if ($order->status !== 'confirmado') {
+            return response()->json(['error' => 'Order has not been confirmed'], 422);
+        }
+
+        if ($order->sendInformation->method === 'delivery' || $order->sendInformation->method === 'send') {
+            $order->update([
+                'deliveryDate' => $request->input('date'),
+                'shippingDate' => null
+            ]);
+        } else {
+            $order->update([
+                'deliveryDate' => null,
+                'shippingDate' => $request->input('date')
+            ]);
+        }
+
+        $order = Order::with('user', 'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+            ->find($order->id);
 
         return response()->json($order);
     }
@@ -968,6 +1138,7 @@ class OrderController extends Controller
         $recojotiendaproceso = $orders->where('status', 'recojotiendaproceso')->count();
         $recojotiendalisto = $orders->where('status', 'recojotiendalisto')->count();
         $entregado = $orders->where('status', 'entregado')->count();
+        $agencia = $orders->where('status', 'agencia')->count();
         $cancelado = $orders->where('status', 'cancelado')->count();
         return response()->json([
             'verificado' => $verificado,
@@ -976,37 +1147,54 @@ class OrderController extends Controller
             'recojotiendaproceso' => $recojotiendaproceso,
             'recojotiendalisto' => $recojotiendalisto,
             'entregado' => $entregado,
+            'agencia' => $agencia,
             'cancelado' => $cancelado,
         ]);
     }
 
+    /**
+     * @OA\Post (
+     *     path="/dgush-backend/public/api/setOrderDistrict/{id}",
+     *     summary="Set order district",
+     *     tags={"Order"},
+     *     @OA\RequestBody( required=true,
+     *         @OA\JsonContent(
+     *             required={"method"},
+     *             @OA\Property(property="method", type="string", example="delivery"),
+     *             @OA\Property(property="district_id", type="integer", example="1"),
+     *             @OA\Property(property="zone_id", type="integer", example="1")
+     *
+     *         )
+     *     ),
+     *     @OA\Response( response=200, description="Order district set successfully", @OA\JsonContent(ref="#/components/schemas/Order")),
+     *     @OA\Response( response=404, description="Order not found", @OA\JsonContent(@OA\Property(property="error", type="string", example="Order not found")) ),
+     *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string", example="The district field is required")) )
+     * )
+     */
     public function setOrderDistrict(Request $request, int $id)
     {
         $order = Order::find($id);
-        if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
-        }
-
-        if ($order->status !== 'verificado') {
-            return response()->json(['error' => 'Order has already been verified'], 422);
-        }
+        if (!$order) return response()->json(['error' => 'Order not found'], 404);
+        if ($order->status !== 'verificado') return response()->json(['error' => 'Order has already been verified'], 422);
 
         $validator = Validator::make($request->all(), [
-            'method' => 'required|string|in:delivery,pickup',
-            'district_id' => 'nullable|integer|exists:district,id'
+            'method' => 'required|string|in:send,pickup,delivery',
+            'district_id' => 'nullable|integer|exists:district,id',
+            'zone_id' => 'nullable|integer|exists:zones,id'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        if ($request->input('method') === 'delivery' && !$request->input('district_id')) {
+        if ($validator->fails()) return response()->json(['error' => $validator->errors()->first()], 422);
+        if ($request->input('method') === 'send' && !$request->input('district_id')) {
             return response()->json(['error' => 'The district field is required'], 422);
         }
 
-        $district = District::find($request->input('district_id'));
+        if ($request->input('method') === 'delivery' && !$request->input('zone_id')) {
+            return response()->json(['error' => 'The zone field is required'], 422);
+        }
 
-        if ($request->input('method') === 'delivery') {
+        if ($request->input('method') === 'send') {
+            $district = District::find($request->input('district_id'));
+            if (!$district) return response()->json(['error' => 'District not found'], 404);
             $order->update([
                 'sendCost' => $district->sendCost,
                 'total' => $order->subtotal + $district->sendCost
@@ -1041,20 +1229,82 @@ class OrderController extends Controller
                     'total' => $order->subtotal + $district->sendCost
                 ]);
             }
+        } elseif ($request->input('method') === 'delivery') {
+            $zone = Zone::find($request->input('zone_id'));
+            if (!$zone) return response()->json(['error' => 'Zone not found'], 404);
+            $order->update([
+                'sendCost' => $zone->sendCost,
+                'total' => $order->subtotal + $zone->sendCost
+            ]);
+
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                $discount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    if ($coupon->indicator === 'subtotal') {
+                        $discount = $order->subtotal * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'total') {
+                        $discount = $order->total * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'sendCost') {
+                        $discount = $order->sendCost * $coupon->value / 100;
+                    }
+
+                } else if ($coupon->type === 'discount') {
+                    $discount = $coupon->value;
+                }
+
+                $order->update([
+                    'sendCost' => $zone->sendCost,
+                    'discount' => $discount,
+                    'total' => $order->subtotal + $zone->sendCost - $discount
+                ]);
+            } else {
+                $order->update([
+                    'sendCost' => $zone->sendCost,
+                    'total' => $order->subtotal + $zone->sendCost
+                ]);
+            }
         } else {
             $order->update([
                 'sendCost' => 0,
-                'total' => $order->subtotal - $order->discount
             ]);
+
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                $discount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    if ($coupon->indicator === 'subtotal') {
+                        $discount = $order->subtotal * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'total') {
+                        $discount = $order->total * $coupon->value / 100;
+                    } else if ($coupon->indicator === 'sendCost') {
+                        $discount = $order->sendCost * $coupon->value / 100;
+                    }
+
+                } else if ($coupon->type === 'discount') {
+                    $discount = $coupon->value;
+                }
+
+                $order->update([
+                    'discount' => $discount,
+                    'total' => $order->subtotal - $discount
+                ]);
+            } else {
+                $order->update([
+                    'sendCost' => 0,
+                    'total' => $order->subtotal
+                ]);
+            }
         }
 
         $order = Order::with('user', 'orderItems.productDetail.product.image',
             'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
             ->find($order->id);
 
-        if ($request->input('method') === 'delivery') {
-            $order->district = $district->name;
-        }
+        if ($request->input('method') === 'send') $order->district = $district->name;
+        if ($request->input('method') === 'delivery') $order->zone = $zone->name;
 
         return response()->json($order);
     }
@@ -1088,7 +1338,7 @@ class OrderController extends Controller
         $cancelado = $orders->where('status', 'cancelado')->count();
         $recojotiendaproceso = $orders->where('status', 'recojotiendaproceso')->count();
         $recojotiendalisto = $orders->where('status', 'recojotiendalisto')->count();
-
+        $agency = $orders->where('status', 'agencia')->count();
 
         return response()->json([
             [
@@ -1118,6 +1368,10 @@ class OrderController extends Controller
             [
                 'description' => 'Órdenes Entregadas',
                 'value' => $entregado
+            ],
+            [
+                'description' => 'Órdenes en Agencia',
+                'value' => $agency
             ],
             [
                 'description' => 'Órdenes Canceladas',

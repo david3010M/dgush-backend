@@ -34,7 +34,7 @@ use Illuminate\Validation\ValidationException;
  *     @OA\Property(property="detailweb", type="string", example="Detail of product 1"),
  *     @OA\Property(property="price1", type="number", example="100.00"),
  *     @OA\Property(property="price2", type="number", example="90.00"),
- *     @OA\Property(property="status", type="'onsale'|'new'", example="onsale"),
+ *     @OA\Property(property="status", type="string", enum={"onsale", "new", "preventa", "none"}, example="onsale"),
  *     @OA\Property(property="subcategory_id", type="integer", example="1"),
  *     @OA\Property(property="product_details[]", type="array",
  *         @OA\Items(
@@ -106,7 +106,7 @@ class Product extends Model
     {
         $validator = Validator::make($this->attributes, [
             'status' => [
-                Rule::in(['onsale', 'new', ''])
+                Rule::in(['onsale', 'new', 'preventa', ''])
             ],
         ]);
 

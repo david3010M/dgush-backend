@@ -32,9 +32,9 @@ class Zone extends Model
         'sendCost',
     ];
 
-    public function orders()
+    public function sendInformation()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(SendInformation::class);
     }
 
 

@@ -3844,19 +3844,54 @@
                 ],
                 "summary": "Search orders",
                 "operationId": "14f3ac72c6b7633caa240b9d63724bb4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
+                                "required": [
+                                    "status"
+                                ],
                                 "properties": {
                                     "status": {
                                         "type": "string",
-                                        "example": "verificado"
+                                        "enum": [
+                                            "verificado",
+                                            "confirmado",
+                                            "enviado",
+                                            "entregado",
+                                            "cancelado",
+                                            "recojotiendaproceso",
+                                            "recojotiendalisto",
+                                            "agencia"
+                                        ]
                                     },
                                     "description": {
                                         "type": "string",
-                                        "example": "Order has been verified"
+                                        "example": "Order confirmed"
+                                    },
+                                    "tracking": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "voucher": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "image": {
+                                        "type": "file",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -3880,6 +3915,73 @@
                     },
                     "422": {
                         "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/downloadVoucherSend/{id}": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Download voucher send",
+                "operationId": "477a8eecbd974e2fa026d452bca75894",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Voucher retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "file"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Voucher not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4211,6 +4313,92 @@
                 }
             }
         },
+        "/dgush-backend/public/api/updateDates/{id}": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Update dates of an order",
+                "operationId": "dfdf59ef51e71876765f5b88118308dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "date"
+                                ],
+                                "properties": {
+                                    "date": {
+                                        "type": "string",
+                                        "example": "2021-12-31"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dates updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/dgush-backend/public/api/cancelOrder/{id}": {
             "post": {
                 "tags": [
@@ -4260,6 +4448,137 @@
                                         "error": {
                                             "type": "string",
                                             "example": "Order has already been confirmed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/orderStatus": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Get order status",
+                "operationId": "8913f0629c562a283db488db1e2d8de4",
+                "responses": {
+                    "200": {
+                        "description": "Order status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "verificado": {
+                                            "type": "integer",
+                                            "example": "10"
+                                        },
+                                        "confirmado": {
+                                            "type": "integer",
+                                            "example": "5"
+                                        },
+                                        "enviado": {
+                                            "type": "integer",
+                                            "example": "3"
+                                        },
+                                        "recojotiendaproceso": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "recojotiendalisto": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "entregado": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "cancelado": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dgush-backend/public/api/setOrderDistrict/{id}": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Set order district",
+                "operationId": "922ba475b76e07d644523252f8c4ff86",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "method"
+                                ],
+                                "properties": {
+                                    "method": {
+                                        "type": "string",
+                                        "example": "delivery"
+                                    },
+                                    "district_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "zone_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order district set successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Order not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The district field is required"
                                         }
                                     },
                                     "type": "object"
@@ -4496,7 +4815,11 @@
                                             },
                                             "status": {
                                                 "type": "string",
-                                                "example": "onsale"
+                                                "enum": [
+                                                    "onsale",
+                                                    "new",
+                                                    "preventa"
+                                                ]
                                             },
                                             "score": {
                                                 "type": "integer",
@@ -8544,7 +8867,13 @@
                         "example": "90.00"
                     },
                     "status": {
-                        "type": "'onsale'|'new'",
+                        "type": "string",
+                        "enum": [
+                            "onsale",
+                            "new",
+                            "preventa",
+                            "none"
+                        ],
                         "example": "onsale"
                     },
                     "subcategory_id": {

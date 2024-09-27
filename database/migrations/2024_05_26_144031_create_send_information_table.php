@@ -20,9 +20,14 @@ return new class extends Migration {
             $table->string('reference');
             $table->string('comment')->nullable();
             $table->string('method'); // + Envio
+            $table->string('tracking')->nullable();
+            $table->string('voucher')->nullable();
+            $table->string('voucherUrl')->nullable();
+            $table->string('voucherFileName')->nullable();
             $table->foreignId('order_id')->constrained('order')->unique();
             $table->foreignId('district_id')->nullable()->constrained('district');
             $table->foreignId('sede_id')->nullable()->constrained('sedes');
+            $table->foreignId('zone_id')->nullable()->constrained('zones');
             $table->timestamps();
             $table->softDeletes();
         });

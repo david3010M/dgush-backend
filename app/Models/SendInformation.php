@@ -54,8 +54,13 @@ class SendInformation extends Model
         'reference',
         'comment',
         'method',
+        'tracking',
+        'voucher',
+        'voucherUrl',
+        'voucherFileName',
         'district_id',
         'sede_id',
+        'zone_id',
         'order_id',
     ];
 
@@ -78,6 +83,11 @@ class SendInformation extends Model
     public function sede()
     {
         return $this->belongsTo(Sede::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
     }
 
 

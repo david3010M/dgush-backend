@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
             'price12' => 25,
             'priceOferta' => 30,
             'priceLiquidacion' => 20,
-            'status' => 'onsale',
+            'status' => 'preventa',
             'liquidacion' => true,
             'subcategory_id' => 1,
         ]);

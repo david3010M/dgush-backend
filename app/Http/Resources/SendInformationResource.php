@@ -7,23 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SendInformationResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    /**
-     * 'names',
-     * 'dni',
-     * 'email',
-     * 'phone',
-     * 'address',
-     * 'reference',
-     * 'comment',
-     * 'method',
-     * 'district_id',
-     * 'order_id',
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -36,10 +19,16 @@ class SendInformationResource extends JsonResource
             'reference' => $this->reference,
             'comment' => $this->comment,
             'method' => $this->method,
+            'tracking' => $this->tracking,
+            'voucher' => $this->voucher,
+            'voucherUrl' => $this->voucherUrl,
+            'voucherFileName' => $this->voucherFileName,
             'district_id' => $this->district_id,
             'district' => $this->district ? (new DistrictResource($this->district))->name : null,
             'sede_id' => $this->sede_id,
             'sede' => $this->sede ? (new SedeResource($this->sede))->name : null,
+            'zone_id' => $this->zone_id,
+            'zone' => $this->zone ? (new ZoneResource($this->zone))->name : null,
             'order_id' => $this->order_id,
         ];
     }
