@@ -95,6 +95,9 @@ Route::get('/banner/{id}', [BannerController::class, 'show'])->name('banner.show
 Route::get('/video', [VideoController::class, 'index'])->name('video.index');
 Route::post('/video', [VideoController::class, 'update'])->name('video.update');
 
+//    ZONE
+Route::get('/zone', [ZoneController::class, 'index'])->name('zone.index');
+
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -174,8 +177,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         );
 
         //    ZONE
-        Route::resource('zone', ZoneController::class)->only(['index', 'show', 'store', 'update', 'destroy']
-        )->names(['index' => 'zone.index', 'store' => 'zone.store', 'show' => 'zone.show',
+        Route::resource('zone', ZoneController::class)->only(['show', 'store', 'update', 'destroy']
+        )->names(['store' => 'zone.store', 'show' => 'zone.show',
             'update' => 'zone.update', 'destroy' => 'zone.destroy',]);
 
 
