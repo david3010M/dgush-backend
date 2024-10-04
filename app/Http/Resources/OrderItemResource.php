@@ -18,8 +18,8 @@ class OrderItemResource extends JsonResource
             'quantity' => $this->quantity,
             'price' => $this->price,
             'name' => $this->productDetail ? $this->productDetail->product->name : null,
-            'color' => $this->productDetail->color->name,
-            'size' => $this->productDetail->size->name,
+            'color' => $this->productDetail ? $this->productDetail->color->name : null,
+            'size' => $this->productDetail ? $this->productDetail->size->name : null,
 //            PARA LOS PEDIDOS DE LA TIENDA
             'description' => $this->productDetail ? $this->productDetail->product->description : null,
             'image' => $this->productDetail ? $this->productDetail->product->image->url : null,
