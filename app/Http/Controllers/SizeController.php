@@ -298,7 +298,7 @@ class SizeController extends Controller
         $size = Size::find($id);
         if ($size) {
 //            VERIFY IF SIZE HAS SIZE PRODUCTS
-            if ($size->products()->count() > 0) {
+            if ($size->productDetails()->count() > 0) {
                 return response()->json(['message' => 'Size is associated with products'], 409);
             }
 

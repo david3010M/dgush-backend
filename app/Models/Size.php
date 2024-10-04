@@ -34,15 +34,9 @@ class Size extends Model
         'deleted_at',
     ];
 
-    public function products()
+    public function productDetails()
     {
-        return $this->belongsToMany(Product::class);
+        return $this->hasMany(ProductDetails::class);
     }
-
-    public function productSizes()
-    {
-        return $this->hasMany(ProductSize::class);
-    }
-
 
 }
