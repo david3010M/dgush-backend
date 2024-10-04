@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -819,24 +820,30 @@ class OrderController extends Controller
             'reference' => 'required|string',
             'comment' => 'nullable|string',
             'method' => 'required|string|in:delivery,pickup,send',
-            'district_id' => 'required_if:method,send|integer',
-            'sede_id' => 'required_if:method,pickup|integer',
-            'zone_id' => 'required_if:method,delivery|integer',
             'paymentId' => 'required|string',
             'paymentNumber' => 'nullable|string'
         ]);
 
         if ($request->input('method') === 'pickup') {
             $validator->addRules([
-                'sede_id' => 'required|exists:sedes,id'
+                'sede_id' => [
+                    'required',
+                    Rule::exists('sedes', 'id')->whereNull('deleted_at')
+                ]
             ]);
         } elseif ($request->input('method') === 'send') {
             $validator->addRules([
-                'district_id' => 'required|exists:district,id'
+                'district_id' => [
+                    'required',
+                    Rule::exists('district', 'id')->whereNull('deleted_at')
+                ]
             ]);
         } else {
             $validator->addRules([
-                'zone_id' => 'required|exists:zones,id'
+                'zone_id' => [
+                    'required',
+                    Rule::exists('zones', 'id')->whereNull('deleted_at')
+                ]
             ]);
         }
 
@@ -867,9 +874,9 @@ class OrderController extends Controller
             'reference' => $request->input('reference'),
             'comment' => $request->input('comment'),
             'method' => $method,
-            'district_id' => $method === 'delivery' ? $request->input('zone_id') : null,
+            'zone_id' => $method === 'delivery' ? $request->input('zone_id') : null,
             'sede_id' => $method === 'pickup' ? $request->input('sede_id') : null,
-            'zone_id' => $method === 'send' ? $request->input('district_id') : null,
+            'district_id' => $method === 'send' ? $request->input('district_id') : null,
             'order_id' => $id,
 //            NUMBER OF PAYMENT
             'paymentId' => $request->input('paymentId'),

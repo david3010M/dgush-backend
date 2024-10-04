@@ -119,7 +119,7 @@ class ZoneController extends Controller
     {
         $zone = Zone::find($id);
         if (!$zone) return response()->json(['error' => 'Zona no encontrada'], 404);
-        if ($zone->orders()->count() > 0) return response()->json(['error' => 'No se puede eliminar la zona porque tiene pedidos asociados'], 409);
+        if ($zone->sendInformation()->count() > 0) return response()->json(['error' => 'No se puede eliminar la zona porque tiene pedidos asociados'], 409);
         $zone->delete();
         return response()->json(['message' => 'Zona eliminada']);
     }
