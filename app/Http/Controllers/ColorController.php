@@ -305,8 +305,7 @@ class ColorController extends Controller
     {
         $color = Color::find($id);
         if ($color) {
-//            VERIFY IF COLOR HAS COLOR PRODUCTS
-            if ($color->productColors()->count() > 0) {
+            if ($color->productDetails()->count() > 0) {
                 return response()->json(['message' => 'Color is associated with products'], 409);
             }
 

@@ -36,13 +36,8 @@ class Color extends Model
         'deleted_at',
     ];
 
-    public function products()
+    public function productDetails()
     {
-        return $this->belongsToMany(Product::class);
-    }
-
-    public function productColors()
-    {
-        return $this->hasMany(ProductColor::class);
+        return $this->belongsToMany(ProductDetails::class);
     }
 }
