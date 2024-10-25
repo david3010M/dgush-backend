@@ -333,6 +333,12 @@ class ProductController extends Controller
                 'route' => $imageUrl,
                 'product_id' => $id
             ]);
+        } else {
+            SizeGuide::create([
+                'name' => 'No guia',
+                'route' => 'https://dgush-storage.sfo3.digitaloceanspaces.com/no-guia/noguia.png',
+                'product_id' => $id
+            ]);
         }
 
         $product = Product::with('productDetails', 'imagesProduct', 'guideSize')->find($id);
