@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductDetailsResource;
+use App\Models\Product;
 use App\Models\ProductDetails;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -272,6 +273,8 @@ class ProductDetailsController extends Controller
     public function destroy(int $id)
     {
         $productDetails = ProductDetails::withTrashed()->find($id);
+        if (!$productDetails) return response()->json(['error' => 'Product details not found'], 404);
+        $product = Product::find($productDetails->product_id);
 
         if (!$productDetails) {
             return response()->json(['error' => 'Product details not found'], 404);
@@ -286,6 +289,10 @@ class ProductDetailsController extends Controller
         }
 
         $productDetails->delete();
+        if ($product->productDetails()->count() == 0) {
+            $product->delete();
+        }
+
         return response()->json(['message' => 'Product details deleted']);
     }
 
