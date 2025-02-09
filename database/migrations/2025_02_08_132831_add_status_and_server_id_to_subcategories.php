@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('value')->nullable()->change();
             $table->string('status')->nullable();
             $table->string('server_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable()->change();
         });
     }
 
@@ -26,6 +27,7 @@ return new class extends Migration
         Schema::table('subcategory', function (Blueprint $table) {
             $table->string('value')->nullable()->change();
             $table->dropColumn(['status', 'server_id']);
+            $table->unsignedBigInteger('category_id')->nullable(false)->change();
         });
     }
 };

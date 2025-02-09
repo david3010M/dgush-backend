@@ -37,7 +37,7 @@ class Api360Service
     public function fetch_category(?string $uuid = '')
     {
         return $this->fetchDataAndSync(
-            'categories-tree',
+            'categories',
             'categories',
             Category::class,
             Category::getfields360,
@@ -48,7 +48,7 @@ class Api360Service
     public function fetch_subcategory(?string $uuid = '')
     {
         return $this->fetchDataAndSync(
-            'categories-tree',
+            'categories',
             'categories',
             Subcategory::class,
             Subcategory::getfields360,
@@ -193,9 +193,10 @@ class Api360Service
                         }
 
                         foreach ($relations as $field => $relatedModel) {
+                       
                             if (isset($item[$field])) {
                                 $relatedInstance         = $relatedModel::where('server_id', $item[$field])->first();
-                                $processedFields[$field] = $relatedInstance?->id ?? null;
+                                $processedFields['subcategory_id'] = $relatedInstance?->id ?? null;
                             }
                         }
 
