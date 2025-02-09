@@ -25,7 +25,16 @@ class Size extends Model
 
     protected $fillable = [
         'name',
+        'status',
+        'server_id',
         'value'
+    ];
+
+    const getfields360 = [
+        'name'=>'name',
+        'value'=>'abbreviation',
+        'status'=>'status',
+        'server_id'=>'id',
     ];
 
     protected $hidden = [

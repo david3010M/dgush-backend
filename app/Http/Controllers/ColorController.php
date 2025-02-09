@@ -3,11 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Color;
+use App\Services\Api360Service;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ColorController extends Controller
 {
+
+    protected $api360Service;
+
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service = $api360Service;
+    }
+
     /**
      * SHOW ALL COLORS
      * @OA\Get(
@@ -314,5 +324,12 @@ class ColorController extends Controller
         } else {
             return response()->json(['message' => 'Color not found'], 404);
         }
+    }
+    public function getcolors(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_color($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
     }
 }

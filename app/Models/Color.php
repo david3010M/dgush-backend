@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +27,15 @@ class Color extends Model
         'name',
         'value',
         'hex',
+        'status',
+        'server_id',
+    ];
+
+    const getfields360 = [
+        'name'=>'name',
+        'hex'=>'code',
+        'status'=>'status',
+        'server_id'=>'id',
     ];
 
     protected $hidden = [

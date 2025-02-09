@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Http\Resources\ProductResource;
@@ -71,6 +70,10 @@ class Product extends Model
         'liquidacion',
         'subcategory_id',
         'image',
+
+        'status_server',
+        'currency',
+        'server_id',
     ];
 
     protected $casts = [
@@ -81,7 +84,25 @@ class Product extends Model
         'created_at',
         'updated_at',
         'deleted_at',
-        'pivot'
+        'pivot',
+    ];
+
+    const getfields360 = [
+        "name"          => 'name',
+        "description"   => "description",
+        "detailweb"     => "description",
+        // "photo"       => "photo",
+        // "photo2"      => "photo2",
+        // "photo3"      => "photo3",
+
+        "price1"        => "price",
+        "price2"        => "price",
+        "priceOferta"   => "promo_price",
+        "currency"      => "currency",
+        "status_server" => "status",
+        "created_at"    => 'created_at',
+        "server_id"     => 'id',
+
     ];
 
     public static function boot()
@@ -106,7 +127,7 @@ class Product extends Model
     {
         $validator = Validator::make($this->attributes, [
             'status' => [
-                Rule::in(['onsale', 'new', 'preventa', ''])
+                Rule::in(['onsale', 'new', 'preventa', '']),
             ],
         ]);
 
@@ -119,9 +140,9 @@ class Product extends Model
     {
         $query = Product::query();
         $query->addSelect(['image' => Image::select('url')
-            ->whereColumn('product_id', 'product.id')
-            ->orderBy('id')
-            ->limit(1)]);
+                ->whereColumn('product_id', 'product.id')
+                ->orderBy('id')
+                ->limit(1)]);
 
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
@@ -157,7 +178,7 @@ class Product extends Model
 
         if ($score) {
             $query->where('score', '>=', $score);
-            $sort = 'score';
+            $sort      = 'score';
             $direction = 'desc';
         }
 
@@ -191,10 +212,10 @@ class Product extends Model
         }
 
         if ($sort == 'price-asc') {
-            $sort = 'price1';
+            $sort      = 'price1';
             $direction = 'asc';
         } elseif ($sort == 'price-desc') {
-            $sort = 'price1';
+            $sort      = 'price1';
             $direction = 'desc';
         }
 
@@ -227,7 +248,7 @@ class Product extends Model
 
         if ($score) {
             $query->where('score', '>=', $score);
-            $sort = 'score';
+            $sort      = 'score';
             $direction = 'desc';
         }
 
@@ -261,10 +282,10 @@ class Product extends Model
         }
 
         if ($sort == 'price-asc') {
-            $sort = 'price1';
+            $sort      = 'price1';
             $direction = 'asc';
         } elseif ($sort == 'price-desc') {
-            $sort = 'price1';
+            $sort      = 'price1';
             $direction = 'desc';
         }
 
@@ -321,10 +342,10 @@ class Product extends Model
             ->orderBy('color.id')
             ->get()
             ->map(function ($item) {
-                $item->id = (int)$item->id;
-                $item->color_id = (int)$item->color_id;
-                $item->size_id = (int)$item->size_id;
-                $item->stock = round($item->stock, 2);
+                $item->id       = (int) $item->id;
+                $item->color_id = (int) $item->color_id;
+                $item->size_id  = (int) $item->size_id;
+                $item->stock    = round($item->stock, 2);
                 return $item;
             });
     }
@@ -354,25 +375,24 @@ class Product extends Model
         // Agrupar resultados por color
         $groupedDetails = $productDetails->groupBy('color_id')->map(function ($items) {
             $color = [
-                'id' => $items->first()->color_id,
-                'name' => $items->first()->color_name,
+                'id'    => $items->first()->color_id,
+                'name'  => $items->first()->color_name,
                 'value' => $items->first()->color_value,
-                'hex' => $items->first()->color_hex,
+                'hex'   => $items->first()->color_hex,
                 'sizes' => $items->map(function ($item) {
                     return [
-                        'id' => $item->size_id,
-                        'name' => $item->size_name,
+                        'id'    => $item->size_id,
+                        'name'  => $item->size_name,
                         'value' => $item->size_value,
-                        'stock' => round($item->stock, 2)
+                        'stock' => round($item->stock, 2),
                     ];
-                })->toArray()
+                })->toArray(),
             ];
             return $color;
         })->values();
 
         return $groupedDetails;
     }
-
 
     public function productDetails()
     {
@@ -426,14 +446,13 @@ class Product extends Model
         })
             ->where('id', '!=', $id)
             ->addSelect(['image' => Image::select('url')
-                ->whereColumn('product_id', 'product.id')
-                ->orderBy('id')
-                ->limit(1)])
+                    ->whereColumn('product_id', 'product.id')
+                    ->orderBy('id')
+                    ->limit(1)])
             ->orderBy('score', 'desc')
             ->limit(4)
             ->get();
     }
-
 
     public static function setProductDetails($id, $productDetails)
     {
@@ -442,8 +461,8 @@ class Product extends Model
         foreach ($productDetails as $productDetail) {
             $product->productDetails()->create([
                 'color_id' => $productDetail['color_id'],
-                'size_id' => $productDetail['size_id'],
-                'stock' => $productDetail['stock'],
+                'size_id'  => $productDetail['size_id'],
+                'stock'    => $productDetail['stock'],
             ]);
         }
     }

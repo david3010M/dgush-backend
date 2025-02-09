@@ -98,14 +98,12 @@ Route::post('/video', [VideoController::class, 'update'])->name('video.update');
 //    ZONE
 Route::get('/zone', [ZoneController::class, 'index'])->name('zone.index');
 
-
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
 //    ROUTES JUST FOR ADMIN USERS
     Route::group(['middleware' => ['checkAccess']], function () {
         Route::get('/logs', [LogController::class, 'index']);
-
 
         Route::get('/clients', [PersonController::class, 'index'])->name('person.index');
         Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
@@ -116,10 +114,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'groupmenu.index',
-                'store' => 'groupmenu.store',
-                'show' => 'groupmenu.show',
-                'update' => 'groupmenu.update',
+                'index'   => 'groupmenu.index',
+                'store'   => 'groupmenu.store',
+                'show'    => 'groupmenu.show',
+                'update'  => 'groupmenu.update',
                 'destroy' => 'groupmenu.destroy',
             ]
         );
@@ -129,10 +127,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'optionmenu.index',
-                'store' => 'optionmenu.store',
-                'show' => 'optionmenu.show',
-                'update' => 'optionmenu.update',
+                'index'   => 'optionmenu.index',
+                'store'   => 'optionmenu.store',
+                'show'    => 'optionmenu.show',
+                'update'  => 'optionmenu.update',
                 'destroy' => 'optionmenu.destroy',
             ]
         );
@@ -142,10 +140,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'typeuser.index',
-                'store' => 'typeuser.store',
-                'show' => 'typeuser.show',
-                'update' => 'typeuser.update',
+                'index'   => 'typeuser.index',
+                'store'   => 'typeuser.store',
+                'show'    => 'typeuser.show',
+                'update'  => 'typeuser.update',
                 'destroy' => 'typeuser.destroy',
             ]
         );
@@ -155,10 +153,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'user.index',
-                'store' => 'user.store',
-                'show' => 'user.show',
-                'update' => 'user.update',
+                'index'   => 'user.index',
+                'store'   => 'user.store',
+                'show'    => 'user.show',
+                'update'  => 'user.update',
                 'destroy' => 'user.destroy',
             ]
         );
@@ -168,26 +166,25 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'access.index',
-                'store' => 'access.store',
-                'show' => 'access.show',
-                'update' => 'access.update',
+                'index'   => 'access.index',
+                'store'   => 'access.store',
+                'show'    => 'access.show',
+                'update'  => 'access.update',
                 'destroy' => 'access.destroy',
             ]
         );
 
         //    ZONE
         Route::resource('zone', ZoneController::class)->only(['show', 'store', 'update', 'destroy']
-        )->names(['store' => 'zone.store', 'show' => 'zone.show',
-            'update' => 'zone.update', 'destroy' => 'zone.destroy',]);
-
+        )->names(['store' => 'zone.store', 'show'     => 'zone.show',
+            'update'          => 'zone.update', 'destroy' => 'zone.destroy']);
 
         //    PRODUCT
         Route::resource('product', ProductController::class)->only(
             ['store', 'destroy']
         )->names(
             [
-                'store' => 'product.store',
+                'store'   => 'product.store',
                 'destroy' => 'product.destroy',
             ]
         );
@@ -201,19 +198,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['store', 'destroy']
         )->names(
             [
-                'store' => 'category.store',
+                'store'   => 'category.store',
                 'destroy' => 'category.destroy',
             ]
         );
         Route::post('/category/{id}', [CategoryController::class, 'update'])->name('category.update');
-
 
         //    SUBCATEGORY
         Route::resource('subcategory', SubcategoryController::class)->only(
             ['store', 'destroy']
         )->names(
             [
-                'update' => 'subcategory.update',
+                'update'  => 'subcategory.update',
                 'destroy' => 'subcategory.destroy',
             ]
         );
@@ -224,9 +220,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['show', 'store', 'update', 'destroy']
         )->names(
             [
-                'store' => 'color.store',
-                'show' => 'color.show',
-                'update' => 'color.update',
+                'store'   => 'color.store',
+                'show'    => 'color.show',
+                'update'  => 'color.update',
                 'destroy' => 'color.destroy',
             ]
         );
@@ -236,9 +232,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['show', 'store', 'update', 'destroy']
         )->names(
             [
-                'store' => 'size.store',
-                'show' => 'size.show',
-                'update' => 'size.update',
+                'store'   => 'size.store',
+                'show'    => 'size.show',
+                'update'  => 'size.update',
                 'destroy' => 'size.destroy',
             ]
         );
@@ -259,10 +255,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
             [
-                'index' => 'productdetails.index',
-                'store' => 'productdetails.store',
-                'show' => 'productdetails.show',
-                'update' => 'productdetails.update',
+                'index'   => 'productdetails.index',
+                'store'   => 'productdetails.store',
+                'show'    => 'productdetails.show',
+                'update'  => 'productdetails.update',
                 'destroy' => 'productdetails.destroy',
             ]
         );
@@ -276,7 +272,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['store', 'destroy']
         )->names(
             [
-                'store' => 'banner.store',
+                'store'   => 'banner.store',
                 'destroy' => 'banner.destroy',
             ]
         );
@@ -287,10 +283,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['index', 'store', 'show', 'update', 'destroy']
         )->names(
             [
-                'index' => 'coupon.index',
-                'store' => 'coupon.store',
-                'show' => 'coupon.show',
-                'update' => 'coupon.update',
+                'index'   => 'coupon.index',
+                'store'   => 'coupon.store',
+                'show'    => 'coupon.show',
+                'update'  => 'coupon.update',
                 'destroy' => 'coupon.destroy',
             ]
         );
@@ -300,8 +296,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['store', 'update', 'destroy']
         )->names(
             [
-                'store' => 'district.store',
-                'update' => 'district.update',
+                'store'   => 'district.store',
+                'update'  => 'district.update',
                 'destroy' => 'district.destroy',
             ]
         );
@@ -311,8 +307,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ['store', 'update', 'destroy']
         )->names(
             [
-                'store' => 'sede.store',
-                'update' => 'sede.update',
+                'store'   => 'sede.store',
+                'update'  => 'sede.update',
                 'destroy' => 'sede.destroy',
             ]
         );
@@ -337,9 +333,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         ['index', 'store', 'show', 'destroy']
     )->names(
         [
-            'index' => 'wishitem.index',
-            'store' => 'wishitem.store',
-            'show' => 'wishitem.show',
+            'index'   => 'wishitem.index',
+            'store'   => 'wishitem.store',
+            'show'    => 'wishitem.show',
             'destroy' => 'wishitem.destroy',
         ]
     );
@@ -349,10 +345,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         ['index', 'show', 'store', 'update', 'destroy']
     )->names(
         [
-            'index' => 'comment.index',
-            'store' => 'comment.store',
-            'show' => 'comment.show',
-            'update' => 'comment.update',
+            'index'   => 'comment.index',
+            'store'   => 'comment.store',
+            'show'    => 'comment.show',
+            'update'  => 'comment.update',
             'destroy' => 'comment.destroy',
         ]
     );
@@ -362,9 +358,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         ['index', 'show', 'store', 'update']
     )->names(
         [
-            'index' => 'order.index',
-            'show' => 'order.show',
-            'store' => 'order.store',
+            'index'  => 'order.index',
+            'show'   => 'order.show',
+            'store'  => 'order.store',
             'update' => 'order.update',
         ]
     );
@@ -375,7 +371,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     )->names(
         [
             'index' => 'coupon.index',
-            'show' => 'coupon.show',
+            'show'  => 'coupon.show',
         ]
     );
 
@@ -384,8 +380,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         ['index', 'show', 'destroy']
     )->names(
         [
-            'index' => 'wishitem.index',
-            'show' => 'wishitem.show',
+            'index'   => 'wishitem.index',
+            'show'    => 'wishitem.show',
             'destroy' => 'wishitem.destroy',
         ]
     );
@@ -394,6 +390,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/person', [PersonController::class, 'show'])->name('person.show');
     Route::put('/person', [PersonController::class, 'update'])->name('person.update');
 
+                                         // API 360 PARA ALIMENTAR TABLAS
+    require __DIR__ . '/Api/360Api.php'; //APIS 360
 
 }
 );

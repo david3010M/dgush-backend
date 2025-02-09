@@ -5,12 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\SizeGuide;
+use App\Services\Api360Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
+
+    protected $api360Service;
+
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service   = $api360Service;
+    }
     /**
      * SHOW ALL CATEGORIES
      * @OA\Get(
@@ -290,5 +299,13 @@ class CategoryController extends Controller
 
         $category->delete();
         return response()->json(['message' => 'Category deleted']);
+    }
+
+    public function getCategories(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_category($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
     }
 }

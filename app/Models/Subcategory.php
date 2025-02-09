@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Models;
 
-use App\Utils\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -41,7 +39,10 @@ class Subcategory extends Model
         'score',
         'image',
         'isHome',
+
+        'status',
         'category_id',
+        'server_id',
     ];
 
     protected $hidden = [
@@ -52,6 +53,11 @@ class Subcategory extends Model
 
     protected $casts = [
         'isHome' => 'boolean',
+    ];
+    const getfields360 = [
+        'name'      => 'name',
+        'status'    => 'status',
+        'server_id' => 'id',
     ];
 
     public static function search($search, $sort, $direction, $all)

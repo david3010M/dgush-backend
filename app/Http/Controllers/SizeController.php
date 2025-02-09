@@ -3,11 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Size;
+use App\Services\Api360Service;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class SizeController extends Controller
 {
+    protected $api360Service;
+
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service   = $api360Service;
+    }
     /**
      * SHOW ALL SIZES
      * @OA\Get(
@@ -308,4 +316,14 @@ class SizeController extends Controller
             return response()->json(['message' => 'Size not found'], 404);
         }
     }
+
+    public function getSizes(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_size($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
+    }
+
+    
 }

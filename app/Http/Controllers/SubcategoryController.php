@@ -1,19 +1,23 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Color;
 use App\Models\Image;
-use App\Models\SizeGuide;
 use App\Models\Subcategory;
+use App\Services\Api360Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class SubcategoryController extends Controller
 {
+    protected $api360Service;
 
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service = $api360Service;
+    }
     /**
      * SHOW ALL SUBCATEGORIES
      * @OA\Get(
@@ -115,40 +119,40 @@ class SubcategoryController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'name' => [
+            'name'        => [
                 'required',
                 'string',
-                Rule::unique('subcategory', 'name')->whereNull('deleted_at')
+                Rule::unique('subcategory', 'name')->whereNull('deleted_at'),
             ],
             'category_id' => 'required|integer|exists:category,id',
-            'image' => 'required|image'
+            'image'       => 'required|image',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $name = $request->input('name');
+        $name  = $request->input('name');
         $value = strtolower(str_replace(' ', '-', $name));
 
         $data = [
-            'name' => $name,
-            'value' => $value,
-            'category_id' => $request->category_id
+            'name'        => $name,
+            'value'       => $value,
+            'category_id' => $request->category_id,
         ];
 
         $subcategory = Subcategory::create($data);
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
+            $image    = $request->file('image');
             $fileName = 'Subcategories/' . $subcategory->id . '/' . $image->getClientOriginalName();
             Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
             $imageUrl = Storage::disk('spaces')->url($fileName);
 
             Image::create([
-                'name' => $fileName,
-                'url' => $imageUrl,
-                'subcategory_id' => $subcategory->id
+                'name'           => $fileName,
+                'url'            => $imageUrl,
+                'subcategory_id' => $subcategory->id,
             ]);
 
             $subcategory->image = $imageUrl;
@@ -209,7 +213,6 @@ class SubcategoryController extends Controller
         }
     }
 
-
     /**
      * UPDATE A SUBCATEGORY
      * @OA\Put(
@@ -259,28 +262,28 @@ class SubcategoryController extends Controller
 
         if ($subcategory) {
             $validator = validator()->make($request->all(), [
-                'name' => [
+                'name'        => [
                     'nullable',
                     'string',
-                    Rule::unique('subcategory', 'name')->ignore($subcategory->id)->whereNull('deleted_at')
+                    Rule::unique('subcategory', 'name')->ignore($subcategory->id)->whereNull('deleted_at'),
                 ],
-                'isHome' => 'nullable',
+                'isHome'      => 'nullable',
                 'category_id' => 'nullable|integer|exists:category,id',
-                'image' => 'nullable|image'
+                'image'       => 'nullable|image',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()->first()], 422);
             }
 
-            $name = $request->input('name') ?? $subcategory->name;
+            $name  = $request->input('name') ?? $subcategory->name;
             $value = strtolower(str_replace(' ', '-', $name));
 
             $data = [
-                'name' => $name,
-                'value' => $value,
-                'isHome' => $request->input('isHome') == 'true' ?? $subcategory->isHome,
-                'category_id' => $request->input('category_id') ?? $subcategory->category_id
+                'name'        => $name,
+                'value'       => $value,
+                'isHome'      => $request->input('isHome') == 'true' ?? $subcategory->isHome,
+                'category_id' => $request->input('category_id') ?? $subcategory->category_id,
             ];
 
             $subcategory->update($data);
@@ -289,15 +292,15 @@ class SubcategoryController extends Controller
                 Storage::disk('spaces')->deleteDirectory('Subcategories/' . $id . "/");
                 Image::where('subcategory_id', $id)->delete();
 
-                $image = $request->file('image');
+                $image    = $request->file('image');
                 $fileName = 'Subcategories/' . $subcategory->id . '/' . $image->getClientOriginalName();
                 Storage::disk('spaces')->put($fileName, file_get_contents($image), 'public');
                 $imageUrl = Storage::disk('spaces')->url($fileName);
 
                 Image::create([
-                    'name' => $fileName,
-                    'url' => $imageUrl,
-                    'subcategory_id' => $subcategory->id
+                    'name'           => $fileName,
+                    'url'            => $imageUrl,
+                    'subcategory_id' => $subcategory->id,
                 ]);
 
                 $subcategory->image = $imageUrl;
@@ -398,5 +401,13 @@ class SubcategoryController extends Controller
             ->get();
 
         return $subcategories;
+    }
+
+    public function getSubCategories(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_subcategory($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
     }
 }

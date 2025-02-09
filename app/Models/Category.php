@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,13 +23,22 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'value'
+        'value',
+        
+        'status',
+        'server_id',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
+    ];
+
+    const getfields360 = [
+        'name'=>'name',
+        'status'=>'status',
+        'server_id'=>'id',
     ];
 
     public function subcategories()
