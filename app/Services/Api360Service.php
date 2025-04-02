@@ -29,9 +29,9 @@ class Api360Service
             new FetchSizeJob(),
             new FetchProductJob(),
         ])
-            ->name('Sincronización de Datos 360')
-            ->onQueue('default')
-            ->dispatch();
+        ->name('Sincronización de Datos 360')
+        ->onConnection('sync') // 🔹 Forzar ejecución inmediata
+        ->dispatch();
         Log::info("Sincronización 360 iniciada con éxito.");
     }
 
