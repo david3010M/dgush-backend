@@ -8,6 +8,7 @@ use App\Jobs\FetchSizeJob;
 use App\Jobs\FetchSubcategoryJob;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductDetails;
 use App\Models\Size;
@@ -193,17 +194,53 @@ class Api360Service
                         }
 
                         foreach ($relations as $field => $relatedModel) {
-                       
+
                             if (isset($item[$field])) {
-                                $relatedInstance         = $relatedModel::where('server_id', $item[$field])->first();
+                                $relatedInstance                   = $relatedModel::where('server_id', $item[$field])->first();
                                 $processedFields['subcategory_id'] = $relatedInstance?->id ?? null;
                             }
                         }
+
+                        // Procesar precios
+                        $price1 = $price2 = $price12 = 0;
+                        if (!empty($item['prices'])) {
+                            foreach ($item['prices'] as $priceData) {
+                                if ($priceData['quantity'] <= 2) {
+                                    $price1 = $priceData['price'];
+                                } elseif ($priceData['quantity'] < 12) {
+                                    $price2 = $priceData['price'];
+                                } elseif ($priceData['quantity'] >= 12) {
+                                    $price12 = $priceData['price'];
+                                }
+                            }
+                        }
+                        $processedFields = array_merge($processedFields, [
+                            'price1' => $price1,
+                            'price2' => $price2,
+                            'price12' => $price12,
+                        ]);                        
+                        $processedFields['price12'] = $price12;
 
                         $product = $modelClass::updateOrCreate(
                             ['server_id' => $item['id']],
                             array_merge($processedFields, ['server_id' => $item['id']])
                         );
+
+                        // Procesar imágenes
+                        foreach (['photo', 'photo2', 'photo3'] as $photoField) {
+                            if (! empty($item[$photoField])) {
+                                $imageName = basename($item[$photoField]);
+                                Image::updateOrCreate(
+                                    [
+                                        'url'        => $item[$photoField],
+                                        'product_id' => $product->id,
+                                    ],
+                                    [
+                                        'name' => $imageName,
+                                    ]
+                                );
+                            }
+                        }
 
                         if (isset($item['colors'])) {
                             foreach ($item['colors'] as $color) {
@@ -224,9 +261,27 @@ class Api360Service
                                             );
                                         }
                                     }
+
+                                }
+
+                                if (! empty($color['images'])) {
+                                    foreach ($color['images'] as $imageUrl) {
+                                        $imageName = basename($imageUrl);
+                                        Image::updateOrCreate(
+                                            [
+                                                'url'        => $imageUrl,
+                                                'product_id' => $product->id,
+                                                'color_id'   => $colorInstance->id,
+                                            ],
+                                            [
+                                                'name' => $imageName,
+                                            ]
+                                        );
+                                    }
                                 }
                             }
                         }
+
                     }
                     return [
                         'status'  => true,

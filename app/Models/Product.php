@@ -88,20 +88,20 @@ class Product extends Model
     ];
 
     const getfields360 = [
-        "name"          => 'name',
-        "description"   => "description",
-        "detailweb"     => "description",
-        // "photo"       => "photo",
-        // "photo2"      => "photo2",
-        // "photo3"      => "photo3",
+        "name"             => 'name',
+        "description"      => "description",
+        "detailweb"        => "description",
 
-        "price1"        => "price",
-        "price2"        => "price",
-        "priceOferta"   => "promo_price",
-        "currency"      => "currency",
-        "status_server" => "status",
-        "created_at"    => 'created_at',
-        "server_id"     => 'id',
+        "price1"           => "price",
+        "price2"           => "price",
+        "priceOferta"      => "promo_price",
+        "currency"         => "currency",
+        "status_server"    => "status",
+        "created_at"       => 'created_at',
+        "server_id"        => 'id',
+
+        "priceLiquidacion" => "clearance_price",
+        "liquidacion"      => "on_clearance",
 
     ];
 

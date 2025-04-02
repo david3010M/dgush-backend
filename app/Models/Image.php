@@ -17,7 +17,8 @@ class Image extends Model
         'name',
         'url',
         'product_id',
-        'subcategory_id'
+        'subcategory_id',
+        'color_id'
     ];
 
     protected $hidden = [
@@ -29,6 +30,10 @@ class Image extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
     }
 
     public function subcategory()
