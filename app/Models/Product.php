@@ -254,7 +254,7 @@ class Product extends Model
         }
 
         if ($subcategory) {
-            $subcategory = Subcategory::whereIn('value', $subcategory)->pluck('id');
+            $subcategory = Subcategory::whereIn('id', $subcategory)->pluck('id');
             $query->whereIn('subcategory_id', $subcategory);
         }
 
@@ -268,7 +268,7 @@ class Product extends Model
 
         //        COLOR
         if ($color) {
-            $color = Color::whereIn('value', $color)->pluck('id');
+            $color = Color::whereIn('id', $color)->pluck('id');
             $query->whereHas('productColors', function ($query) use ($color) {
                 $query->whereIn('color_id', $color);
             });
@@ -276,7 +276,7 @@ class Product extends Model
 
         //        SIZE
         if ($size) {
-            $size = Size::whereIn('value', $size)->pluck('id');
+            $size = Size::whereIn('id', $size)->pluck('id');
             $query->whereHas('productSizes', function ($query) use ($size) {
                 $query->whereIn('size_id', $size);
             });
