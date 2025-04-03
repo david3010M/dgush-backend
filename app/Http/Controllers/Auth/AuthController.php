@@ -216,6 +216,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            $persona = Person::where('id', $user->person_id)->first();
 
             $token = $user->createToken('AuthToken', expiresAt: now()->addDays(7));
             $typeuser = $user->typeuser()->first();
@@ -225,6 +226,7 @@ class AuthController extends Controller
                 'access_token' => $token->plainTextToken,
 //                'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
                 'user' => $user,
+                'persona' => $persona,
                 'typeuser' => $typeuser,
 //                'optionMenuAccess' => $typeuserAccess,
 //                'permissions' => $typeuserHasPermission
@@ -362,10 +364,12 @@ class AuthController extends Controller
 
             $token = $user->createToken('AuthToken', ['expires_at' => now()->addDays(7)])->plainTextToken;
             $typeuser = $user->typeuser()->first();
+            $persona = Person::where('id', $user->person_id)->first();
 
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
+                'persona' => $persona,
                 'typeuser' => $typeuser,
             ]);
         } else {
@@ -510,6 +514,7 @@ class AuthController extends Controller
                 'expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
                 'user' => $user,
                 'typeuser' => $typeuser,
+                'persona' => $person,
                 'optionMenuAccess' => $optionMenuAccess,
             ]
         );
