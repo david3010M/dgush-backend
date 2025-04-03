@@ -69,7 +69,13 @@ class SubcategoryController extends Controller
             request('sort', 'score'),
             request('direction', 'desc'),
             request('all', false)
-        );
+        )->map(function ($subcategory) {
+            if (! $subcategory->image) {
+                $subcategory->image = url('images/placeholder.svg');
+            }
+            return $subcategory;
+        });
+
         return response()->json($subcategories);
     }
 
