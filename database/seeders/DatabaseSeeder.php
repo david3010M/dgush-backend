@@ -33,27 +33,27 @@ class DatabaseSeeder extends Seeder
         $this->call(PersonSeeder::class);
         $this->call(UserSeeder::class);
 
-        $this->call(CategorySeeder::class);
-        $this->call(SubcategorySeeder::class);
-        $this->call(ColorSeeder::class);
-        $this->call(SizeSeeder::class);
-        $this->call(ProductSeeder::class);
-        $this->call(CommentSeeder::class);
+        // $this->call(CategorySeeder::class);
+        // $this->call(SubcategorySeeder::class);
+        // $this->call(ColorSeeder::class);
+        // $this->call(SizeSeeder::class);
+        // $this->call(ProductSeeder::class);
+        // $this->call(CommentSeeder::class);
         // $this->call(ImageSeeder::class);
 
 //        ProductDetailsSeeder
         $this->call(CouponSeeder::class);
-        $this->call(ProductDetailsSeeder::class);
-        $this->call(WishItemSeeder::class);
+        // $this->call(ProductDetailsSeeder::class);
+        // $this->call(WishItemSeeder::class);
 
         $this->call(ZoneSeeder::class);
-        $this->call(OrderSeeder::class);
-        $this->call(OrderItemSeeder::class);
+        // $this->call(OrderSeeder::class);
+        // $this->call(OrderItemSeeder::class);
         $this->call(SedeSeeder::class);
-        $this->call(SendInformationSeeder::class);
+        // $this->call(SendInformationSeeder::class);
         $this->call(BannerSeeder::class);
         $this->call(VideoSeeder::class);
-        $this->call(SizeGuideSeeder::class);
+        // $this->call(SizeGuideSeeder::class);
 
     }
 }
