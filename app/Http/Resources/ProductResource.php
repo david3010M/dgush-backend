@@ -31,7 +31,7 @@ class ProductResource extends JsonResource
             'status' => $this->status,
             'liquidacion' => $this->liquidacion,
             'subcategory_id' => $this->subcategory_id,
-            'image' => (new ImageResource($this->image))->url
+            'image' => $this->image ? (new ImageResource($this->image))->url : url('images/placeholder.svg'),
         ];
     }
 }
