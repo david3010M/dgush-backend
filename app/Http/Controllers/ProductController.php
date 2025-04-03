@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
@@ -97,20 +98,20 @@ class ProductController extends Controller
     {
         //        VALIDATE DATA
         request()->validate([
-            'search'      => 'nullable|string',
-            'score'       => 'nullable|integer',
-            'status'      => 'nullable|string|in:onsale,new,preventa',
+            'search' => 'nullable|string',
+            'score' => 'nullable|integer',
+            'status' => 'nullable|string|in:onsale,new,preventa',
             'liquidacion' => 'nullable|boolean',
-            'category'    => 'nullable|array',
-            'category.*'  => 'nullable|string',
-            'price'       => 'nullable|array|size:2',
-            'price.*'     => 'nullable|numeric',
-            'color'       => 'nullable|array',
-            'color.*'     => 'nullable|string',
-            'size'        => 'nullable|array',
-            'size.*'      => 'nullable|string',
-            'sort'        => 'nullable|string|in:none,price-asc,price-desc,score',
-            'direction'   => 'nullable|string',
+            'category' => 'nullable|array',
+            'category.*' => 'nullable|string',
+            'price' => 'nullable|array|size:2',
+            'price.*' => 'nullable|numeric',
+            'color' => 'nullable|array',
+            'color.*' => 'nullable|string',
+            'size' => 'nullable|array',
+            'size.*' => 'nullable|string',
+            'sort' => 'nullable|string|in:none,price-asc,price-desc,score',
+            'direction' => 'nullable|string',
         ]);
 
         $products = Product::search(
@@ -134,22 +135,22 @@ class ProductController extends Controller
     {
         //        VALIDATE DATA
         request()->validate([
-            'search'      => 'nullable|string',
-            'score'       => 'nullable|integer',
-            'status'      => 'nullable|string|in:onsale,new,preventa',
+            'search' => 'nullable|string',
+            'score' => 'nullable|integer',
+            'status' => 'nullable|string|in:onsale,new,preventa',
             'liquidacion' => 'nullable|boolean',
-            'category'    => 'nullable|array',
-            'category.*'  => 'nullable|string',
-            'price'       => 'nullable|array|size:2',
-            'price.*'     => 'nullable|numeric',
-            'color'       => 'nullable|array',
-            'color.*'     => 'nullable|string',
-            'size'        => 'nullable|array',
-            'size.*'      => 'nullable|string',
-            'sort'        => 'nullable|string|in:none,price-asc,price-desc,score',
-            'direction'   => 'nullable|string',
-            'per_page'    => 'nullable|integer',
-            'page'        => 'nullable|integer',
+            'category' => 'nullable|array',
+            'category.*' => 'nullable|string',
+            'price' => 'nullable|array|size:2',
+            'price.*' => 'nullable|numeric',
+            'color' => 'nullable|array',
+            'color.*' => 'nullable|string',
+            'size' => 'nullable|array',
+            'size.*' => 'nullable|string',
+            'sort' => 'nullable|string|in:none,price-asc,price-desc,score',
+            'direction' => 'nullable|string',
+            'per_page' => 'nullable|integer',
+            'page' => 'nullable|integer',
         ]);
 
         $per_page = $request->input('per_page', 9);
@@ -260,27 +261,27 @@ class ProductController extends Controller
         }
 
         $validator = validator()->make($request->all(), [
-            'name'                       => [
+            'name' => [
                 'required',
                 'string',
                 Rule::unique('product', 'name')->whereNull('deleted_at'),
             ],
-            'description'                => 'required|string',
-            'detailweb'                  => 'required|string',
-            'price1'                     => 'required|numeric',
-            'price2'                     => 'required|numeric',
-            'price12'                    => 'nullable|numeric',
-            'priceLiquidacion'           => 'nullable|numeric',
-            'priceOferta'                => 'nullable|numeric',
-            'status'                     => 'nullable|string|in:onsale,new,preventa',
-            'subcategory_id'             => 'required|integer|exists:subcategory,id',
-            'product_details'            => 'required|array',
-            'product_details.*.stock'    => 'required|numeric',
+            'description' => 'required|string',
+            'detailweb' => 'required|string',
+            'price1' => 'required|numeric',
+            'price2' => 'required|numeric',
+            'price12' => 'nullable|numeric',
+            'priceLiquidacion' => 'nullable|numeric',
+            'priceOferta' => 'nullable|numeric',
+            'status' => 'nullable|string|in:onsale,new,preventa',
+            'subcategory_id' => 'required|integer|exists:subcategory,id',
+            'product_details' => 'required|array',
+            'product_details.*.stock' => 'required|numeric',
             'product_details.*.color_id' => 'required|integer|exists:color,id',
-            'product_details.*.size_id'  => 'required|integer|exists:size,id',
-            'images'                     => 'required|array',
-            'images.*'                   => 'required|image',
-            'sizeGuideImage'             => 'nullable|image',
+            'product_details.*.size_id' => 'required|integer|exists:size,id',
+            'images' => 'required|array',
+            'images.*' => 'required|image',
+            'sizeGuideImage' => 'nullable|image',
         ]);
 
         if ($validator->fails()) {
@@ -288,18 +289,18 @@ class ProductController extends Controller
         }
 
         $data = [
-            'name'           => $request->input('name'),
-            'description'    => $request->input('description'),
-            'detailweb'      => $request->input('detailweb'),
-            'price1'         => $request->input('price1'),
-            'price2'         => $request->input('price2'),
-            'price12'        => $request->input('price12') ?? null,
-            'status'         => $request->input('status') ?? '',
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'detailweb' => $request->input('detailweb'),
+            'price1' => $request->input('price1'),
+            'price2' => $request->input('price2'),
+            'price12' => $request->input('price12') ?? null,
+            'status' => $request->input('status') ?? '',
             'subcategory_id' => $request->input('subcategory_id'),
         ];
 
         $product = Product::create($data);
-        $id      = $product->id;
+        $id = $product->id;
 
         $images = $request->file('images');
 
@@ -307,9 +308,9 @@ class ProductController extends Controller
 
         foreach ($productDetails as $productDetail) {
             $dataProductDetail = [
-                'stock'      => $productDetail['stock'],
-                'color_id'   => $productDetail['color_id'],
-                'size_id'    => $productDetail['size_id'],
+                'stock' => $productDetail['stock'],
+                'color_id' => $productDetail['color_id'],
+                'size_id' => $productDetail['size_id'],
                 'product_id' => $id,
             ];
             ProductDetails::create($dataProductDetail);
@@ -322,27 +323,27 @@ class ProductController extends Controller
             $imageUrl = Storage::disk('spaces')->url($fileName);
 
             Image::create([
-                'name'       => $fileName,
-                'url'        => $imageUrl,
+                'name' => $fileName,
+                'url' => $imageUrl,
                 'product_id' => $id,
             ]);
         }
 
         if ($request->hasFile('sizeGuideImage')) {
             $guideSize = $request->file('sizeGuideImage');
-            $fileName  = 'SizeGuides/' . $id . '/' . $guideSize->getClientOriginalName();
+            $fileName = 'SizeGuides/' . $id . '/' . $guideSize->getClientOriginalName();
             Storage::disk('spaces')->put($fileName, file_get_contents($guideSize), 'public');
             $imageUrl = Storage::disk('spaces')->url($fileName);
 
             SizeGuide::create([
-                'name'       => $fileName,
-                'route'      => $imageUrl,
+                'name' => $fileName,
+                'route' => $imageUrl,
                 'product_id' => $id,
             ]);
         } else {
             SizeGuide::create([
-                'name'       => 'No guia',
-                'route'      => 'https://dgush-storage.sfo3.digitaloceanspaces.com/no-guia/noguia.png',
+                'name' => 'No guia',
+                'route' => 'https://dgush-storage.sfo3.digitaloceanspaces.com/no-guia/noguia.png',
                 'product_id' => $id,
             ]);
         }
@@ -393,7 +394,7 @@ class ProductController extends Controller
     public function show(int $id)
     {
         //        VALIDATE ID IS INTEGER
-        if (! is_int($id)) {
+        if (!is_int($id)) {
             return response()->json(['message' => 'ID must be an integer'], 422);
         }
 
@@ -401,22 +402,22 @@ class ProductController extends Controller
         $product = Product::find($id);
         if ($product) {
             //            GET COMMENTS
-            $colors         = $product->getColorsByProduct($id);
-            $sizes          = $product->getSizesByProduct($id);
-            $comments       = $product->comments($id);
-            $images         = $product->images($id);
+            $colors = $product->getColorsByProduct($id);
+            $sizes = $product->getSizesByProduct($id);
+            $comments = $product->comments($id);
+            $images = $product->images($id);
             $productDetails = $product->getProductDetails($id);
             $productRelated = $product->getRelatedProducts($id);
-            $sizeGuide      = $product->SizeGuide($id);
+            $sizeGuide = $product->SizeGuide($id);
             return response()->json([
-                'product'        => $product,
-                'colors'         => $colors,
-                'sizes'          => $sizes,
-                'comments'       => $comments,
+                'product' => $product,
+                'colors' => $colors,
+                'sizes' => $sizes,
+                'comments' => $comments,
                 'productDetails' => $productDetails,
-                'images'         => $images,
+                'images' => $images,
                 'productRelated' => $productRelated,
-                'sizeGuide'      => $sizeGuide,
+                'sizeGuide' => $sizeGuide,
             ]);
         } else {
             //            PRODUCT NOT FOUND
@@ -427,7 +428,7 @@ class ProductController extends Controller
     public function productShow(int $id)
     {
         // VALIDATE ID IS INTEGER
-        if (! is_int($id)) {
+        if (!is_int($id)) {
             return response()->json(['message' => 'ID must be an integer'], 422);
         }
 
@@ -436,18 +437,31 @@ class ProductController extends Controller
         if ($product) {
             // GET PRODUCT DETAILS
             $productDetails = $product->getProductDetailsWithSizes($id);
-            $comments       = $product->comments($id);
-            $images         = $product->images($id);
+            $comments = $product->comments($id);
+            $images = $product->images($id);
             $productRelated = $product->getRelatedProducts($id);
-            $sizeGuide      = $product->SizeGuide($id);
+            $sizeGuide = $product->SizeGuide($id);
+
+            if (!$images || count($images) == 0) {
+//                foreach ($productDetails as $productDetail) {
+                $images[] = [
+                    "id" => 1,
+                    "name" => "placeholder.png",
+                    "url" => url('images/placeholder.svg'),
+                    "product_id" => $id,
+                    "subcategory_id" => null,
+                    "color_id" => null
+                ];
+//                }
+            }
 
             return response()->json([
-                'product'        => $product,
+                'product' => $product,
                 'productDetails' => $productDetails,
-                'comments'       => $comments,
-                'images'         => $images,
+                'comments' => $comments,
+                'images' => $images,
                 'productRelated' => $productRelated,
-                'sizeGuide'      => $sizeGuide->route,
+                'sizeGuide' => $sizeGuide?->route,
             ]);
         } else {
             // PRODUCT NOT FOUND
@@ -515,33 +529,33 @@ class ProductController extends Controller
 
         $product = Product::find($id);
 
-        if (! $product) {
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
         $validator = validator()->make($request->all(), [
-            'name'                       => [
+            'name' => [
                 'nullable',
                 'string',
                 Rule::unique('product')->whereNull('deleted_at')->ignore($id),
             ],
-            'description'                => 'nullable|string',
-            'detailweb'                  => 'nullable|string',
-            'price1'                     => 'nullable|numeric',
-            'price2'                     => 'nullable|numeric',
-            'price12'                    => 'nullable|numeric',
-            'priceLiquidacion'           => 'nullable|numeric',
-            'priceOferta'                => 'nullable|numeric',
-            'status'                     => 'nullable|string|in:onsale,new,preventa,none',
-            'liquidacion'                => 'nullable',
-            'subcategory_id'             => 'nullable|integer|exists:subcategory,id',
-            'product_details'            => 'nullable|array',
-            'product_details.*.stock'    => 'required|numeric',
+            'description' => 'nullable|string',
+            'detailweb' => 'nullable|string',
+            'price1' => 'nullable|numeric',
+            'price2' => 'nullable|numeric',
+            'price12' => 'nullable|numeric',
+            'priceLiquidacion' => 'nullable|numeric',
+            'priceOferta' => 'nullable|numeric',
+            'status' => 'nullable|string|in:onsale,new,preventa,none',
+            'liquidacion' => 'nullable',
+            'subcategory_id' => 'nullable|integer|exists:subcategory,id',
+            'product_details' => 'nullable|array',
+            'product_details.*.stock' => 'required|numeric',
             'product_details.*.color_id' => 'required|integer|exists:color,id',
-            'product_details.*.size_id'  => 'required|integer|exists:size,id',
-            'images'                     => 'nullable|array',
-            'images.*'                   => 'required|image',
-            'sizeGuideImage'             => 'nullable|image',
+            'product_details.*.size_id' => 'required|integer|exists:size,id',
+            'images' => 'nullable|array',
+            'images.*' => 'required|image',
+            'sizeGuideImage' => 'nullable|image',
         ]);
 
         if ($validator->fails()) {
@@ -549,23 +563,23 @@ class ProductController extends Controller
         }
 
         $data = [
-            'name'             => $request->input('name') ?? $product->name,
-            'description'      => $request->input('description') ?? $product->description,
-            'detailweb'        => $request->input('detailweb') ?? $product->detailweb,
-            'price1'           => $request->input('price1') ?? $product->price1,
-            'price2'           => $request->input('price2') ?? $product->price2,
-            'price12'          => $request->input('price12') ?? $product->price12,
+            'name' => $request->input('name') ?? $product->name,
+            'description' => $request->input('description') ?? $product->description,
+            'detailweb' => $request->input('detailweb') ?? $product->detailweb,
+            'price1' => $request->input('price1') ?? $product->price1,
+            'price2' => $request->input('price2') ?? $product->price2,
+            'price12' => $request->input('price12') ?? $product->price12,
             'priceLiquidacion' => $request->input('priceLiquidacion') ?? $product->priceLiquidacion,
-            'priceOferta'      => $request->input('priceOferta') ?? $product->priceOferta,
-            'status'           => $request->input('status') === 'none' ? "" : $request->input('status') ?? $product->status,
-            'liquidacion'      => $request->input('liquidacion') == 'true' ?? $product->liquidacion,
-            'subcategory_id'   => $request->input('subcategory_id') ?? $product->subcategory_id,
+            'priceOferta' => $request->input('priceOferta') ?? $product->priceOferta,
+            'status' => $request->input('status') === 'none' ? "" : $request->input('status') ?? $product->status,
+            'liquidacion' => $request->input('liquidacion') == 'true' ?? $product->liquidacion,
+            'subcategory_id' => $request->input('subcategory_id') ?? $product->subcategory_id,
         ];
 
         $product->update($data);
         $id = $product->id;
 
-        $images         = $request->file('images');
+        $images = $request->file('images');
         $productDetails = $request->input('product_details');
 
         if ($productDetails) {
@@ -573,9 +587,9 @@ class ProductController extends Controller
 
             foreach ($productDetails as $productDetail) {
                 $dataProductDetail = [
-                    'stock'      => $productDetail['stock'],
-                    'color_id'   => $productDetail['color_id'],
-                    'size_id'    => $productDetail['size_id'],
+                    'stock' => $productDetail['stock'],
+                    'color_id' => $productDetail['color_id'],
+                    'size_id' => $productDetail['size_id'],
                     'product_id' => $id,
                 ];
                 ProductDetails::create($dataProductDetail);
@@ -593,8 +607,8 @@ class ProductController extends Controller
                 $imageUrl = Storage::disk('spaces')->url($fileName);
 
                 Image::create([
-                    'name'       => $fileName,
-                    'url'        => $imageUrl,
+                    'name' => $fileName,
+                    'url' => $imageUrl,
                     'product_id' => $id,
                 ]);
             }
@@ -605,13 +619,13 @@ class ProductController extends Controller
             SizeGuide::where('product_id', $id)->delete();
 
             $guideSize = $request->file('sizeGuideImage');
-            $fileName  = 'SizeGuides/' . $id . '/' . $guideSize->getClientOriginalName();
+            $fileName = 'SizeGuides/' . $id . '/' . $guideSize->getClientOriginalName();
             Storage::disk('spaces')->put($fileName, file_get_contents($guideSize), 'public');
             $imageUrl = Storage::disk('spaces')->url($fileName);
 
             SizeGuide::create([
-                'name'       => $fileName,
-                'route'      => $imageUrl,
+                'name' => $fileName,
+                'route' => $imageUrl,
                 'product_id' => $id,
             ]);
         }
@@ -669,7 +683,7 @@ class ProductController extends Controller
     public function destroy(int $id)
     {
         $product = Product::find($id);
-        if (! $product) {
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
@@ -704,8 +718,8 @@ class ProductController extends Controller
     public function updateProductsOnSale(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'products'      => 'required|array',
-            'products.*'    => 'required|array',
+            'products' => 'required|array',
+            'products.*' => 'required|array',
             'products.*.id' => 'required|integer|exists:product,id',
         ]);
 
@@ -728,6 +742,7 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Products updated']);
     }
+
     public function getProducts(Request $request)
     {
         $uuid = $request->input('uuid', '');
@@ -735,6 +750,7 @@ class ProductController extends Controller
 
         return response()->json($data); // Devolvemos la respuesta
     }
+
     public function sincronizarDatos360(Request $request)
     {
         $uuid = $request->input('uuid', '');
