@@ -14,5 +14,5 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('getdata-color', [ColorController::class, 'getcolors']);
     Route::get('getdata-size', [SizeController::class, 'getsizes']);
     Route::get('getdata-products', [ProductController::class, 'getproducts']);
-    Route::get('getdata-sincronizarDatos360', [ProductController::class, 'sincronizarDatos360']);
+    
 });

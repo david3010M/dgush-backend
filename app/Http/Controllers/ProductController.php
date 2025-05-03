@@ -753,6 +753,9 @@ class ProductController extends Controller
 
     public function sincronizarDatos360(Request $request)
     {
+        if ($request->header('UUID') !== env('APP_UUID')) {
+            return response()->json(['status' => 'unauthorized'], 401);
+        }
         $uuid = $request->input('uuid', '');
         $this->api360Service->sincronizarDatos360();
         return response()->json('Sincronización 360 iniciada con éxito.');
