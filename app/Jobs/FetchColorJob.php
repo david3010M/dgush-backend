@@ -15,14 +15,16 @@ class FetchColorJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable; // 🔹 Agregar Batchable
 
     protected $api360Service;
+    protected $uuid;
 
-    public function __construct()
+    public function __construct($uuid)
     {
+        $this->uuid = $uuid;
         $this->api360Service = app(Api360Service::class);
     }
 
     public function handle()
     {
-        $this->api360Service->fetch_color();
+        $this->api360Service->fetch_color($this->uuid);
     }
 }

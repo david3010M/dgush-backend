@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\District;
+use App\Services\Api360Service;
 use Illuminate\Http\Request;
 
 class DistrictController extends Controller
 {
+
+    protected $api360Service;
+
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service   = $api360Service;
+    }
+
     /**
      * @OA\Get(
      *     path="/dgush-backend/public/api/district",
@@ -119,4 +129,14 @@ class DistrictController extends Controller
 
         return response()->json(['message' => 'District deleted']);
     }
+
+    public function getdistricts(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_districts($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
+    }
 }
+
+

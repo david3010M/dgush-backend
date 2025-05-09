@@ -14,6 +14,8 @@ class Zone extends Model
     protected $fillable = [
         'name',
         'sendCost',
+        'status',
+        'server_id',
     ];
 
     protected $hidden = [
@@ -22,9 +24,17 @@ class Zone extends Model
         'deleted_at',
     ];
 
+    const getfields360 = [
+        'name'=>'name',
+        'sendCost'=>'price',
+        'status'=>'status',
+    ];
+
     const filters = [
         'name' => 'like',
         'sendCost' => 'like',
+        'status' => '=',
+        'server_id'=> '=',
     ];
 
     const sorts = [

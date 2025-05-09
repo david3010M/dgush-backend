@@ -1,6 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Product\ConsultaStockRequest;
+use App\Http\Requests\Product\UpdateStockRequest;
+use App\Http\Resources\ProductDetailsResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Image;
 use App\Models\Product;
@@ -750,16 +753,39 @@ class ProductController extends Controller
 
         return response()->json($data); // Devolvemos la respuesta
     }
+
+    public function actualizar_stock_360(UpdateStockRequest $request, $product_id)
+    {
+
+        if ($request->header('UUID') !== env('APP_UUID')) {
+            return response()->json(['status' => 'unauthorized'], 401);
+        }
+        if (! Product::where('server_id', $product_id)->first()) {
+            return response()->json(['status' => 'unauthorized'], 422);
+        }
+
+        $data               = $request->validated(); // $data es ahora un array asociativo
+        $data['product_id'] = $product_id;
+
+        $detail = $this->api360Service->updateStock($data);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Stock actualizado correctamente.',
+            'data'    => new ProductDetailsResource($detail),
+        ]);
+    }
+
     public function sincronizarDatos360(Request $request)
     {
         if ($request->header('UUID') !== env('APP_UUID')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
 
-        $uuid = $request->input('uuid', '');
+        $uuid = $request->header('UUID'); // Puedes usar este como uuid definitivo
 
-        // Crear el proceso sin bloquear
-        $cmd = 'php ' . base_path('artisan') . ' sincronizar:datos360';
+        // 🔹 Incluir el UUID como argumento en el comando
+        $cmd = 'php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
 
         $descriptorspec = [
             0 => ['pipe', 'r'],                                                    // stdin
@@ -767,12 +793,30 @@ class ProductController extends Controller
             2 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stderr
         ];
 
-        // Ejecutar en segundo plano sin esperar resultado
         proc_open("start /B " . $cmd, $descriptorspec, $pipes);
 
         Log::info("Sincronización 360 enviada al fondo para UUID: $uuid");
 
-        return response()->json(['status' => 'success', 'message' => 'Sincronización 360 iniciada con éxito.']);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Sincronización 360 iniciada con éxito.',
+        ]);
+    }
+
+    public function consultar_stock_360(ConsultaStockRequest $request, $product_id)
+    {
+        $uuid = $request->header('UUID', ''); // Puedes usar este como uuid definitivo
+
+        $detail = $this->api360Service->update_stock_consultando_360([
+            'product_id' => $product_id,
+            'color_id'   => $request->color_id,
+            'size_id'    => $request->size_id,
+        ], $uuid);
+
+        return response()->json([
+            'status' => 'success',
+            'data'  => new ProductDetailsResource($detail),
+        ]);
     }
 
 }

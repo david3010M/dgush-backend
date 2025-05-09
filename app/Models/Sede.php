@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +16,10 @@ class Sede extends Model
         'phone',
         'email',
         'district_id',
+
+        'ruc',
+        'brand_name',
+        'server_id',
     ];
 
     protected $hidden = [
@@ -26,10 +29,24 @@ class Sede extends Model
     ];
 
     const filters = [
-        'name' => 'like',
-        'address' => 'like',
-        'phone' => 'like',
-        'email' => 'like',
+        'name'       => 'like',
+        'address'    => 'like',
+        'phone'      => 'like',
+        'email'      => 'like',
+
+        'ruc'        => 'like',
+        'brand_name' => 'like',
+        'server_id'  => '=',
+    ];
+
+    const getfields360 = [
+        'name'       => 'name',
+        'address'    => 'address',
+        // 'phone'      => 'phone',
+        // 'email'      => 'email',
+
+        'ruc'        => 'ruc',
+        'brand_name' => 'brand_name',
     ];
 
     const sorts = [
@@ -44,6 +61,5 @@ class Sede extends Model
     {
         return $this->belongsTo(District::class);
     }
-
 
 }

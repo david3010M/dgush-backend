@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class FetchCategoryJob implements ShouldQueue
+class FetchZoneJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable; // 🔹 Agregar Batchable
 
@@ -25,6 +25,6 @@ class FetchCategoryJob implements ShouldQueue
 
     public function handle()
     {
-        $this->api360Service->fetch_category($this->uuid);
+        $this->api360Service->fetch_zones($this->uuid);
     }
 }

@@ -3,16 +3,22 @@ namespace App\Services;
 
 use App\Jobs\FetchCategoryJob;
 use App\Jobs\FetchColorJob;
+use App\Jobs\FetchDistrictJob;
 use App\Jobs\FetchProductJob;
+use App\Jobs\FetchSedeJob;
 use App\Jobs\FetchSizeJob;
 use App\Jobs\FetchSubcategoryJob;
+use App\Jobs\FetchZoneJob;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\District;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductDetails;
+use App\Models\Sede;
 use App\Models\Size;
 use App\Models\Subcategory;
+use App\Models\Zone;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
@@ -20,19 +26,111 @@ use Illuminate\Support\Facades\Log;
 
 class Api360Service
 {
-    public function sincronizarDatos360()
+    public function orderPostRequest(
+        string $endpoint,
+        string $authorizationUiid,
+        array $postBody = []
+    ) {
+        try {
+            $url               = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
+            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID_DEMO_360');
+
+            $response = Http::withHeaders([
+                'Authorization' => $authorizationUiid,
+                'Accept'        => 'application/json',
+            ])->post($url, $postBody);
+
+            if ($response->successful()) {
+                return [
+                    'status'  => true,
+                    'message' => 'Solicitud POST exitosa.',
+                    'data'    => $response->json(),
+                ];
+            }
+
+            // Log de error si la respuesta no fue exitosa
+            Log::error("POST Fallido a {$url}", [
+                'status_code' => $response->status(),
+                'body'        => $response->body(),
+            ]);
+
+            return [
+                'status'  => false,
+                'message' => 'La solicitud POST falló.',
+                'data'    => $response->json(),
+            ];
+        } catch (\Exception $e) {
+            Log::error("Excepción en POST a {$url}", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'status'  => false,
+                'message' => 'Error interno, revisa el log.',
+            ];
+        }
+    }
+
+    public function sincronizarDatos360($uuid)
     {
-        Bus::batch([
-            new FetchCategoryJob(),
-            new FetchSubcategoryJob(),
-            new FetchColorJob(),
-            new FetchSizeJob(),
-            new FetchProductJob(),
-        ])
-        ->name('Sincronización de Datos 360')
-        ->onConnection('sync') // 🔹 Forzar ejecución inmediata
-        ->dispatch();
-        Log::info("Sincronización 360 iniciada con éxito.");
+        try {
+            Bus::batch([
+                new FetchCategoryJob($uuid),
+                new FetchSubcategoryJob($uuid),
+                new FetchColorJob($uuid),
+                new FetchSizeJob($uuid),
+                new FetchProductJob($uuid),
+                new FetchSedeJob($uuid),
+                new FetchZoneJob($uuid),
+                new FetchDistrictJob($uuid),
+            ])
+                ->name('Sincronización de Datos 360')
+                ->onConnection('sync') // 🔹 Forzar ejecución inmediata
+                ->dispatch();
+
+            Log::info("Sincronización 360 iniciada con éxito.");
+        } catch (\Throwable $e) {
+            Log::error('Error en sincronización de datos 360', [
+                'message' => $e->getMessage(),
+                'uuid'    => $uuid,
+            ]);
+        }
+    }
+
+    public function fetch_zones(?string $uuid = '')
+    {
+        return $this->fetchDataAndSync(
+            'zones',
+            'zones',
+            Zone::class,
+            Zone::getfields360,
+            $uuid,
+            []// Relación dinámica
+        );
+    }
+
+    public function fetch_districts(?string $uuid = '')
+    {
+        return $this->fetchDataAndSync(
+            'districts',
+            'districts',
+            District::class,
+            District::getfields360,
+            $uuid,
+            []// Relación dinámica
+        );
+    }
+    public function fetch_sedes(?string $uuid = '')
+    {
+        return $this->fetchDataAndSync(
+            'branches',
+            'branches',
+            Sede::class,
+            Sede::getfields360,
+            $uuid,
+            []// Relación dinámica
+        );
     }
 
     public function fetch_category(?string $uuid = '')
@@ -102,12 +200,13 @@ class Api360Service
     ) {
         try {
             $endpoint          = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : '4807a98f-2a48-4c54-bd5a-0d330b202045';
+            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
 
             $response = Http::withHeaders(['Authorization' => $authorizationUiid])->get($endpoint);
 
             if ($response->successful()) {
-                $data  = $response->json();
+                $data = $response->json();
+
                 $items = $data['data'][$dataKey] ?? [];
 
                 if (isset($items['id'])) {
@@ -174,7 +273,7 @@ class Api360Service
     ) {
         try {
             $endpoint          = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : '4807a98f-2a48-4c54-bd5a-0d330b202045';
+            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
 
             $response = Http::withHeaders(['Authorization' => $authorizationUiid])->get($endpoint);
 
@@ -203,7 +302,7 @@ class Api360Service
 
                         // Procesar precios
                         $price1 = $price2 = $price12 = 0;
-                        if (!empty($item['prices'])) {
+                        if (! empty($item['prices'])) {
                             foreach ($item['prices'] as $priceData) {
                                 if ($priceData['quantity'] <= 2) {
                                     $price1 = $priceData['price'];
@@ -215,10 +314,10 @@ class Api360Service
                             }
                         }
                         $processedFields = array_merge($processedFields, [
-                            'price1' => $price1,
-                            'price2' => $price2,
+                            'price1'  => $price1,
+                            'price2'  => $price2,
                             'price12' => $price12,
-                        ]);                        
+                        ]);
                         $processedFields['price12'] = $price12;
 
                         $product = $modelClass::updateOrCreate(
@@ -308,6 +407,60 @@ class Api360Service
                 'message' => 'Error interno: ' . $e->getMessage(),
             ];
         }
+    }
+
+    public function updateStock(array $data)
+    {
+        $product = Product::firstWhere('server_id', $data['product_id']);
+        $color   = Color::firstWhere('server_id', $data['color_id']);
+        $size    = Size::firstWhere('server_id', $data['size_id']);
+
+        return ProductDetails::updateOrCreate(
+            [
+                'product_id' => $product->id,
+                'color_id'   => $color->id,
+                'size_id'    => $size->id,
+            ],
+            ['stock' => $data['stock']]
+        );
+    }
+    public function update_stock_consultando_360(array $data,$authorizationUuid)
+    {
+        // Consultar el stock desde la API externa
+        $authorizationUuid = $authorizationUuid ?? env('APP_UUID');
+
+        $endpoint = 'https://sistema.360sys.com.pe/api/online-store/products/' . $data['product_id'] . '/stock';
+      
+        $response = Http::withHeaders([
+            'Authorization' => $authorizationUuid,
+        ])->get($endpoint, [
+            'color_id' => $data['color_id'],
+            'size_id'  => $data['size_id'],
+        ]);
+
+        // Verificar que la respuesta sea exitosa
+        if ($response->successful()) {
+                                                    // Obtener el stock desde la respuesta
+            $apiStock = $response->json()['stock']; // Suponiendo que el campo de stock es 'stock'
+
+            // Obtener los detalles del producto, color y tamaño
+            $product = Product::firstWhere('server_id', $data['product_id']);
+            $color   = Color::firstWhere('server_id', $data['color_id']);
+            $size    = Size::firstWhere('server_id', $data['size_id']);
+
+            // Actualizar o crear el registro de ProductDetails
+            return ProductDetails::updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'color_id'   => $color->id,
+                    'size_id'    => $size->id,
+                ],
+                ['stock' => $apiStock]// Usamos el stock consultado de la API
+            );
+        }
+
+        // Si la API no responde correctamente
+        return response()->json(['error' => 'Error al consultar el stock desde la API'], 500);
     }
 
 }

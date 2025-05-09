@@ -12,7 +12,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     title="ZoneResource",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="name", type="string", example="Zona 1"),
- *     @OA\Property(property="sendCost", type="number", example="10.5")
+ *     @OA\Property(property="sendCost", type="number", example="10.5"),
+ *     @OA\Property(property="status", type="string", example="1")
  * )
  *
  * @OA\Schema(
@@ -33,6 +34,7 @@ class ZoneResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'sendCost' => $this->sendCost,
+            'status' => $this->status,
         ];
     }
 }

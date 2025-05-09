@@ -7,9 +7,18 @@ use App\Http\Resources\ZoneResource;
 use App\Models\Zone;
 use App\Http\Requests\StoreZoneRequest;
 use App\Http\Requests\UpdateZoneRequest;
+use App\Services\Api360Service;
+use Illuminate\Http\Request;
 
 class ZoneController extends Controller
 {
+    protected $api360Service;
+
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service   = $api360Service;
+    }
     /**
      * @OA\Get (
      *     path="/dgush-backend/public/api/zone",
@@ -122,5 +131,14 @@ class ZoneController extends Controller
         if ($zone->sendInformation()->count() > 0) return response()->json(['error' => 'No se puede eliminar la zona porque tiene pedidos asociados'], 409);
         $zone->delete();
         return response()->json(['message' => 'Zona eliminada']);
+    }
+
+
+    public function getzones(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_zones($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
     }
 }

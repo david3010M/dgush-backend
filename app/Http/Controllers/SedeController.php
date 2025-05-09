@@ -7,11 +7,22 @@ use App\Http\Resources\SedeResource;
 use App\Models\Sede;
 use App\Http\Requests\StoreSedeRequest;
 use App\Http\Requests\UpdateSedeRequest;
+use App\Services\Api360Service;
 use App\Traits\Filterable;
+use Illuminate\Http\Request;
+
 
 class SedeController extends Controller
 {
     use  Filterable;
+
+    protected $api360Service;
+
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service   = $api360Service;
+    }
 
     public function index(IndexSedeRequest $request)
     {
@@ -51,5 +62,13 @@ class SedeController extends Controller
         if (!$sede) return response()->json(['message' => 'Sede not found'], 404);
         $sede->delete();
         return response()->json(['message' => 'Sede deleted']);
+    }
+
+    public function getsedes(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_sedes($uuid);
+
+        return response()->json($data); // Devolvemos la respuesta
     }
 }

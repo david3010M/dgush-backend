@@ -397,3 +397,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 );
 //API LIBRE PARA SER USADA DESDE 360
 Route::get('getdata-sincronizarDatos360', [ProductController::class, 'sincronizarDatos360']);
+//stock
+Route::put('products/{id}/actualizar-stock', [ProductController::class, 'actualizar_stock_360']);
