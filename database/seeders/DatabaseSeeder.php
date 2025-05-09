@@ -26,9 +26,9 @@ class DatabaseSeeder extends Seeder
         $this->call(OptionMenuSeeder::class);
         $this->call(AccessSeeder::class);
 
-        $this->call(DepartmentSeeder::class);
-        $this->call(ProvinceSeeder::class);
-        $this->call(DistrictSeeder::class);
+        // $this->call(DepartmentSeeder::class);
+        // $this->call(ProvinceSeeder::class);
+        // $this->call(DistrictSeeder::class);
 
         $this->call(PersonSeeder::class);
         $this->call(UserSeeder::class);
@@ -46,10 +46,10 @@ class DatabaseSeeder extends Seeder
         // $this->call(ProductDetailsSeeder::class);
         // $this->call(WishItemSeeder::class);
 
-        $this->call(ZoneSeeder::class);
+        // $this->call(ZoneSeeder::class);
         // $this->call(OrderSeeder::class);
         // $this->call(OrderItemSeeder::class);
-        $this->call(SedeSeeder::class);
+        // $this->call(SedeSeeder::class);
         // $this->call(SendInformationSeeder::class);
         $this->call(BannerSeeder::class);
         $this->call(VideoSeeder::class);

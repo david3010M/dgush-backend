@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\District;
@@ -14,7 +13,7 @@ class DistrictController extends Controller
     // Inyectamos el servicio en el controlador
     public function __construct(Api360Service $api360Service)
     {
-        $this->api360Service   = $api360Service;
+        $this->api360Service = $api360Service;
     }
 
     /**
@@ -38,9 +37,9 @@ class DistrictController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'name' => 'required|string',
+            'name'        => 'required|string',
             'province_id' => 'required|integer',
-            'sendCost' => 'required|numeric',
+            'sendCost'    => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -48,9 +47,9 @@ class DistrictController extends Controller
         }
 
         $data = [
-            'name' => $request->input('name'),
+            'name'        => $request->input('name'),
             'province_id' => $request->input('province_id'),
-            'sendCost' => $request->input('sendCost'),
+            'sendCost'    => $request->input('sendCost'),
         ];
 
         $district = District::create($data);
@@ -76,7 +75,7 @@ class DistrictController extends Controller
     {
         $district = District::find($id);
 
-        if (!$district) {
+        if (! $district) {
             return response()->json(['error' => 'District not found'], 404);
         }
 
@@ -87,14 +86,14 @@ class DistrictController extends Controller
     {
         $district = District::find($id);
 
-        if (!$district) {
+        if (! $district) {
             return response()->json(['error' => 'District not found'], 404);
         }
 
         $validator = validator()->make($request->all(), [
-            'name' => 'nullable|string',
+            'name'        => 'nullable|string',
             'province_id' => 'nullable|integer',
-            'sendCost' => 'nullable|numeric',
+            'sendCost'    => 'nullable|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -102,9 +101,9 @@ class DistrictController extends Controller
         }
 
         $data = [
-            'name' => $request->input('name', $district->name),
+            'name'        => $request->input('name', $district->name),
             'province_id' => $request->input('province_id', $district->province_id),
-            'sendCost' => $request->input('sendCost', $district->sendCost),
+            'sendCost'    => $request->input('sendCost', $district->sendCost),
         ];
 
         $district->update($data);
@@ -117,7 +116,7 @@ class DistrictController extends Controller
     {
         $district = District::find($id);
 
-        if (!$district) {
+        if (! $district) {
             return response()->json(['error' => 'District not found'], 404);
         }
 
@@ -130,13 +129,32 @@ class DistrictController extends Controller
         return response()->json(['message' => 'District deleted']);
     }
 
-    public function getdistricts(Request $request)
+    public function getDistricts(Request $request)
     {
         $uuid = $request->input('uuid', '');
-        $data = $this->api360Service->fetch_districts($uuid);
 
-        return response()->json($data); // Devolvemos la respuesta
+        // Asumiendo que el UUID representa un identificador que sirve para todas las llamadas (esto depende de tu API)
+        $departments = $this->api360Service->fetch_departments($uuid);
+        $provinces   = $this->api360Service->fetch_provinces($uuid);
+        $districts   = $this->api360Service->fetch_districts($uuid);
+
+        return response()->json([
+            'departments' => $departments,
+            'provinces'   => $provinces,
+            'data'   => $districts,
+        ]);
+    }
+
+    public function getProvinces(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_provinces($uuid);
+        return response()->json($data);
+    }
+    public function getDepartments(Request $request)
+    {
+        $uuid = $request->input('uuid', '');
+        $data = $this->api360Service->fetch_departments($uuid);
+        return response()->json($data);
     }
 }
-
-

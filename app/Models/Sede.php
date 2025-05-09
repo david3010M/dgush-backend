@@ -42,8 +42,8 @@ class Sede extends Model
     const getfields360 = [
         'name'       => 'name',
         'address'    => 'address',
-        // 'phone'      => 'phone',
-        // 'email'      => 'email',
+        'phone'      => 'phone',
+        'email'      => 'email',
 
         'ruc'        => 'ruc',
         'brand_name' => 'brand_name',

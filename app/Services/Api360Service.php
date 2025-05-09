@@ -3,18 +3,22 @@ namespace App\Services;
 
 use App\Jobs\FetchCategoryJob;
 use App\Jobs\FetchColorJob;
+use App\Jobs\FetchDepartmentJob;
 use App\Jobs\FetchDistrictJob;
 use App\Jobs\FetchProductJob;
+use App\Jobs\FetchProvincesJob;
 use App\Jobs\FetchSedeJob;
 use App\Jobs\FetchSizeJob;
 use App\Jobs\FetchSubcategoryJob;
 use App\Jobs\FetchZoneJob;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Department;
 use App\Models\District;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductDetails;
+use App\Models\Province;
 use App\Models\Sede;
 use App\Models\Size;
 use App\Models\Subcategory;
@@ -83,7 +87,11 @@ class Api360Service
                 new FetchProductJob($uuid),
                 new FetchSedeJob($uuid),
                 new FetchZoneJob($uuid),
+
+                new FetchDepartmentJob($uuid),
+                new FetchProvincesJob($uuid),
                 new FetchDistrictJob($uuid),
+
             ])
                 ->name('Sincronización de Datos 360')
                 ->onConnection('sync') // 🔹 Forzar ejecución inmediata
@@ -110,6 +118,29 @@ class Api360Service
         );
     }
 
+    public function fetch_departments(?string $uuid = '')
+    {
+        return $this->fetchDataAndSync(
+            'districts',
+            'departments',
+            Department::class,
+            Department::getfields360,
+            $uuid,
+            []// Relación dinámica
+        );
+    }
+
+    public function fetch_provinces(?string $uuid = '')
+    {
+        return $this->fetchDataAndSync(
+            'districts',
+            'provinces',
+            Province::class,
+            Province::getfields360,
+            $uuid,
+            ['department_id' => Department::class]// Relación dinámica
+        );
+    }
     public function fetch_districts(?string $uuid = '')
     {
         return $this->fetchDataAndSync(
@@ -118,20 +149,18 @@ class Api360Service
             District::class,
             District::getfields360,
             $uuid,
-            []// Relación dinámica
+            ['province_id' => Province::class]// Relación dinámica
         );
     }
     public function fetch_sedes(?string $uuid = '')
-    {
-        return $this->fetchDataAndSync(
-            'branches',
-            'branches',
-            Sede::class,
-            Sede::getfields360,
-            $uuid,
-            []// Relación dinámica
-        );
-    }
+    {return $this->fetchDataAndSync(
+        'branches',
+        'branches',
+        Sede::class,
+        Sede::getfields360,
+        $uuid,
+        ['district_id' => District::class]// Relación dinámica
+    );}
 
     public function fetch_category(?string $uuid = '')
     {
@@ -424,13 +453,13 @@ class Api360Service
             ['stock' => $data['stock']]
         );
     }
-    public function update_stock_consultando_360(array $data,$authorizationUuid)
+    public function update_stock_consultando_360(array $data, $authorizationUuid)
     {
         // Consultar el stock desde la API externa
         $authorizationUuid = $authorizationUuid ?? env('APP_UUID');
 
         $endpoint = 'https://sistema.360sys.com.pe/api/online-store/products/' . $data['product_id'] . '/stock';
-      
+
         $response = Http::withHeaders([
             'Authorization' => $authorizationUuid,
         ])->get($endpoint, [

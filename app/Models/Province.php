@@ -24,13 +24,22 @@ class Province extends Model
 
     protected $table = 'province';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name','location_code','department_id','server_id'];
+
+    const getfields360 = [
+        'name'       => 'name',
+        'location_code' => 'location_code',
+    ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
     public function districts()
     {
         return $this->hasMany(District::class);
+    }
+    public function department()
+    {
+        return $this->belongsTo(Department::class,'department_id');
     }
 
 }

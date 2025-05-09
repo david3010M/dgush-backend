@@ -22,8 +22,8 @@ class PersonSeeder extends Seeder
             'phone' => '925531983',
             'address' => 'Calle 123',
             'reference' => 'Calle 123',
-            'district_id' => 1,
-            'typeuser_id' => 1,
+            'district_id' => null,
+            'typeuser_id' => null,
         ]);
     }
 }
