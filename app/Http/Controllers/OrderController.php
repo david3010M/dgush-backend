@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Mail\ConfirmOrder;
 use App\Mail\StatusOrder;
@@ -14,6 +15,9 @@ use App\Models\SendInformation;
 use App\Models\User;
 use App\Models\Zone;
 use App\Services\Api360Service;
+use App\Services\AuditLogService;
+use App\Services\CulquiService;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -24,11 +28,14 @@ class OrderController extends Controller
 {
 
     protected $api360Service;
-
+    protected $culqiService;
+    protected $orderService;
     // Inyectamos el servicio en el controlador
-    public function __construct(Api360Service $api360Service)
+    public function __construct(Api360Service $api360Service, CulquiService $culqiService, OrderService $orderService)
     {
         $this->api360Service = $api360Service;
+        $this->culqiService  = $culqiService;
+        $this->orderService  = $orderService;
     }
 
     /**
@@ -199,221 +206,120 @@ class OrderController extends Controller
         return response()->json($orders);
     }
 
-    /**
-     * @OA\Post (
-     *     path="/dgush-backend/public/api/order",
-     *     summary="Create a new order",
-     *     security={{"bearerAuth": {}}},
-     *     tags={"Order"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"orderItems"},
-     *             @OA\Property(property="orderItems", type="array", @OA\Items(
-     *                 @OA\Property(property="product_id", type="integer"),
-     *                 @OA\Property(property="color_id", type="integer"),
-     *                 @OA\Property(property="size_id", type="integer"),
-     *                 @OA\Property(property="quantity", type="integer")
-     *             )),
-     *             @OA\Property(property="coupon_id", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Order created successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/Order")
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string")
-     *         )
-     *     )
-     * )
-     */
-    public function store(Request $request)
+/**
+ * @OA\Post(
+ *     path="/dgush-backend/public/api/order",
+ *     summary="Create a new order",
+ *     security={{"bearerAuth": {}}},
+ *     tags={"Order"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\MediaType(
+ *             mediaType="multipart/form-data",
+ *             @OA\Schema(
+ *                 ref="#/components/schemas/360StoreOrderRequest"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Order created successfully",
+ *         @OA\JsonContent(ref="#/components/schemas/Order")
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="error", type="string")
+ *         )
+ *     )
+ * )
+ */
+
+    public function store(StoreOrderRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'orderItems'              => 'required|array',
-            'orderItems.*.product_id' => 'required|exists:product,id',
-            'orderItems.*.color_id'   => 'required|exists:color,id',
-            'orderItems.*.size_id'    => 'required|exists:size,id',
-            'orderItems.*.quantity'   => 'required|integer',
-            'coupon_id'               => 'nullable|exists:coupon,id',
-        ])->after(function ($validator) use ($request) {
-            foreach ($request->orderItems as $index => $item) {
-                // Consultar stock desde la API
-                $detail = $this->api360Service->update_stock_consultando_360([
-                    'product_id' => $item['product_id'],
-                    'color_id'   => $item['color_id'],
-                    'size_id'    => $item['size_id'],
-                ],env('APP_UUID'));
-                // Validar si el stock es suficiente
-                if ($detail->stock < $item['quantity']) {
-                    $validator->errors()->add('orderItems.' . $index . '.quantity', 'No hay suficiente stock para el producto seleccionado.');
-                }
-            }
-        });
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        // Encontrar los detalles del producto
-        $products               = $request->input('orderItems');
-        $productDetailsValidate = [];
-
-        foreach ($products as $product) {
-            $key = $product['product_id'] . '-' . $product['color_id'] . '-' . $product['size_id'];
-
-            if (array_key_exists($key, $productDetailsValidate)) {
-                $productDetailsValidate[$key]['quantity'] += $product['quantity'];
-            } else {
-                $productDetailsValidate[$key] = $product;
-            }
-        }
-
-        $productDetails = [];
-        foreach ($productDetailsValidate as $product) {
-            $productDetail = ProductDetails::where('product_id', $product['product_id'])
-                ->where('color_id', $product['color_id'])
-                ->where('size_id', $product['size_id'])
-                ->with(['product', 'color', 'size'])
-                ->first();
-            if ($productDetail) {
-                $productDetails[] = $productDetail;
-            } else {
-                return response()->json(['error' => 'Product not found'], 404);
-            }
-        }
-
-        $lastOrder  = Order::orderBy('number', 'desc')->first();
-        $lastNumber = $lastOrder ? (int) $lastOrder->number : 0;
-        $number     = str_pad($lastNumber + 1, 9, "0", STR_PAD_LEFT);
-
-        // Crear la orden
-        $order = Order::create([
-            'number'   => $number,
-            'subtotal' => 0,
-            'discount' => 0,
-            'sendCost' => 0,
-            'total'    => 0,
-            'quantity' => 0,
-            'date'     => now(),
-            'user_id'  => auth()->user()->id,
-//            'coupon_id' => $request->input('coupon_id')
-        ]);
-
-        // Adjuntar productos a la orden y calcular subtotal y cantidad
-        $quantity        = 0;
-        $subtotal        = 0;
-        $payloadProducts = [];
-
-        foreach ($productDetails as $productDetail) {
-            $key = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
-
-            if (! array_key_exists($key, $productDetailsValidate)) {
-                return response()->json(['error' => 'Product details mismatch'], 422);
+        try {
+            // 1. Procesar el pago con Culqi
+            $result = $this->culqiService->createCharge($request);
+            AuditLogService::log('culqi_create_charge', $request->all(), $result);
+            
+            if (! $result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El pago falló.',
+                    'error'   => $result['message'] ?? 'Error desconocido en el pago.',
+                ], 400);
             }
 
-            $quantityOfProduct = $productDetailsValidate[$key]['quantity'];
-            $stock             = (float) $productDetail->stock;
+            // 2. Preparar el payload para 360
+            $payload = [
+                "mode"             => $request->mode, //RECOJO, DELIVERY, ENVIO
+                "scheduled_date"   => $request->scheduled_date,
+                "cellphone_number" => $request->cellphone,
+                "email_address"    => $request->email_address,
+                "address"          => $request->address,
+                "zone_id"          => $request->zone_id,     // Requerido cuando el modo es DELIVERY
+                "district_id"      => $request->district_id, // Requerido cuando el modo es ENVIO
+                "branch_id"        => $request->branch_id,   // Requerido cuando el modo es RECOJO
+                "customer"         => [
+                    "dni"        => $request->customer_dni,
+                    "first_name" => $request->customer_first_name,
+                    "last_name"  => $request->customer_last_name,
+                ],
+                "notes"            => $request->notes,
+                "total"            => $request->total,
+                "currency"         => "PEN",
+                "payment"          => [
+                    "method"        => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
+                    "pos"           => $request->payment_pos ?? "CULQI",      // Opciones válidas: IZIPAY, NIUBIZ, CULQI
+                    "card"          => [
+                        "name" => $request->payment_card_name ?? "VISA",    // Opciones válidas: VISA, MASTERCARD, AMERICAN EXPRESS, DINERS CLUB INTERNATIONAL
+                        "type" => $request->payment_card_type ?? "CREDITO", // Opciones válidas: CREDITO, DEBITO
+                    ],
+                    "digitalwallet" => $request->payment_digitalwallet ?? null, // Opcional, puede ser YAPE o null
+                ],
 
-            if ($stock <= $quantityOfProduct) {
-                return response()->json(['error' => 'The product is out of stock'], 422);
+                "shipping_cost"    => $request->shipping_cost ?? 0, // puede ser 0, no negativo
+                "products"         => $request->products ?? [],
+            ];
+
+            // Si el UUID no está presente, lo dejamos vacío
+            $uuid = $request->input('uuid', '');
+
+            // 3. Enviar el pedido a la API externa (360)
+            $api360Response = $this->culqiService->orderPostRequest('order', $uuid, $payload);
+            AuditLogService::log('api360_order_post', ['uuid' => $uuid, 'payload' => $payload], $api360Response);
+
+            // Verificar la respuesta de la API 360
+            if (! $api360Response['status']) {
+                return response()->json([
+                    'success'     => false,
+                    'message'     => 'Error al registrar el pedido.',
+                    'api_error'   => $api360Response['message'],
+                    'api_details' => $api360Response['data'] ?? [],
+                ]);
             }
+            
+            // 4. Obtener y guardar la orden usando el ID recibido
+            $orderId360 = $api360Response['data']['id'];
+            $orderInfo  = $this->orderService->getOrdertosave($orderId360, $uuid);
+            AuditLogService::log('api360_order_get_save', ['order_id' => $orderId360], $orderInfo);
 
-            $quantity += $quantityOfProduct;
-        }
-
-        foreach ($productDetails as $productDetail) {
-            $key               = $productDetail->product_id . '-' . $productDetail->color_id . '-' . $productDetail->size_id;
-            $quantityOfProduct = $productDetailsValidate[$key]['quantity'];
-//            PRICE TO CHOSE
-            $prices = [];
-
-            if ($productDetail->product->priceLiquidacion && $productDetail->product->liquidacion == true) {
-                $prices[] = $productDetail->product->priceLiquidacion;
-            }
-            if ($productDetail->product->priceOferta && $productDetail->product->status == 'onsale') {
-                $prices[] = $productDetail->product->priceOferta;
-            }
-            if ($quantity >= 12 && $productDetail->product->price12) {
-                $prices[] = $productDetail->product->price12;
-            }
-            if ($quantity >= 3 && $productDetail->product->price2) {
-                $prices[] = $productDetail->product->price2;
-            }
-
-            $prices[]   = $productDetail->product->price1;
-            $priceChose = min($prices);
-
-            $order_item = OrderItem::create([
-                'quantity'          => $quantityOfProduct,
-                'price'             => $priceChose,
-                'product_detail_id' => $productDetail->id,
-                'order_id'          => $order->id,
+            // 5. Respuesta final con el pago y el pedido procesado correctamente
+            return response()->json([
+                'success'        => true,
+                'message'        => 'Pago y pedido registrados correctamente.',
+                'payment_data'   => $result['object'],
+                'api_360_result' => $api360Response,
             ]);
 
-            $subtotal += $priceChose * $quantityOfProduct;
-
-            //360 details
-            $payloadProducts[] = [
-                "quantity"          => $order_item->quantity,
-                "product_id"        => $productDetail->product_id,
-                "product_detail_id" => $productDetail->id,
-                "color_id"          => $productDetail->color_id,
-                "size_id"           => $productDetail->size_id,
-                "price"             => $priceChose,
-            ];
+        } catch (\Exception $e) {
+            AuditLogService::log('exception_caught', request()->all(), ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error inesperado: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Actualizar la orden con el subtotal y la cantidad total
-        $order->update([
-            'subtotal' => $subtotal,
-            'total'    => $subtotal + $order->sendCost,
-            'quantity' => $quantity,
-        ]);
-        //360 carga util
-        $payload = [
-            "mode"             => "DELIVERY",
-            "scheduled_date"   => "2025-05-31",
-            "cellphone_number" => "966559501",
-            "email_address"    => "correo@gmail.com",
-            "address"          => "MI CASA",
-            "zone_id"          => 1,
-            "district_id"      => null,
-            "branch_id"        => null,
-            "customer"         => [
-                "dni"        => "12345678",
-                "first_name" => "JOSE LUIS",
-                "last_name"  => "DIAZ PECSEN",
-            ],
-            "notes"            => "TEST",
-            "total"            => $order->total,
-            "currency"         => "PEN",
-            "payment"          => [
-                "method"        => "TARJETA",
-                "pos"           => "CULQI",
-                "card"          => [
-                    "name" => "VISA",
-                    "type" => "CREDITO",
-                ],
-                "digitalwallet" => "YAPE",
-            ],
-            "shipping_cost"    => $order->sendCost,
-            "products"         => $payloadProducts,
-        ];
-
-        $uuid     = $request->input('uuid', '');
-        $response = $this->api360Service->orderPostRequest('order', $uuid, $payload);
-
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
-            ->find($order->id);
-
-        return response()->json($order);
     }
 
     /**

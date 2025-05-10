@@ -30,51 +30,7 @@ use Illuminate\Support\Facades\Log;
 
 class Api360Service
 {
-    public function orderPostRequest(
-        string $endpoint,
-        string $authorizationUiid,
-        array $postBody = []
-    ) {
-        try {
-            $url               = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID_DEMO_360');
-
-            $response = Http::withHeaders([
-                'Authorization' => $authorizationUiid,
-                'Accept'        => 'application/json',
-            ])->post($url, $postBody);
-
-            if ($response->successful()) {
-                return [
-                    'status'  => true,
-                    'message' => 'Solicitud POST exitosa.',
-                    'data'    => $response->json(),
-                ];
-            }
-
-            // Log de error si la respuesta no fue exitosa
-            Log::error("POST Fallido a {$url}", [
-                'status_code' => $response->status(),
-                'body'        => $response->body(),
-            ]);
-
-            return [
-                'status'  => false,
-                'message' => 'La solicitud POST falló.',
-                'data'    => $response->json(),
-            ];
-        } catch (\Exception $e) {
-            Log::error("Excepción en POST a {$url}", [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return [
-                'status'  => false,
-                'message' => 'Error interno, revisa el log.',
-            ];
-        }
-    }
+    
 
     public function sincronizarDatos360($uuid)
     {
@@ -85,7 +41,7 @@ class Api360Service
                 new FetchColorJob($uuid),
                 new FetchSizeJob($uuid),
                 new FetchProductJob($uuid),
-                new FetchSedeJob($uuid),
+                new FetchSedeJob($uuid),//revisar
                 new FetchZoneJob($uuid),
 
                 new FetchDepartmentJob($uuid),

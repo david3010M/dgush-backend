@@ -35,6 +35,7 @@ class ZoneResource extends JsonResource
             'name' => $this->name,
             'sendCost' => $this->sendCost,
             'status' => $this->status,
+            'server_id' => $this->server_id,
         ];
     }
 }

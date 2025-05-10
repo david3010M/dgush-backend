@@ -3590,37 +3590,9 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "orderItems"
-                                ],
-                                "properties": {
-                                    "orderItems": {
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "product_id": {
-                                                    "type": "integer"
-                                                },
-                                                "color_id": {
-                                                    "type": "integer"
-                                                },
-                                                "size_id": {
-                                                    "type": "integer"
-                                                },
-                                                "quantity": {
-                                                    "type": "integer"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "coupon_id": {
-                                        "type": "integer"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/360StoreOrderRequest"
                             }
                         }
                     }
@@ -8170,6 +8142,211 @@
                 },
                 "type": "object"
             },
+            "360StoreOrderRequest": {
+                "required": [
+                    "amount",
+                    "description",
+                    "email",
+                    "token",
+                    "mode",
+                    "scheduled_date",
+                    "cellphone",
+                    "email_address",
+                    "address",
+                    "customer_dni",
+                    "customer_first_name",
+                    "customer_last_name",
+                    "notes",
+                    "total",
+                    "payment_method",
+                    "shipping_cost",
+                    "products"
+                ],
+                "properties": {
+                    "amount": {
+                        "description": "Charge amount",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0.01
+                    },
+                    "description": {
+                        "description": "Charge description",
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "description": "Email for charge",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "token": {
+                        "description": "Payment token from Culqi",
+                        "type": "string"
+                    },
+                    "mode": {
+                        "description": "Order mode",
+                        "type": "string",
+                        "enum": [
+                            "RECOJO",
+                            "DELIVERY",
+                            "ENVIO"
+                        ]
+                    },
+                    "scheduled_date": {
+                        "description": "Scheduled delivery date",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "cellphone": {
+                        "description": "Customer cellphone",
+                        "type": "string",
+                        "pattern": "^\\d{9}$"
+                    },
+                    "email_address": {
+                        "description": "Customer email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "address": {
+                        "description": "Delivery address",
+                        "type": "string"
+                    },
+                    "zone_id": {
+                        "description": "Zone ID for DELIVERY mode",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "district_id": {
+                        "description": "District ID for ENVIO mode",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "branch_id": {
+                        "description": "Branch ID for RECOJO mode",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "customer_dni": {
+                        "description": "Customer DNI (8-12 digits)",
+                        "type": "string"
+                    },
+                    "customer_first_name": {
+                        "description": "Customer first name",
+                        "type": "string"
+                    },
+                    "customer_last_name": {
+                        "description": "Customer last name",
+                        "type": "string"
+                    },
+                    "notes": {
+                        "description": "Order notes",
+                        "type": "string"
+                    },
+                    "total": {
+                        "description": "Order total",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0
+                    },
+                    "payment_method": {
+                        "description": "Payment method",
+                        "type": "string",
+                        "enum": [
+                            "TARJETA",
+                            "BILLETERA DIGITAL"
+                        ]
+                    },
+                    "payment_pos": {
+                        "description": "POS system",
+                        "type": "string",
+                        "enum": [
+                            "IZIPAY",
+                            "NIUBIZ",
+                            "CULQI"
+                        ],
+                        "nullable": true
+                    },
+                    "payment_card_name": {
+                        "description": "Card brand",
+                        "type": "string",
+                        "enum": [
+                            "VISA",
+                            "MASTERCARD",
+                            "AMERICAN EXPRESS",
+                            "DINERS CLUB INTERNATIONAL"
+                        ],
+                        "nullable": true
+                    },
+                    "payment_card_type": {
+                        "description": "Card type",
+                        "type": "string",
+                        "enum": [
+                            "CREDITO",
+                            "DEBITO"
+                        ],
+                        "nullable": true
+                    },
+                    "payment_digitalwallet": {
+                        "description": "Digital wallet",
+                        "type": "string",
+                        "enum": [
+                            "YAPE"
+                        ],
+                        "nullable": true
+                    },
+                    "shipping_cost": {
+                        "description": "Shipping cost",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0
+                    },
+                    "products": {
+                        "description": "List of products",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "id",
+                                "quantity",
+                                "price"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "description": "Product server ID",
+                                    "type": "integer"
+                                },
+                                "color_id": {
+                                    "description": "Color server ID",
+                                    "type": "integer",
+                                    "nullable": true
+                                },
+                                "size_id": {
+                                    "description": "Size server ID",
+                                    "type": "integer",
+                                    "nullable": true
+                                },
+                                "quantity": {
+                                    "description": "Quantity",
+                                    "type": "integer",
+                                    "minimum": 1
+                                },
+                                "price": {
+                                    "description": "Unit price",
+                                    "type": "number",
+                                    "format": "float",
+                                    "minimum": 0
+                                },
+                                "notes": {
+                                    "description": "Product notes",
+                                    "type": "string",
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "StoreZoneRequest": {
                 "required": [
                     "name",
@@ -8336,6 +8513,10 @@
                     "sendCost": {
                         "type": "number",
                         "example": "10.5"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "1"
                     }
                 },
                 "type": "object"
