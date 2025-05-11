@@ -20,7 +20,7 @@ class StoreOrderRequest extends StoreRequest
  *         "address", "customer_dni", "customer_first_name", "customer_last_name",
  *         "payment_method", "products"
  *     },
- * 
+ *
  *     @OA\Property(property="amount", type="number", format="float", minimum=600, description="Monto total del cobro (mínimo 600)"),
  *     @OA\Property(property="description", type="string", maxLength=255, description="Descripción del cobro"),
  *     @OA\Property(property="email", type="string", format="email", description="Correo electrónico del cliente para la transacción"),
@@ -65,7 +65,6 @@ class StoreOrderRequest extends StoreRequest
  * )
  */
 
-
     public function rules()
     {
         return [
@@ -75,7 +74,11 @@ class StoreOrderRequest extends StoreRequest
             'email'                 => ['required', 'email'],              // Email debe ser válido
             'token'                 => ['required', 'string'],             // Token no debe estar vacío
 
+            //cupon
+            'coupon_id'             => ['nullable', 'integer', Rule::exists('coupon', 'id')],
+
             //Validaciones para el POST pedido 360
+
             'mode'                  => ['required', 'in:RECOJO,DELIVERY,ENVIO'],
             'scheduled_date'        => ['nullable', 'date'],
             'cellphone'             => ['required'],
@@ -141,6 +144,11 @@ class StoreOrderRequest extends StoreRequest
             'email.required'                => 'El correo electrónico es obligatorio.',
             'email.email'                   => 'El correo electrónico no tiene un formato válido.',
             'token.required'                => 'El token de pago es obligatorio.',
+
+            //cupon
+            'coupon_id.nullable'            => 'El cupón puede estar vacío.',
+            'coupon_id.integer'             => 'El cupón debe ser un valor numérico entero.',
+            'coupon_id.exists'              => 'El cupón especificado no existe en nuestros registros.',
 
             // Pedido 360
             'mode.required'                 => 'El modo de entrega es obligatorio.',

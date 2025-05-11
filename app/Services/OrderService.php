@@ -32,12 +32,12 @@ class OrderService
 
             if ($mode === 'DELIVERY') {
                 if (isset($request->zone_id) && ! empty($request->zone_id)) {
-                    $zone     = Zone::find($request->zone_id);
+                    $zone     = Zone::firstWhere('server_id', $request->zone_id);
                     $sendCost = $zone && $zone->sendCost !== null ? $zone->sendCost : 0;
                 }
             } elseif ($mode === 'ENVIO') {
                 if (isset($request->district_id) && ! empty($request->district_id)) {
-                    $district = District::find($request->district_id);
+                    $district = District::firstWhere('server_id', $request->district_id);
                     $sendCost = $district && $district->sendCost !== null ? $district->sendCost : 0;
                 }
             }
