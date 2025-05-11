@@ -11,70 +11,69 @@ class StoreOrderRequest extends StoreRequest
     {
         return true;
     }
-
 /**
  * @OA\Schema(
  *     schema="360StoreOrderRequest",
  *     type="object",
  *     required={
- *         "amount", "description", "email", "token", "mode", "scheduled_date", "cellphone", "email_address",
- *         "address", "customer_dni", "customer_first_name", "customer_last_name", "notes", "total",
- *         "payment_method", "shipping_cost", "products"
+ *         "amount", "description", "email", "token", "mode", "cellphone", "email_address",
+ *         "address", "customer_dni", "customer_first_name", "customer_last_name",
+ *         "payment_method", "products"
  *     },
- *     @OA\Property(property="amount", type="number", format="float", minimum=0.01, description="Charge amount"),
- *     @OA\Property(property="description", type="string", maxLength=255, description="Charge description"),
- *     @OA\Property(property="email", type="string", format="email", description="Email for charge"),
- *     @OA\Property(property="token", type="string", description="Payment token from Culqi"),
+ * 
+ *     @OA\Property(property="amount", type="number", format="float", minimum=600, description="Monto total del cobro (mínimo 600)"),
+ *     @OA\Property(property="description", type="string", maxLength=255, description="Descripción del cobro"),
+ *     @OA\Property(property="email", type="string", format="email", description="Correo electrónico del cliente para la transacción"),
+ *     @OA\Property(property="token", type="string", description="Token generado por Culqi"),
 
- *     @OA\Property(property="mode", type="string", enum={"RECOJO", "DELIVERY", "ENVIO"}, description="Order mode"),
- *     @OA\Property(property="scheduled_date", type="string", format="date", description="Scheduled delivery date"),
- *     @OA\Property(property="cellphone", type="string", pattern="^\d{9}$", description="Customer cellphone"),
- *     @OA\Property(property="email_address", type="string", format="email", description="Customer email"),
- *     @OA\Property(property="address", type="string", description="Delivery address"),
- *     @OA\Property(property="zone_id", type="integer", nullable=true, description="Zone ID for DELIVERY mode"),
- *     @OA\Property(property="district_id", type="integer", nullable=true, description="District ID for ENVIO mode"),
- *     @OA\Property(property="branch_id", type="integer", nullable=true, description="Branch ID for RECOJO mode"),
+ *     @OA\Property(property="mode", type="string", enum={"RECOJO", "DELIVERY", "ENVIO"}, description="Modo del pedido"),
+ *     @OA\Property(property="scheduled_date", type="string", format="date", nullable=true, description="Fecha programada (opcional)"),
+ *     @OA\Property(property="cellphone", type="string", description="Número de celular del cliente"),
+ *     @OA\Property(property="email_address", type="string", format="email", description="Correo electrónico de contacto"),
+ *     @OA\Property(property="address", type="string", description="Dirección de entrega"),
 
- *     @OA\Property(property="customer_dni", type="string", description="Customer DNI (8-12 digits)"),
- *     @OA\Property(property="customer_first_name", type="string", description="Customer first name"),
- *     @OA\Property(property="customer_last_name", type="string", description="Customer last name"),
- *     @OA\Property(property="notes", type="string", description="Order notes"),
- *     @OA\Property(property="total", type="number", format="float", minimum=0, description="Order total"),
+ *     @OA\Property(property="zone_id", type="integer", nullable=true, description="ID de zona (requerido si mode=DELIVERY)"),
+ *     @OA\Property(property="district_id", type="integer", nullable=true, description="ID de distrito (requerido si mode=ENVIO)"),
+ *     @OA\Property(property="branch_id", type="integer", nullable=true, description="ID de sede (requerido si mode=RECOJO)"),
 
- *     @OA\Property(property="payment_method", type="string", enum={"TARJETA", "BILLETERA DIGITAL"}, description="Payment method"),
- *     @OA\Property(property="payment_pos", type="string", enum={"IZIPAY", "NIUBIZ", "CULQI"}, nullable=true, description="POS system"),
- *     @OA\Property(property="payment_card_name", type="string", enum={"VISA", "MASTERCARD", "AMERICAN EXPRESS", "DINERS CLUB INTERNATIONAL"}, nullable=true, description="Card brand"),
- *     @OA\Property(property="payment_card_type", type="string", enum={"CREDITO", "DEBITO"}, nullable=true, description="Card type"),
- *     @OA\Property(property="payment_digitalwallet", type="string", enum={"YAPE"}, nullable=true, description="Digital wallet"),
+ *     @OA\Property(property="customer_dni", type="string", maxLength=8, description="DNI del cliente (máx. 8 caracteres)"),
+ *     @OA\Property(property="customer_first_name", type="string", description="Nombres del cliente"),
+ *     @OA\Property(property="customer_last_name", type="string", description="Apellidos del cliente"),
+ *     @OA\Property(property="notes", type="string", nullable=true, description="Notas adicionales del pedido"),
 
- *     @OA\Property(property="shipping_cost", type="number", format="float", minimum=0, description="Shipping cost"),
+ *     @OA\Property(property="payment_method", type="string", enum={"TARJETA", "BILLETERA DIGITAL"}, description="Método de pago"),
+ *     @OA\Property(property="payment_card_name", type="string", enum={"VISA", "MASTERCARD", "AMERICAN EXPRESS", "DINERS CLUB INTERNATIONAL"}, nullable=true, description="Marca de tarjeta (si es pago con tarjeta)"),
+ *     @OA\Property(property="payment_card_type", type="string", enum={"CREDITO", "DEBITO"}, nullable=true, description="Tipo de tarjeta (si es pago con tarjeta)"),
+ *     @OA\Property(property="payment_digitalwallet", type="string", enum={"YAPE"}, nullable=true, description="Nombre de la billetera digital (si aplica)"),
 
  *     @OA\Property(
  *         property="products",
  *         type="array",
- *         description="List of products",
+ *         minItems=1,
+ *         description="Lista de productos del pedido",
  *         @OA\Items(
  *             type="object",
  *             required={"id", "quantity", "price"},
- *             @OA\Property(property="id", type="integer", description="Product server ID"),
- *             @OA\Property(property="color_id", type="integer", nullable=true, description="Color server ID"),
- *             @OA\Property(property="size_id", type="integer", nullable=true, description="Size server ID"),
- *             @OA\Property(property="quantity", type="integer", minimum=1, description="Quantity"),
- *             @OA\Property(property="price", type="number", format="float", minimum=0, description="Unit price"),
- *             @OA\Property(property="notes", type="string", nullable=true, description="Product notes")
+ *             @OA\Property(property="id", type="integer", description="ID del producto"),
+ *             @OA\Property(property="color_id", type="integer", nullable=true, description="ID del color del producto (opcional)"),
+ *             @OA\Property(property="size_id", type="integer", nullable=true, description="ID de la talla del producto (opcional)"),
+ *             @OA\Property(property="quantity", type="integer", minimum=1, description="Cantidad solicitada del producto"),
+ *             @OA\Property(property="price", type="number", format="float", minimum=0, description="Precio unitario del producto"),
+ *             @OA\Property(property="notes", type="string", nullable=true, description="Notas adicionales para el producto")
  *         )
  *     )
  * )
  */
 
+
     public function rules()
     {
         return [
-                                                                            // Validaciones para el cargo con Culqi
-            'amount'                => ['required', 'numeric','min:600'], // Monto debe ser numérico y mayor que 0
-            'description'           => ['required', 'string', 'max:255'],   // Descripción es obligatoria y con un límite de caracteres
-            'email'                 => ['required', 'email'],               // Email debe ser válido
-            'token'                 => ['required', 'string'],              // Token no debe estar vacío
+                                                                           // Validaciones para el cargo con Culqi
+            'amount'                => ['required', 'numeric', 'min:600'], // Monto debe ser numérico y mayor que 0
+            'description'           => ['required', 'string', 'max:255'],  // Descripción es obligatoria y con un límite de caracteres
+            'email'                 => ['required', 'email'],              // Email debe ser válido
+            'token'                 => ['required', 'string'],             // Token no debe estar vacío
 
             //Validaciones para el POST pedido 360
             'mode'                  => ['required', 'in:RECOJO,DELIVERY,ENVIO'],
@@ -102,21 +101,21 @@ class StoreOrderRequest extends StoreRequest
                 Rule::exists('sedes', 'server_id'),
             ],
 
-            'customer_dni'          => ['required', 'digits_between:8,12'],
+            'customer_dni'          => ['required', 'max:8'],
             'customer_first_name'   => ['required', 'string'],
             'customer_last_name'    => ['required', 'string'],
 
-            'notes'                 => ['required', 'string'],
-            'total'                 => ['required', 'numeric', 'min:0'],
+            'notes'                 => ['nullable', 'string'],
 
             // Payment
             'payment_method'        => ['required', 'in:TARJETA,BILLETERA DIGITAL'],
-            'payment_pos'           => ['nullable', 'in:IZIPAY,NIUBIZ,CULQI'],
+
             'payment_card_name'     => ['required_if:payment_method,TARJETA', 'in:VISA,MASTERCARD,AMERICAN EXPRESS,DINERS CLUB INTERNATIONAL'],
             'payment_card_type'     => ['required_if:payment_method,TARJETA', 'in:CREDITO,DEBITO'],
             'payment_digitalwallet' => ['nullable', 'in:YAPE'],
 
-            'shipping_cost'         => ['required', 'numeric', 'min:0'],
+            //verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
+            // 'shipping_cost'         => ['nullable','required_if:mode,ENVIO,DELIVERY', 'numeric', 'min:0'],
 
             // Products
             'products'              => ['required', 'array', 'min:1'],
@@ -126,6 +125,7 @@ class StoreOrderRequest extends StoreRequest
             'products.*.quantity'   => ['required', 'integer', 'min:1'],
             'products.*.price'      => ['required', 'numeric', 'min:0'],
             'products.*.notes'      => ['nullable', 'string'],
+
         ];
     }
 
@@ -135,7 +135,7 @@ class StoreOrderRequest extends StoreRequest
             // Culqi
             'amount.required'               => 'El monto es obligatorio.',
             'amount.numeric'                => 'El monto debe ser un valor numérico.',
-            'amount.min'                    => 'El monto debe ser mayor a 0.',
+            'amount.min'                    => 'El monto debe ser como mínimo de S/. 600.',
             'description.required'          => 'La descripción es obligatoria.',
             'description.max'               => 'La descripción no debe superar los 255 caracteres.',
             'email.required'                => 'El correo electrónico es obligatorio.',
@@ -145,10 +145,8 @@ class StoreOrderRequest extends StoreRequest
             // Pedido 360
             'mode.required'                 => 'El modo de entrega es obligatorio.',
             'mode.in'                       => 'El modo de entrega debe ser RECOJO, DELIVERY o ENVIO.',
-            'scheduled_date.required'       => 'La fecha programada es obligatoria.',
             'scheduled_date.date'           => 'La fecha programada no tiene un formato válido.',
             'cellphone.required'            => 'El celular es obligatorio.',
-            'cellphone.digits'              => 'El celular debe tener 9 dígitos.',
             'email_address.required'        => 'El correo de contacto es obligatorio.',
             'email_address.email'           => 'El correo de contacto no es válido.',
             'address.required'              => 'La dirección es obligatoria.',
@@ -164,48 +162,40 @@ class StoreOrderRequest extends StoreRequest
             'branch_id.exists'              => 'La sede seleccionada no es válida.',
 
             'customer_dni.required'         => 'El DNI del cliente es obligatorio.',
-            'customer_dni.digits_between'   => 'El DNI debe tener entre 8 y 12 dígitos.',
+            'customer_dni.max'              => 'El DNI del cliente no debe tener más de 8 caracteres.',
             'customer_first_name.required'  => 'El nombre del cliente es obligatorio.',
             'customer_first_name.string'    => 'El nombre del cliente debe ser texto.',
             'customer_last_name.required'   => 'El apellido del cliente es obligatorio.',
             'customer_last_name.string'     => 'El apellido del cliente debe ser texto.',
 
-            'notes.required'                => 'Las notas del pedido son obligatorias.',
-            'notes.string'                  => 'Las notas deben ser texto.',
-            'total.required'                => 'El total del pedido es obligatorio.',
-            'total.numeric'                 => 'El total debe ser numérico.',
-            'total.min'                     => 'El total no puede ser negativo.',
+            'notes.string'                  => 'Las notas del pedido deben ser texto.',
 
+            // Payment
             'payment_method.required'       => 'El método de pago es obligatorio.',
-            'payment_method.in'             => 'El método de pago no es válido.',
-            'payment_pos.in'                => 'El POS seleccionado no es válido.',
-            'payment_card_name.required_if' => 'La marca de la tarjeta es obligatoria.',
-            'payment_card_name.in'          => 'La marca de la tarjeta no es válida.',
-            'payment_card_type.required_if' => 'El tipo de tarjeta es obligatorio.',
-            'payment_card_type.in'          => 'El tipo de tarjeta debe ser CRÉDITO o DÉBITO.',
-            'payment_digitalwallet.in'      => 'La billetera digital no es válida.',
+            'payment_method.in'             => 'El método de pago debe ser TARJETA o BILLETERA DIGITAL.',
+            'payment_card_name.required_if' => 'La marca de tarjeta es obligatoria si el método de pago es TARJETA.',
+            'payment_card_name.in'          => 'La marca de tarjeta debe ser VISA, MASTERCARD, AMERICAN EXPRESS o DINERS CLUB INTERNATIONAL.',
+            'payment_card_type.required_if' => 'El tipo de tarjeta es obligatorio si el método de pago es TARJETA.',
+            'payment_card_type.in'          => 'El tipo de tarjeta debe ser CREDITO o DEBITO.',
+            'payment_digitalwallet.in'      => 'La billetera digital debe ser YAPE.',
 
-            'shipping_cost.required'        => 'El costo de envío es obligatorio.',
-            'shipping_cost.numeric'         => 'El costo de envío debe ser numérico.',
-            'shipping_cost.min'             => 'El costo de envío no puede ser negativo.',
-
-            'products.required'             => 'Debe incluir al menos un producto.',
-            'products.array'                => 'Los productos deben estar en formato de lista.',
-            'products.min'                  => 'Debe incluir al menos un producto.',
-
+            // Products
+            'products.required'             => 'Debe registrar al menos un producto.',
+            'products.array'                => 'El formato de productos no es válido.',
+            'products.min'                  => 'Debe registrar al menos un producto.',
             'products.*.id.required'        => 'El ID del producto es obligatorio.',
-            'products.*.id.integer'         => 'El ID del producto debe ser numérico.',
-            'products.*.id.exists'          => 'El producto seleccionado no existe.',
-            'products.*.color_id.integer'   => 'El ID del color debe ser numérico.',
-            'products.*.color_id.exists'    => 'El color seleccionado no existe.',
-            'products.*.size_id.integer'    => 'El ID de la talla debe ser numérico.',
-            'products.*.size_id.exists'     => 'La talla seleccionada no existe.',
+            'products.*.id.integer'         => 'El ID del producto debe ser un número.',
+            'products.*.id.exists'          => 'El producto no existe.',
+            'products.*.color_id.integer'   => 'El ID del color debe ser un número.',
+            'products.*.color_id.exists'    => 'El color seleccionado no es válido.',
+            'products.*.size_id.integer'    => 'El ID de la talla debe ser un número.',
+            'products.*.size_id.exists'     => 'La talla seleccionada no es válida.',
             'products.*.quantity.required'  => 'La cantidad es obligatoria.',
-            'products.*.quantity.integer'   => 'La cantidad debe ser numérica.',
+            'products.*.quantity.integer'   => 'La cantidad debe ser un número entero.',
             'products.*.quantity.min'       => 'La cantidad debe ser al menos 1.',
             'products.*.price.required'     => 'El precio es obligatorio.',
-            'products.*.price.numeric'      => 'El precio debe ser numérico.',
-            'products.*.price.min'          => 'El precio no puede ser negativo.',
+            'products.*.price.numeric'      => 'El precio debe ser un valor numérico.',
+            'products.*.price.min'          => 'El precio debe ser mayor o igual a 0.',
             'products.*.notes.string'       => 'Las notas del producto deben ser texto.',
         ];
     }

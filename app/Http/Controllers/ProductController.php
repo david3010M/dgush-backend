@@ -781,20 +781,21 @@ class ProductController extends Controller
         if ($request->header('UUID') !== env('APP_UUID')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
+        
 
         $uuid = $request->header('UUID'); // Puedes usar este como uuid definitivo
 
         // 🔹 Incluir el UUID como argumento en el comando
-        $cmd = 'php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
+        $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
 
         $descriptorspec = [
             0 => ['pipe', 'r'],                                                    // stdin
             1 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stdout
             2 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stderr
         ];
+      
 
-        proc_open("start /B " . $cmd, $descriptorspec, $pipes);
-
+        $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
         Log::info("Sincronización 360 enviada al fondo para UUID: $uuid");
 
         return response()->json([

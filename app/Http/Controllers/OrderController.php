@@ -239,10 +239,25 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         try {
+
+            //VALIDAR CALCULOS ANTES DE HACER EL CARGO
+            $calculatedValues = $this->orderService->calculate($request);
+
+            // Verificar si hubo algún error en el cálculo
+            if (isset($calculatedValues['error'])) {
+                return response()->json([
+                    'error'   => 'Error en los cálculos',
+                    'message' => $calculatedValues['message'],
+                ], 400);
+            }
+
+            $total         = $calculatedValues['total'];
+            $shipping_cost = $calculatedValues['sendCost'];
+
             // 1. Procesar el pago con Culqi
             $result = $this->culqiService->createCharge($request);
             AuditLogService::log('culqi_create_charge', $request->all(), $result);
-            
+
             if (! $result['success']) {
                 return response()->json([
                     'success' => false,
@@ -252,6 +267,7 @@ class OrderController extends Controller
             }
 
             // 2. Preparar el payload para 360
+
             $payload = [
                 "mode"             => $request->mode, //RECOJO, DELIVERY, ENVIO
                 "scheduled_date"   => $request->scheduled_date,
@@ -267,19 +283,20 @@ class OrderController extends Controller
                     "last_name"  => $request->customer_last_name,
                 ],
                 "notes"            => $request->notes,
-                "total"            => $request->total,
+                "total"            => $total, //calcular de los detalles
                 "currency"         => "PEN",
                 "payment"          => [
                     "method"        => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
-                    "pos"           => $request->payment_pos ?? "CULQI",      // Opciones válidas: IZIPAY, NIUBIZ, CULQI
+                    "pos"           => "CULQI",                               // Opciones válidas: IZIPAY, NIUBIZ, CULQI
                     "card"          => [
                         "name" => $request->payment_card_name ?? "VISA",    // Opciones válidas: VISA, MASTERCARD, AMERICAN EXPRESS, DINERS CLUB INTERNATIONAL
                         "type" => $request->payment_card_type ?? "CREDITO", // Opciones válidas: CREDITO, DEBITO
                     ],
                     "digitalwallet" => $request->payment_digitalwallet ?? null, // Opcional, puede ser YAPE o null
                 ],
+//verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
+                "shipping_cost"    => $shipping_cost ?? 0, // puede ser 0, no negativo
 
-                "shipping_cost"    => $request->shipping_cost ?? 0, // puede ser 0, no negativo
                 "products"         => $request->products ?? [],
             ];
 
@@ -299,7 +316,7 @@ class OrderController extends Controller
                     'api_details' => $api360Response['data'] ?? [],
                 ]);
             }
-            
+
             // 4. Obtener y guardar la orden usando el ID recibido
             $orderId360 = $api360Response['data']['id'];
             $orderInfo  = $this->orderService->getOrdertosave($orderId360, $uuid);
