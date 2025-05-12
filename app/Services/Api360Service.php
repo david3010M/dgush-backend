@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Log;
 
 class Api360Service
 {
-    
 
     public function sincronizarDatos360($uuid)
     {
@@ -41,7 +40,7 @@ class Api360Service
                 new FetchColorJob($uuid),
                 new FetchSizeJob($uuid),
                 new FetchProductJob($uuid),
-                new FetchSedeJob($uuid),//revisar
+                new FetchSedeJob($uuid), //revisar
                 new FetchZoneJob($uuid),
 
                 new FetchDepartmentJob($uuid),
@@ -396,19 +395,29 @@ class Api360Service
 
     public function updateStock(array $data)
     {
-        $product = Product::firstWhere('server_id', $data['product_id']);
-        $color   = Color::firstWhere('server_id', $data['color_id']);
-        $size    = Size::firstWhere('server_id', $data['size_id']);
+        $updatedDetails = [];
 
-        return ProductDetails::updateOrCreate(
-            [
-                'product_id' => $product->id,
-                'color_id'   => $color->id,
-                'size_id'    => $size->id,
-            ],
-            ['stock' => $data['stock']]
-        );
+        foreach ($data['items'] as $item) {
+            $product = Product::firstWhere('server_id', $item['product_id']);
+            $color   = Color::firstWhere('server_id', $item['color_id']);
+            $size    = Size::firstWhere('server_id', $item['size_id']);
+
+            if ($product && $color && $size) {
+                $detail = ProductDetails::updateOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'color_id'   => $color->id,
+                        'size_id'    => $size->id,
+                    ],
+                    ['stock' => $item['stock']]
+                );
+                $updatedDetails[] = $detail;
+            }
+        }
+
+        return $updatedDetails;
     }
+
     public function update_stock_consultando_360(array $data, $authorizationUuid)
     {
         // Consultar el stock desde la API externa

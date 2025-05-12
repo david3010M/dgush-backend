@@ -5306,6 +5306,152 @@
                 ]
             }
         },
+        "/dgush-backend/public/api/products/actualizar-stock": {
+            "post": {
+                "tags": [
+                    "360"
+                ],
+                "summary": "Actualizar stock de variantes de productos",
+                "description": "UPDATE STOCK PRODUCT",
+                "operationId": "bfbd907a7ae61150b60b3369afcc24fc",
+                "parameters": [
+                    {
+                        "name": "UUID",
+                        "in": "header",
+                        "description": "UUID autorizado para ejecutar la sincronización",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "abc-123-xyz-789"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateStockRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stock actualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Stock actualizado correctamente."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProductDetailsResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dgush-backend/public/api/products/sincronizar-datos": {
+            "post": {
+                "tags": [
+                    "360"
+                ],
+                "summary": "Sincroniza datos desde el sistema 360",
+                "description": "SINCRONIZAR DATOS 360",
+                "operationId": "52c0ce704827b25743a751cd2fb082c9",
+                "parameters": [
+                    {
+                        "name": "UUID",
+                        "in": "header",
+                        "description": "UUID autorizado para ejecutar la sincronización",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "abc-123-xyz-789"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sincronización iniciada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sincronización 360 iniciada con éxito."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/dgush-backend/public/api/productdetails": {
             "get": {
                 "tags": [
@@ -8149,42 +8295,43 @@
                     "email",
                     "token",
                     "mode",
-                    "scheduled_date",
                     "cellphone",
                     "email_address",
                     "address",
                     "customer_dni",
                     "customer_first_name",
                     "customer_last_name",
-                    "notes",
-                    "total",
                     "payment_method",
-                    "shipping_cost",
                     "products"
                 ],
                 "properties": {
+                    "coupon_id": {
+                        "description": "ID del cupón de descuento (opcional, debe existir en la tabla 'coupon')",
+                        "type": "integer",
+                        "nullable": true
+                    },
                     "amount": {
-                        "description": "Charge amount",
+                        "description": "Monto total del cobro (mínimo 600)",
                         "type": "number",
                         "format": "float",
-                        "minimum": 0.01
+                        "minimum": 600
                     },
                     "description": {
-                        "description": "Charge description",
+                        "description": "Descripción del cobro",
                         "type": "string",
                         "maxLength": 255
                     },
                     "email": {
-                        "description": "Email for charge",
+                        "description": "Correo electrónico del cliente para la transacción",
                         "type": "string",
                         "format": "email"
                     },
                     "token": {
-                        "description": "Payment token from Culqi",
+                        "description": "Token generado por Culqi",
                         "type": "string"
                     },
                     "mode": {
-                        "description": "Order mode",
+                        "description": "Modo del pedido",
                         "type": "string",
                         "enum": [
                             "RECOJO",
@@ -8193,81 +8340,67 @@
                         ]
                     },
                     "scheduled_date": {
-                        "description": "Scheduled delivery date",
+                        "description": "Fecha programada (opcional)",
                         "type": "string",
-                        "format": "date"
+                        "format": "date",
+                        "nullable": true
                     },
                     "cellphone": {
-                        "description": "Customer cellphone",
-                        "type": "string",
-                        "pattern": "^\\d{9}$"
+                        "description": "Número de celular del cliente",
+                        "type": "string"
                     },
                     "email_address": {
-                        "description": "Customer email",
+                        "description": "Correo electrónico de contacto",
                         "type": "string",
                         "format": "email"
                     },
                     "address": {
-                        "description": "Delivery address",
+                        "description": "Dirección de entrega",
                         "type": "string"
                     },
                     "zone_id": {
-                        "description": "Zone ID for DELIVERY mode",
+                        "description": "ID de zona (requerido si mode=DELIVERY)",
                         "type": "integer",
                         "nullable": true
                     },
                     "district_id": {
-                        "description": "District ID for ENVIO mode",
+                        "description": "ID de distrito (requerido si mode=ENVIO)",
                         "type": "integer",
                         "nullable": true
                     },
                     "branch_id": {
-                        "description": "Branch ID for RECOJO mode",
+                        "description": "ID de sede (requerido si mode=RECOJO)",
                         "type": "integer",
                         "nullable": true
                     },
                     "customer_dni": {
-                        "description": "Customer DNI (8-12 digits)",
-                        "type": "string"
+                        "description": "DNI del cliente (máx. 8 caracteres)",
+                        "type": "string",
+                        "maxLength": 8
                     },
                     "customer_first_name": {
-                        "description": "Customer first name",
+                        "description": "Nombres del cliente",
                         "type": "string"
                     },
                     "customer_last_name": {
-                        "description": "Customer last name",
+                        "description": "Apellidos del cliente",
                         "type": "string"
                     },
                     "notes": {
-                        "description": "Order notes",
-                        "type": "string"
-                    },
-                    "total": {
-                        "description": "Order total",
-                        "type": "number",
-                        "format": "float",
-                        "minimum": 0
+                        "description": "Notas adicionales del pedido",
+                        "type": "string",
+                        "nullable": true
                     },
                     "payment_method": {
-                        "description": "Payment method",
+                        "description": "Método de pago",
                         "type": "string",
                         "enum": [
                             "TARJETA",
                             "BILLETERA DIGITAL"
                         ]
                     },
-                    "payment_pos": {
-                        "description": "POS system",
-                        "type": "string",
-                        "enum": [
-                            "IZIPAY",
-                            "NIUBIZ",
-                            "CULQI"
-                        ],
-                        "nullable": true
-                    },
                     "payment_card_name": {
-                        "description": "Card brand",
+                        "description": "Marca de tarjeta (si es pago con tarjeta)",
                         "type": "string",
                         "enum": [
                             "VISA",
@@ -8278,7 +8411,7 @@
                         "nullable": true
                     },
                     "payment_card_type": {
-                        "description": "Card type",
+                        "description": "Tipo de tarjeta (si es pago con tarjeta)",
                         "type": "string",
                         "enum": [
                             "CREDITO",
@@ -8287,21 +8420,15 @@
                         "nullable": true
                     },
                     "payment_digitalwallet": {
-                        "description": "Digital wallet",
+                        "description": "Nombre de la billetera digital (si aplica)",
                         "type": "string",
                         "enum": [
                             "YAPE"
                         ],
                         "nullable": true
                     },
-                    "shipping_cost": {
-                        "description": "Shipping cost",
-                        "type": "number",
-                        "format": "float",
-                        "minimum": 0
-                    },
                     "products": {
-                        "description": "List of products",
+                        "description": "Lista de productos del pedido",
                         "type": "array",
                         "items": {
                             "required": [
@@ -8311,34 +8438,73 @@
                             ],
                             "properties": {
                                 "id": {
-                                    "description": "Product server ID",
+                                    "description": "ID del producto",
                                     "type": "integer"
                                 },
                                 "color_id": {
-                                    "description": "Color server ID",
+                                    "description": "ID del color del producto (opcional)",
                                     "type": "integer",
                                     "nullable": true
                                 },
                                 "size_id": {
-                                    "description": "Size server ID",
+                                    "description": "ID de la talla del producto (opcional)",
                                     "type": "integer",
                                     "nullable": true
                                 },
                                 "quantity": {
-                                    "description": "Quantity",
+                                    "description": "Cantidad solicitada del producto",
                                     "type": "integer",
                                     "minimum": 1
                                 },
                                 "price": {
-                                    "description": "Unit price",
+                                    "description": "Precio unitario del producto",
                                     "type": "number",
                                     "format": "float",
                                     "minimum": 0
                                 },
                                 "notes": {
-                                    "description": "Product notes",
+                                    "description": "Notas adicionales para el producto",
                                     "type": "string",
                                     "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "minItems": 1
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateStockRequest": {
+                "required": [
+                    "items"
+                ],
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "product_id",
+                                "color_id",
+                                "size_id",
+                                "stock"
+                            ],
+                            "properties": {
+                                "product_id": {
+                                    "description": "ID del producto",
+                                    "type": "integer"
+                                },
+                                "color_id": {
+                                    "description": "ID del color",
+                                    "type": "integer"
+                                },
+                                "size_id": {
+                                    "description": "ID de la talla",
+                                    "type": "integer"
+                                },
+                                "stock": {
+                                    "description": "Cantidad de stock",
+                                    "type": "integer"
                                 }
                             },
                             "type": "object"
@@ -9478,6 +9644,10 @@
         {
             "name": "Product",
             "description": "Product"
+        },
+        {
+            "name": "360",
+            "description": "360"
         },
         {
             "name": "Product Details",

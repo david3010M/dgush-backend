@@ -20,7 +20,14 @@ class StoreOrderRequest extends StoreRequest
  *         "address", "customer_dni", "customer_first_name", "customer_last_name",
  *         "payment_method", "products"
  *     },
- *
+
+ * @OA\Property(
+ *     property="coupon_id",
+ *     type="integer",
+ *     nullable=true,
+ *     description="ID del cupón de descuento (opcional, debe existir en la tabla 'coupon')"
+ * ),
+
  *     @OA\Property(property="amount", type="number", format="float", minimum=600, description="Monto total del cobro (mínimo 600)"),
  *     @OA\Property(property="description", type="string", maxLength=255, description="Descripción del cobro"),
  *     @OA\Property(property="email", type="string", format="email", description="Correo electrónico del cliente para la transacción"),

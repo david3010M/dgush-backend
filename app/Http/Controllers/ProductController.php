@@ -754,34 +754,104 @@ class ProductController extends Controller
         return response()->json($data); // Devolvemos la respuesta
     }
 
-    public function actualizar_stock_360(UpdateStockRequest $request, $product_id)
-    {
+    /**
+     * UPDATE STOCK PRODUCT
+     *
+     * @OA\Post(
+     *     path="/dgush-backend/public/api/products/actualizar-stock",
+     *     tags={"360"},
+     *     summary="Actualizar stock de variantes de productos",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UpdateStockRequest")
+     *     ),
+     *     @OA\Parameter(
+     *         name="UUID",
+     *         in="header",
+     *         required=true,
+     *         description="UUID autorizado para ejecutar la sincronización",
+     *         @OA\Schema(type="string", example="abc-123-xyz-789")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Stock actualizado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Stock actualizado correctamente."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/ProductDetailsResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Error de validación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="The given data was invalid.")
+     *         )
+     *     )
+     * )
+     */
 
+    public function actualizar_stock_360(UpdateStockRequest $request)
+    {
         if ($request->header('UUID') !== env('APP_UUID')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
-        if (! Product::where('server_id', $product_id)->first()) {
-            return response()->json(['status' => 'unauthorized'], 422);
-        }
 
-        $data               = $request->validated(); // $data es ahora un array asociativo
-        $data['product_id'] = $product_id;
+        $data = $request->validated();
 
-        $detail = $this->api360Service->updateStock($data);
+        // Procesar todos los items con el servicio
+        $details = $this->api360Service->updateStock($data);
 
         return response()->json([
             'status'  => 'success',
             'message' => 'Stock actualizado correctamente.',
-            'data'    => new ProductDetailsResource($detail),
+            'data'    => ProductDetailsResource::collection($details),
         ]);
     }
+
+    /**
+     * SINCRONIZAR DATOS 360
+     *
+     * @OA\Post(
+     *     path="/dgush-backend/public/api/products/sincronizar-datos",
+     *     tags={"360"},
+     *     summary="Sincroniza datos desde el sistema 360",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="UUID",
+     *         in="header",
+     *         required=true,
+     *         description="UUID autorizado para ejecutar la sincronización",
+     *         @OA\Schema(type="string", example="abc-123-xyz-789")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sincronización iniciada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Sincronización 360 iniciada con éxito.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="unauthorized")
+     *         )
+     *     )
+     * )
+     */
 
     public function sincronizarDatos360(Request $request)
     {
         if ($request->header('UUID') !== env('APP_UUID')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
-        
 
         $uuid = $request->header('UUID'); // Puedes usar este como uuid definitivo
 
@@ -793,7 +863,6 @@ class ProductController extends Controller
             1 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stdout
             2 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stderr
         ];
-      
 
         $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
         Log::info("Sincronización 360 enviada al fondo para UUID: $uuid");
@@ -816,7 +885,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data'  => new ProductDetailsResource($detail),
+            'data'   => new ProductDetailsResource($detail),
         ]);
     }
 
