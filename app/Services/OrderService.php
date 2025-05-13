@@ -222,7 +222,11 @@ class OrderService
         try {
             $url = "https://sistema.360sys.com.pe/api/online-store/{$route}";
 
-            $response = Http::withHeaders([
+
+    
+
+            $response = Http::timeout(120) // segundos
+    ->connectTimeout(30)->withHeaders([
                 'Authorization' => $uuid,
                 'Accept'        => 'application/json',
             ])->get($url, $request->only('start', 'end'));

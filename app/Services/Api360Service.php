@@ -259,7 +259,10 @@ class Api360Service
             $endpoint          = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
             $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
 
-            $response = Http::withHeaders(['Authorization' => $authorizationUiid])->get($endpoint);
+            $response = Http::timeout(120) // segundos
+    ->connectTimeout(30)
+    ->withHeaders(['Authorization' => $authorizationUiid])
+    ->get($endpoint);
 
             if ($response->successful()) {
                 $data  = $response->json();

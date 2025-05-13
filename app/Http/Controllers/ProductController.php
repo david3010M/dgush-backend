@@ -798,7 +798,7 @@ class ProductController extends Controller
 
     public function actualizar_stock_360(UpdateStockRequest $request)
     {
-        if ($request->header('UUID') !== env('APP_UUID')) {
+        if ($request->header('Authorization') !== env('APP_UUID')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
 
@@ -849,11 +849,11 @@ class ProductController extends Controller
 
     public function sincronizarDatos360(Request $request)
     {
-        if ($request->header('UUID') !== env('APP_UUID')) {
+        if ($request->header('Authorization') !== env('APP_UUID')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
 
-        $uuid = $request->header('UUID'); // Puedes usar este como uuid definitivo
+        $uuid = $request->header('Authorization'); // Puedes usar este como uuid definitivo
 
         // 🔹 Incluir el UUID como argumento en el comando
         $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
@@ -875,7 +875,7 @@ class ProductController extends Controller
 
     public function consultar_stock_360(ConsultaStockRequest $request, $product_id)
     {
-        $uuid = $request->header('UUID', ''); // Puedes usar este como uuid definitivo
+        $uuid = $request->header('Authorization', ''); // Puedes usar este como uuid definitivo
 
         $detail = $this->api360Service->update_stock_consultando_360([
             'product_id' => $product_id,

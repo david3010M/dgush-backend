@@ -29,9 +29,9 @@ class SincronizarOrders360 extends Command
         $end   = $this->option('end') ?? now()->toDateString();             // hoy
 
         // Mostrar información al usuario en consola
-        $this->info("🚀 Iniciando sincronización de órdenes desde 360");
-        $this->info("🔑 UUID: {$uuid}");
-        $this->info("📅 Rango: desde {$start} hasta {$end}");
+        $this->info(" Iniciando sincronización de órdenes desde 360");
+        $this->info(" UUID: {$uuid}");
+        $this->info(" Rango: desde {$start} hasta {$end}");
 
         // Registrar en logs
         Log::info('Sincronización de órdenes 360 iniciada.', compact('uuid', 'start', 'end'));
