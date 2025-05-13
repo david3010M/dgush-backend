@@ -17,7 +17,7 @@ class UpdateOrderRequest extends StoreRequest
         return [
             // 'orders' debe ser un arreglo
             'orders' => 'required|array',
-            'orders.*.order_id' => 'required|exists:order,server_id',  // Aseguramos que cada 'order_id' exista en la base de datos
+            'orders.*.id' => 'required|exists:order,server_id',  // Aseguramos que cada 'id' exista en la base de datos
 
             // Los campos de cada orden
             'orders.*.number'           => 'nullable',
@@ -40,6 +40,7 @@ class UpdateOrderRequest extends StoreRequest
             'orders.*.total'            => 'nullable',
             'orders.*.currency'         => 'nullable',
             'orders.*.shipping_cost'    => 'nullable',
+            'orders.*.invoices'           => 'nullable',
 
             // Campos relacionados con el cliente para cada orden
             'orders.*.customer'         => 'nullable',
@@ -53,8 +54,8 @@ class UpdateOrderRequest extends StoreRequest
         return [
             'orders.required'           => 'El campo orders es obligatorio.',
             'orders.array'              => 'El campo orders debe ser un arreglo.',
-            'orders.*.order_id.required' => 'El ID de la orden es obligatorio.',
-            'orders.*.order_id.exists'   => 'La orden con el ID especificado no existe en la base de datos.',
+            'orders.*.id.required' => 'El ID de la orden es obligatorio.',
+            'orders.*.id.exists'   => 'La orden con el ID especificado no existe en la base de datos.',
             'orders.*.number.string'     => 'El campo "number" debe ser una cadena de texto.',
             'orders.*.date.date'         => 'El campo "date" debe ser una fecha válida.',
             'orders.*.scheduled_date.date' => 'El campo "scheduled_date" debe ser una fecha válida.',

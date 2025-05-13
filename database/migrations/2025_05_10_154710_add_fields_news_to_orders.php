@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('stage')->nullable();
     
             $table->string('server_id')->nullable();
+            $table->string('invoices')->nullable();
             $table->date('scheduled_date')->nullable();
             $table->date('payment_date')->nullable();
             $table->date('end_date')->nullable();
@@ -69,6 +70,7 @@ return new class extends Migration
             $table->dropColumn([
                 'stage',
  
+                'invoices',
                 'server_id',
                 'scheduled_date',
                 'payment_date',

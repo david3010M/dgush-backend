@@ -9,6 +9,7 @@ use App\Models\Sede;
 use App\Models\Zone;
 use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -137,7 +138,8 @@ class OrderService
             $responseData = $response->json();
 
             if ($response->successful() && isset($responseData['data']['order'])) {
-                $order = $responseData['data']['order'];
+                $order            = $responseData['data']['order'];
+                $order['user_id'] = Auth::user()->id;
 
                 // Guardar o actualizar usando método genérico
                 $this->update_or_create_item($order, $modelClass, $fields);
@@ -255,12 +257,12 @@ class OrderService
                 'district_id' => District::class,
                 'branch_id'   => Sede::class,
             ];
-    
+
             // Mapear zone_id, district_id, branch_id
             foreach ($map as $key => $model) {
-                if (!empty($data[$key])) {
+                if (! empty($data[$key])) {
                     $found = $this->api360Service->find_by_server_id($model, $data[$key]);
-    
+
                     if ($found['status']) {
                         $data[$key] = $found['data']->id;
                     } else {
@@ -268,32 +270,32 @@ class OrderService
                     }
                 }
             }
-    
+
             // Convertir arrays a JSON si existen
             foreach (['customer', 'payments', 'products'] as $jsonField) {
                 if (isset($data[$jsonField]) && is_array($data[$jsonField])) {
                     $data[$jsonField] = json_encode($data[$jsonField]);
                 }
             }
-    
+
             // Verificar que 'id' exista en los datos antes de continuar
             if (empty($data['id'])) {
                 Log::error("Missing 'id' in the data for model {$modelClass}", [
-                    'data' => $data,
+                    'data'   => $data,
                     'fields' => $fields,
                 ]);
                 return; // O lanzar una excepción si prefieres
             }
-    
+
             // Realizar updateOrCreate si 'id' está presente
             $modelClass::updateOrCreate(
-                ['server_id' => $data['id']],  // Condición de búsqueda
+                ['server_id' => $data['id']], // Condición de búsqueda
                 collect($fields)
-                    ->filter(fn($f) => isset($data[$f])) // Solo usar campos presentes
+                    ->filter(fn($f) => isset($data[$f]))       // Solo usar campos presentes
                     ->mapWithKeys(fn($f) => [$f => $data[$f]]) // Mapear los campos
                     ->toArray()
             );
-    
+
         } catch (\Throwable $e) {
             Log::error("Error in update_or_create_item for model {$modelClass}: " . $e->getMessage(), [
                 'data'   => $data,
@@ -302,6 +304,5 @@ class OrderService
             ]);
         }
     }
-    
 
 }

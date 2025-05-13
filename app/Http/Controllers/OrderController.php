@@ -1470,10 +1470,10 @@ class OrderController extends Controller
     // Procesar cada pedido en el arreglo 'orders'
     foreach ($request->orders as $pedidoData) {
         // Asegurarse de que 'order_id' esté disponible y renombrarlo a 'id'
-        if (isset($pedidoData['order_id'])) {
-            $pedidoData['id'] = $pedidoData['order_id']; // Renombrar 'order_id' a 'id'
-            unset($pedidoData['order_id']); // Eliminar 'order_id' para evitar conflictos
-        }
+        // if (isset($pedidoData['order_id'])) {
+        //     $pedidoData['id'] = $pedidoData['order_id']; // Renombrar 'order_id' a 'id'
+        //     unset($pedidoData['order_id']); // Eliminar 'order_id' para evitar conflictos
+        // }
 
         // Buscar el pedido por su 'id' (ahora 'order_id' se ha convertido en 'id')
         $pedido = $this->api360Service->find_by_server_id(Order::class, $pedidoData['id']);

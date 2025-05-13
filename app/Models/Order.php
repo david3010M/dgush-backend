@@ -80,7 +80,7 @@ class Order extends Model
         'description',
         'user_id',
         'coupon_id',
-
+        'invoices',
         'stage',
         'bill_number',
         'server_id',
@@ -133,7 +133,8 @@ class Order extends Model
         "notes"            => 'notes',            
         "total"            => 'total',            
         "currency"         => 'currency',         
-        "shipping_cost"    => 'sendCost',         
+        "shipping_cost"    => 'sendCost',    
+        "invoices"    => 'invoices',      
 
         "customer"         => 'customer', 
         "payments"         => 'payments', 

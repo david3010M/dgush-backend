@@ -60,6 +60,7 @@ class OrderResource extends JsonResource
             'user'             => $this->user ? new UserResource($this->user) : null,
 
             //campos agreegados
+            'invoices'          => $this->invoices ?? null,
             'quantity'         => $this->quantity ?? null,
             'user_id'          => $this->user_id ?? null,
             'stage'            => $this->stage ?? null,
