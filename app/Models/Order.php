@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -67,6 +66,7 @@ class Order extends Model
     protected $table = 'order';
 
     protected $fillable = [
+        'id',
         'number',
         'subtotal',
         'discount',
@@ -80,12 +80,71 @@ class Order extends Model
         'description',
         'user_id',
         'coupon_id',
+
+        'stage',
+        'bill_number',
+        'server_id',
+        "scheduled_date",
+        "end_date", 
+        "mode",             
+        "cellphone_number", 
+        "email_address",    
+        "address",          
+        "destiny",          
+        "zone_id",          
+        "district_id",      
+        "branch_id",        
+        "notes",            
+        "currency",         
+        "payment_date",
+        "end_date",
+        "mode",
+        "cellphone_number",
+        "email_address",
+        "address",
+        "destiny",
+        "zone_id",
+        "district_id",
+        "branch_id",
+        "notes",
+
+        "customer",
+        "payments",
+        "products",
+    ];
+
+    const getfields360 = [
+        "number"           => 'number',           
+        "date"             => 'date',             
+        "scheduled_date"   => 'scheduled_date',   
+        "payment_date"     => 'payment_date',     
+        "shipping_date"    => 'shippingDate',     
+        "end_date"         => 'end_date',         
+        "stage"            => 'stage',            
+        "status"           => 'status',           
+        "mode"             => 'mode',             
+        "cellphone_number" => 'cellphone_number', 
+        "email_address"    => 'email_address',    
+        "address"          => 'address',          
+        "destiny"          => 'destiny',          
+        "zone_id"          => 'zone_id',          
+        "district_id"      => 'district_id',      
+        "branch_id"        => 'branch_id',        
+        "notes"            => 'notes',            
+        "total"            => 'total',            
+        "currency"         => 'currency',         
+        "shipping_cost"    => 'sendCost',         
+
+        "customer"         => 'customer', 
+        "payments"         => 'payments', 
+        "products"         => 'products', 
+
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     public function user()

@@ -1,19 +1,27 @@
 <?php
 namespace App\Services;
 
+use App\Jobs\FetchSincronizarOrdenesJob;
 use App\Models\Coupon;
 use App\Models\District;
 use App\Models\Order;
+use App\Models\Sede;
 use App\Models\Zone;
+use Illuminate\Bus\Batch;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
 
-    public function __construct()
-    {
+    protected $api360Service;
 
+    // Inyectamos el servicio en el controlador
+    public function __construct(Api360Service $api360Service)
+    {
+        $this->api360Service = $api360Service;
     }
 
     public function calculate($request)
@@ -113,7 +121,9 @@ class OrderService
 
     public function getOrdertosave(
         string $order_id,
-        string $authorizationUuid
+        string $authorizationUuid,
+        string $modelClass = Order::class,
+        array $fields = Order::getfields360
     ) {
         try {
             $url               = "https://sistema.360sys.com.pe/api/online-store/order/" . $order_id;
@@ -126,24 +136,16 @@ class OrderService
 
             $responseData = $response->json();
 
-            if ($response->successful()) {
-                $data  = $responseData['data'];
-                $order = $data['order'];
+            if ($response->successful() && isset($responseData['data']['order'])) {
+                $order = $responseData['data']['order'];
 
-                // Guardar o actualizar el pedido en la base de datos
-                Order::updateOrCreate(
-                    ['server_id' => $order['id']],
-                    [
-                        'number'      => $order['number'] ?? null,
-                        'stage'       => $order['stage'] ?? null,
-                        'bill_number' => $order['bill_number'] ?? null,
-                    ]
-                );
+                // Guardar o actualizar usando método genérico
+                $this->update_or_create_item($order, $modelClass, $fields);
 
                 return [
                     'status'  => true,
                     'message' => 'Pedido registrado exitosamente.',
-                    'data'    => $data,
+                    'data'    => $responseData['data'],
                 ];
             }
 
@@ -163,5 +165,143 @@ class OrderService
             ];
         }
     }
+
+    public function sincronizarOrders360($uuid, $start, $end)
+    {
+
+        try {
+            Bus::batch([
+                new FetchSincronizarOrdenesJob($uuid, $start, $end),
+
+            ])
+                ->name('Sincronización de Ordenes 360')
+                ->onConnection('sync') // 🔹 Forzar ejecución inmediata
+                ->dispatch();
+
+            Log::info("Sincronización 360 iniciada con éxito.");
+        } catch (\Throwable $e) {
+            Log::error('Error en sincronización de ordenes 360', [
+                'message' => $e->getMessage(),
+                'uuid'    => $uuid,
+            ]);
+        }
+    }
+
+    public function callListarPedidos360(string $uuid, string $start, string $end)
+    {
+        $request = new Request(['start' => $start, 'end' => $end]);
+
+        return $this->listarPedidosPorFechas(
+            $request,
+            route: 'orders',
+            key: 'orders',
+            clase: Order::class,
+            getfields: Order::getfields360,
+            uuid: $uuid
+        );
+    }
+
+    public function listarPedidosPorFechas(
+        Request $request,
+        string $route,
+        string $key,
+        string $clase,
+        array $getfields,
+        string $uuid
+    ) {
+        try {
+            $url = "https://sistema.360sys.com.pe/api/online-store/{$route}";
+
+            $response = Http::withHeaders([
+                'Authorization' => $uuid,
+                'Accept'        => 'application/json',
+            ])->get($url, $request->only('start', 'end'));
+
+            $responseData = $response->json();
+
+            if ($response->successful() && isset($responseData['data'])) {
+                foreach ($responseData['data'][$key] as $item) {
+                    $this->update_or_create_item($item, $clase, $getfields);
+                }
+
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Datos sincronizados correctamente.',
+                    'data'    => $responseData['data'],
+                ]);
+            }
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'No se pudieron obtener los datos.',
+                'data'    => $responseData,
+            ], $response->status());
+
+        } catch (\Throwable $e) {
+            Log::error("Error en listarPedidosPorFechas: " . $e->getMessage());
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Error interno del servidor.',
+            ], 500);
+        }
+    }
+
+    public function update_or_create_item(array $data, string $modelClass, array $fields): void
+    {
+        try {
+            $map = [
+                'zone_id'     => Zone::class,
+                'district_id' => District::class,
+                'branch_id'   => Sede::class,
+            ];
+    
+            // Mapear zone_id, district_id, branch_id
+            foreach ($map as $key => $model) {
+                if (!empty($data[$key])) {
+                    $found = $this->api360Service->find_by_server_id($model, $data[$key]);
+    
+                    if ($found['status']) {
+                        $data[$key] = $found['data']->id;
+                    } else {
+                        unset($data[$key]); // No incluir si no se encuentra
+                    }
+                }
+            }
+    
+            // Convertir arrays a JSON si existen
+            foreach (['customer', 'payments', 'products'] as $jsonField) {
+                if (isset($data[$jsonField]) && is_array($data[$jsonField])) {
+                    $data[$jsonField] = json_encode($data[$jsonField]);
+                }
+            }
+    
+            // Verificar que 'id' exista en los datos antes de continuar
+            if (empty($data['id'])) {
+                Log::error("Missing 'id' in the data for model {$modelClass}", [
+                    'data' => $data,
+                    'fields' => $fields,
+                ]);
+                return; // O lanzar una excepción si prefieres
+            }
+    
+            // Realizar updateOrCreate si 'id' está presente
+            $modelClass::updateOrCreate(
+                ['server_id' => $data['id']],  // Condición de búsqueda
+                collect($fields)
+                    ->filter(fn($f) => isset($data[$f])) // Solo usar campos presentes
+                    ->mapWithKeys(fn($f) => [$f => $data[$f]]) // Mapear los campos
+                    ->toArray()
+            );
+    
+        } catch (\Throwable $e) {
+            Log::error("Error in update_or_create_item for model {$modelClass}: " . $e->getMessage(), [
+                'data'   => $data,
+                'fields' => $fields,
+                'trace'  => $e->getTraceAsString(),
+            ]);
+        }
+    }
+    
 
 }

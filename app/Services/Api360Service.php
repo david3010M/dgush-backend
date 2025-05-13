@@ -457,4 +457,11 @@ class Api360Service
         return response()->json(['error' => 'Error al consultar el stock desde la API'], 500);
     }
 
+    public function find_by_server_id(string $modelClass, $id)
+    {
+        $data = $modelClass::where('server_id', $id)->first();
+        return $data
+        ? ['status' => true, 'data' => $data]
+        : ['status' => false, 'data' => [],'model' => $modelClass, 'message' => "No se encontró server_id: {$id} en {$modelClass}"];
+    }
 }

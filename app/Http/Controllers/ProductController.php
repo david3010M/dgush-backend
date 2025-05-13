@@ -767,12 +767,12 @@ class ProductController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/UpdateStockRequest")
      *     ),
      *     @OA\Parameter(
-     *         name="UUID",
-     *         in="header",
-     *         required=true,
-     *         description="UUID autorizado para ejecutar la sincronización",
-     *         @OA\Schema(type="string", example="abc-123-xyz-789")
-     *     ),
+ *         name="UUID",
+ *         in="header",
+ *         required=true,
+ *         description="UUID autorizado para ejecutar la sincronización",
+ *         @OA\Schema(type="string", example="abc-123-xyz-789")
+ *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Stock actualizado",
@@ -815,37 +815,37 @@ class ProductController extends Controller
     }
 
     /**
-     * SINCRONIZAR DATOS 360
-     *
-     * @OA\Post(
-     *     path="/dgush-backend/public/api/products/sincronizar-datos",
-     *     tags={"360"},
-     *     summary="Sincroniza datos desde el sistema 360",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="UUID",
-     *         in="header",
-     *         required=true,
-     *         description="UUID autorizado para ejecutar la sincronización",
-     *         @OA\Schema(type="string", example="abc-123-xyz-789")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Sincronización iniciada",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="success"),
-     *             @OA\Property(property="message", type="string", example="Sincronización 360 iniciada con éxito.")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="unauthorized")
-     *         )
-     *     )
-     * )
-     */
+ * SINCRONIZAR DATOS 360
+ *
+ * @OA\Post(
+ *     path="/dgush-backend/public/api/products/sincronizar-datos",
+ *     tags={"360"},
+ *     summary="Sincroniza datos desde el sistema 360",
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="UUID",
+ *         in="header",
+ *         required=true,
+ *         description="UUID autorizado para ejecutar la sincronización",
+ *         @OA\Schema(type="string", example="abc-123-xyz-789")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Sincronización iniciada",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="status", type="string", example="success"),
+ *             @OA\Property(property="message", type="string", example="Sincronización 360 iniciada con éxito.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="status", type="string", example="unauthorized")
+ *         )
+ *     )
+ * )
+ */
 
     public function sincronizarDatos360(Request $request)
     {

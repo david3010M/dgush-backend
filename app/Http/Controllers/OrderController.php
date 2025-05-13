@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Order\ListOrders360Request;
 use App\Http\Requests\Order\StoreOrderRequest;
+use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Mail\ConfirmOrder;
 use App\Mail\StatusOrder;
@@ -19,6 +21,7 @@ use App\Services\AuditLogService;
 use App\Services\CulquiService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -319,8 +322,13 @@ class OrderController extends Controller
 
             // 4. Obtener y guardar la orden usando el ID recibido
             $orderId360 = $api360Response['data']['id'];
-            $orderInfo  = $this->orderService->getOrdertosave($orderId360, $uuid);
-            AuditLogService::log('api360_order_get_save', ['order_id' => $orderId360], $orderInfo);
+            $orderInfo = $this->orderService->getOrdertosave(
+                $orderId360,
+                $uuid,
+                Order::class,
+                Order::getfields360
+            );
+             AuditLogService::log('api360_order_get_save', ['order_id' => $orderId360], $orderInfo);
 
             // 5. Respuesta final con el pago y el pedido procesado correctamente
             return response()->json([
@@ -1404,5 +1412,93 @@ class OrderController extends Controller
             ],
         ]);
     }
+
+  
+
+    public function sincronizarOrders360(ListOrders360Request $request)
+    {
+        $uuid = $request->header('UUID');
+    
+        if ($uuid !== env('APP_UUID_DEMO_360')) {
+            return response()->json(['status' => 'unauthorized'], 401);
+        }
+    
+        // 🔹 Obtener fechas si están presentes en la request
+        $start = $request->input('start');
+        $end   = $request->input('end');
+    
+        // 🔹 Comando base
+       // $cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+        $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+
+        // 🔹 Añadir opciones correctamente formateadas
+        if ($start) {
+            $cmd .= ' --start=' . escapeshellarg($start);
+        }
+    
+        if ($end) {
+            $cmd .= ' --end=' . escapeshellarg($end);
+        }
+    
+        // 🔹 Definir manejo de salida
+        $descriptorspec = [
+            0 => ['pipe', 'r'], // stdin
+            1 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stdout
+            2 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stderr
+        ];
+    
+        // 🔹 Ejecutar el comando en segundo plano (solo Windows con `start /B`)
+        // proc_open($cmd, $descriptorspec, $pipes);
+        $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+    
+        Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
+            'uuid'  => $uuid,
+            'start' => $start,
+            'end'   => $end,
+        ]);
+    
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
+        ]);
+    }
+
+    public function updatepedidos(UpdateOrderRequest $request)
+{
+    $updatedOrders = []; // Arreglo para almacenar los pedidos actualizados
+
+    // Procesar cada pedido en el arreglo 'orders'
+    foreach ($request->orders as $pedidoData) {
+        // Asegurarse de que 'order_id' esté disponible y renombrarlo a 'id'
+        if (isset($pedidoData['order_id'])) {
+            $pedidoData['id'] = $pedidoData['order_id']; // Renombrar 'order_id' a 'id'
+            unset($pedidoData['order_id']); // Eliminar 'order_id' para evitar conflictos
+        }
+
+        // Buscar el pedido por su 'id' (ahora 'order_id' se ha convertido en 'id')
+        $pedido = $this->api360Service->find_by_server_id(Order::class, $pedidoData['id']);
+        
+        if ($pedido) {
+            // Llamar al servicio para actualizar o crear el pedido
+            $this->orderService->update_or_create_item(
+                $pedidoData,  // Pasamos los datos del pedido con 'id' en lugar de 'order_id'
+                Order::class,
+                Order::getfields360
+            );
+
+            // Después de actualizar el pedido, lo agregamos al arreglo de órdenes actualizadas
+            $updatedOrders[] = $this->api360Service->find_by_server_id(Order::class, $pedidoData['id'])['data'];
+        
+        }
+    }
+
+    // Si se actualizaron órdenes correctamente, devolvemos las órdenes actualizadas
+    return response()->json([
+        'status' => true,
+        'message' => 'Órdenes actualizadas correctamente.',
+        'updated_orders' => ($updatedOrders), // Usamos la colección de OrderResource si es necesario
+    ]);
+}
+
 
 }
