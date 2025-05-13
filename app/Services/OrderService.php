@@ -120,12 +120,34 @@ class OrderService
         }
     }
 
+    public function createOrder(array $data): Order
+    {
+        $data['user_id'] = Auth::id();
+        $data['status']  = 'VERIFICANDO';
+    
+        $orderModel = new Order();
+        $fillableFields = $orderModel->getFillable();
+    
+        // Convertir arrays a JSON si están en los fillables
+        foreach ($data as $key => $value) {
+            if (in_array($key, $fillableFields) && is_array($value)) {
+                $data[$key] = json_encode($value);
+            }
+        }
+    
+        $filteredData = array_intersect_key($data, array_flip($fillableFields));
+    
+        return Order::create($filteredData);
+    }
+    
+    
+
     public function getOrdertosave(
         string $order_id,
         string $authorizationUuid,
         array $others_fields = [],
         string $modelClass = Order::class,
-        array $fields = Order::getfields360
+        array $fields = Order::getfields360,
     ) {
 
         try {
@@ -173,6 +195,62 @@ class OrderService
                 'status'  => false,
                 'message' => 'Error interno del servidor. Revisa el log.',
             ];
+        }
+    }  
+    
+    public function update_or_create_item(array $data, string $modelClass, array $fields): void
+    {
+        try {
+            $map = [
+                'zone_id'     => Zone::class,
+                'district_id' => District::class,
+                'branch_id'   => Sede::class,
+            ];
+
+            // Mapear zone_id, district_id, branch_id
+            foreach ($map as $key => $model) {
+                if (! empty($data[$key])) {
+                    $found = $this->api360Service->find_by_server_id($model, $data[$key]);
+
+                    if ($found) {
+                        $data[$key] = $found['data']->id;
+                    } else {
+                        unset($data[$key]); // No incluir si no se encuentra
+                    }
+                }
+            }
+
+            // Convertir arrays a JSON si existen
+            foreach (['customer', 'payments', 'products', 'invoices'] as $jsonField) {
+                if (isset($data[$jsonField]) && is_array($data[$jsonField])) {
+                    $data[$jsonField] = json_encode($data[$jsonField]);
+                }
+            }
+
+            // Verificar que 'id' exista en los datos antes de continuar
+            if (empty($data['id'])) {
+                Log::error("Missing 'id' in the data for model {$modelClass}", [
+                    'data'   => $data,
+                    'fields' => $fields,
+                ]);
+                return; // O lanzar una excepción si prefieres
+            }
+
+            // Realizar updateOrCreate si 'id' está presente
+            $modelClass::updateOrCreate(
+                ['server_id' => $data['id']], // Condición de búsqueda
+                collect($fields)
+                    ->filter(fn($f) => isset($data[$f]))       // Solo usar campos presentes
+                    ->mapWithKeys(fn($f) => [$f => $data[$f]]) // Mapear los campos
+                    ->toArray()
+            );
+
+        } catch (\Throwable $e) {
+            Log::error("Error in update_or_create_item for model {$modelClass}: " . $e->getMessage(), [
+                'data'   => $data,
+                'fields' => $fields,
+                'trace'  => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -222,11 +300,8 @@ class OrderService
         try {
             $url = "https://sistema.360sys.com.pe/api/online-store/{$route}";
 
-
-    
-
             $response = Http::timeout(120) // segundos
-    ->connectTimeout(30)->withHeaders([
+                ->connectTimeout(30)->withHeaders([
                 'Authorization' => $uuid,
                 'Accept'        => 'application/json',
             ])->get($url, $request->only('start', 'end'));
@@ -261,60 +336,6 @@ class OrderService
         }
     }
 
-    public function update_or_create_item(array $data, string $modelClass, array $fields): void
-    {
-        try {
-            $map = [
-                'zone_id'     => Zone::class,
-                'district_id' => District::class,
-                'branch_id'   => Sede::class,
-            ];
-
-            // Mapear zone_id, district_id, branch_id
-            foreach ($map as $key => $model) {
-                if (! empty($data[$key])) {
-                    $found = $this->api360Service->find_by_server_id($model, $data[$key]);
-
-                    if ($found['status']) {
-                        $data[$key] = $found['data']->id;
-                    } else {
-                        unset($data[$key]); // No incluir si no se encuentra
-                    }
-                }
-            }
-
-            // Convertir arrays a JSON si existen
-            foreach (['customer', 'payments', 'products', 'invoices'] as $jsonField) {
-                if (isset($data[$jsonField]) && is_array($data[$jsonField])) {
-                    $data[$jsonField] = json_encode($data[$jsonField]);
-                }
-            }
-
-            // Verificar que 'id' exista en los datos antes de continuar
-            if (empty($data['id'])) {
-                Log::error("Missing 'id' in the data for model {$modelClass}", [
-                    'data'   => $data,
-                    'fields' => $fields,
-                ]);
-                return; // O lanzar una excepción si prefieres
-            }
-
-            // Realizar updateOrCreate si 'id' está presente
-            $modelClass::updateOrCreate(
-                ['server_id' => $data['id']], // Condición de búsqueda
-                collect($fields)
-                    ->filter(fn($f) => isset($data[$f]))       // Solo usar campos presentes
-                    ->mapWithKeys(fn($f) => [$f => $data[$f]]) // Mapear los campos
-                    ->toArray()
-            );
-
-        } catch (\Throwable $e) {
-            Log::error("Error in update_or_create_item for model {$modelClass}: " . $e->getMessage(), [
-                'data'   => $data,
-                'fields' => $fields,
-                'trace'  => $e->getTraceAsString(),
-            ]);
-        }
-    }
+  
 
 }

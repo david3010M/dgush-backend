@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Order\ListOrders360Request;
+use App\Http\Requests\Order\PayOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
@@ -239,10 +240,16 @@ class OrderController extends Controller
  * )
  */
 
-    public function store(StoreOrderRequest $request)
+    public function pay_order($id_order, PayOrderRequest $request)
     {
         try {
 
+            $order = Order::find($id_order);
+            if (! $order) {
+                return response()->json([
+                    'error' => 'Orden No encontrada',
+                ], 422);
+            }
             //VALIDAR CALCULOS ANTES DE HACER EL CARGO
             $calculatedValues = $this->orderService->calculate($request);
 
@@ -325,7 +332,11 @@ class OrderController extends Controller
 
             // 4. Obtener y guardar la orden usando el ID recibido
             $orderId360 = $api360Response['data']['id'];
-            $orderInfo  = $this->orderService->getOrdertosave(
+            //actualizar id de servide_id de la orden
+            $order->serverid=$orderId360;
+            $order->save();
+            $orderInfo = $this->orderService->getOrdertosave(
+
                 $orderId360,
                 $uuid,
                 $data_adicional,
@@ -344,6 +355,80 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             AuditLogService::log('exception_caught', request()->all(), ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error inesperado: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function store(StoreOrderRequest $request)
+    {
+        try {
+
+            // Validar cálculos antes de hacer el cargo
+            $calculatedValues = $this->orderService->calculate($request);
+
+            // Verificar si hubo algún error en el cálculo
+            if (! empty($calculatedValues['error'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $calculatedValues['message'] ?? 'Error en los cálculos',
+                ], 400);
+            }
+
+            // Obtener datos validados y combinar con los cálculos
+
+            $total         = $calculatedValues['total'] ?? 0;
+            $shipping_cost = $calculatedValues['sendCost'] ?? 0;
+
+            $payload = [
+                "mode"             => $request->mode, //RECOJO, DELIVERY, ENVIO
+                "scheduled_date"   => $request->scheduled_date,
+                "cellphone_number" => $request->cellphone,
+                "email_address"    => $request->email_address,
+                "address"          => $request->address,
+                "zone_id"          => $request->zone_id,     // Requerido cuando el modo es DELIVERY
+                "district_id"      => $request->district_id, // Requerido cuando el modo es ENVIO
+                "branch_id"        => $request->branch_id,   // Requerido cuando el modo es RECOJO
+                "customer"         => [
+                    "dni"        => $request->customer_dni,
+                    "first_name" => $request->customer_first_name,
+                    "last_name"  => $request->customer_last_name,
+                ],
+                "notes"            => $request->notes,
+                "total"            => $total, //calcular de los detalles
+                "currency"         => "PEN",
+                "payment"          => [
+                    "method"        => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
+                    "pos"           => "CULQI",                               // Opciones válidas: IZIPAY, NIUBIZ, CULQI
+                    "card"          => [
+                        "name" => $request->payment_card_name ?? "VISA",    // Opciones válidas: VISA, MASTERCARD, AMERICAN EXPRESS, DINERS CLUB INTERNATIONAL
+                        "type" => $request->payment_card_type ?? "CREDITO", // Opciones válidas: CREDITO, DEBITO
+                    ],
+                    "digitalwallet" => $request->payment_digitalwallet ?? null, // Opcional, puede ser YAPE o null
+                ],
+//verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
+                "shipping_cost"    => $shipping_cost ?? 0, // puede ser 0, no negativo
+
+                "products"         => $request->products ?? [],
+            ];
+
+            // Crear la orden
+            $order = $this->orderService->createOrder($payload);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Orden creada correctamente',
+                'order'   => $order,
+            ], 201);
+
+        } catch (\Exception $e) {
+            AuditLogService::log('exception_caught', $request->all(), [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error inesperado: ' . $e->getMessage(),

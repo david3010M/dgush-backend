@@ -767,12 +767,12 @@ class ProductController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/UpdateStockRequest")
      *     ),
      *     @OA\Parameter(
- *         name="UUID",
- *         in="header",
- *         required=true,
- *         description="UUID autorizado para ejecutar la sincronización",
- *         @OA\Schema(type="string", example="abc-123-xyz-789")
- *     ),
+     *         name="UUID",
+     *         in="header",
+     *         required=true,
+     *         description="UUID autorizado para ejecutar la sincronización",
+     *         @OA\Schema(type="string", example="abc-123-xyz-789")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Stock actualizado",
@@ -815,48 +815,46 @@ class ProductController extends Controller
     }
 
     /**
- * SINCRONIZAR DATOS 360
- *
- * @OA\Post(
- *     path="/dgush-backend/public/api/products/sincronizar-datos",
- *     tags={"360"},
- *     summary="Sincroniza datos desde el sistema 360",
- *     security={{"bearerAuth": {}}},
- *     @OA\Parameter(
- *         name="UUID",
- *         in="header",
- *         required=true,
- *         description="UUID autorizado para ejecutar la sincronización",
- *         @OA\Schema(type="string", example="abc-123-xyz-789")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Sincronización iniciada",
- *         @OA\JsonContent(
- *             @OA\Property(property="status", type="string", example="success"),
- *             @OA\Property(property="message", type="string", example="Sincronización 360 iniciada con éxito.")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(property="status", type="string", example="unauthorized")
- *         )
- *     )
- * )
- */
+     * SINCRONIZAR DATOS 360
+     *
+     * @OA\Post(
+     *     path="/dgush-backend/public/api/products/sincronizar-datos",
+     *     tags={"360"},
+     *     summary="Sincroniza datos desde el sistema 360",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="UUID",
+     *         in="header",
+     *         required=true,
+     *         description="UUID autorizado para ejecutar la sincronización",
+     *         @OA\Schema(type="string", example="abc-123-xyz-789")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sincronización iniciada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Sincronización 360 iniciada con éxito.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="unauthorized")
+     *         )
+     *     )
+     * )
+     */
 
     public function sincronizarDatos360(Request $request)
     {
-        if ($request->header('Authorization') !== env('APP_UUID')) {
-            return response()->json(['status' => 'unauthorized'], 401);
-        }
 
         $uuid = $request->header('Authorization'); // Puedes usar este como uuid definitivo
 
         // 🔹 Incluir el UUID como argumento en el comando
         $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
+        //$cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
 
         $descriptorspec = [
             0 => ['pipe', 'r'],                                                    // stdin
@@ -865,6 +863,7 @@ class ProductController extends Controller
         ];
 
         $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+        // proc_open($cmd, $descriptorspec, $pipes);
         Log::info("Sincronización 360 enviada al fondo para UUID: $uuid");
 
         return response()->json([

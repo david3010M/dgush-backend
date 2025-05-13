@@ -421,10 +421,13 @@ class Api360Service
         return $updatedDetails;
     }
 
-    public function update_stock_consultando_360(array $data, $authorizationUuid)
+    public function update_stock_consultando_360(array $data, $authorizationUuid='')
     {
         // Consultar el stock desde la API externa
-        $authorizationUuid = $authorizationUuid ?? env('APP_UUID');
+
+        if(empty($authorizationUuid)){
+            $authorizationUuid =env('APP_UUID');
+        }
 
         $endpoint = 'https://sistema.360sys.com.pe/api/online-store/products/' . $data['product_id'] . '/stock';
 
@@ -444,7 +447,6 @@ class Api360Service
             $product = Product::firstWhere('server_id', $data['product_id']);
             $color   = Color::firstWhere('server_id', $data['color_id']);
             $size    = Size::firstWhere('server_id', $data['size_id']);
-
             // Actualizar o crear el registro de ProductDetails
             return ProductDetails::updateOrCreate(
                 [

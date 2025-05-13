@@ -400,5 +400,6 @@ Route::get('getdata-sincronizarDatos360', [ProductController::class, 'sincroniza
 
 //stock
 Route::post('products/actualizar-stock', [ProductController::class, 'actualizar_stock_360']);
+
 //actualizar campos pedido
 Route::post('orders/actualizarcampos', [OrderController::class, 'updatepedidos']);

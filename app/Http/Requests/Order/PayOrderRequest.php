@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests\Order;
 
+use App\Http\Requests\PayRequest;
 use App\Http\Requests\StoreRequest;
 use App\Models\Color;
 use App\Models\Product;
@@ -9,7 +10,7 @@ use App\Services\Api360Service;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class StoreOrderRequest extends StoreRequest
+class PayOrderRequest extends StoreRequest
 {
     public function authorize(): bool
     {
@@ -17,7 +18,7 @@ class StoreOrderRequest extends StoreRequest
     }
 /**
  * @OA\Schema(
- *     schema="360StoreOrderRequest",
+ *     schema="360PayOrderRequest",
  *     type="object",
  *     required={
  *         "amount", "description", "email", "token", "mode", "cellphone", "email_address",
@@ -80,10 +81,10 @@ class StoreOrderRequest extends StoreRequest
     {
         return [
                                                                            // Validaciones para el cargo con Culqi
-            'amount'                => ['nullable', 'numeric', 'min:600'], // Monto debe ser numérico y mayor que 0
-            'description'           => ['nullable', 'string', 'max:255'],  // Descripción es obligatoria y con un límite de caracteres
-            'email'                 => ['nullable', 'email'],              // Email debe ser válido
-            'token'                 => ['nullable', 'string'],             // Token no debe estar vacío
+            'amount'                => ['required', 'numeric', 'min:600'], // Monto debe ser numérico y mayor que 0
+            'description'           => ['required', 'string', 'max:255'],  // Descripción es obligatoria y con un límite de caracteres
+            'email'                 => ['required', 'email'],              // Email debe ser válido
+            'token'                 => ['required', 'string'],             // Token no debe estar vacío
 
             //cupon
             'coupon_id'             => ['nullable', 'integer', Rule::exists('coupon', 'id')],
@@ -134,8 +135,8 @@ class StoreOrderRequest extends StoreRequest
             // Products
             'products'              => ['required', 'array', 'min:1'],
             'products.*.id'         => ['required', 'integer', Rule::exists('product', 'server_id')],
-            'products.*.color_id'   => ['required', 'integer', Rule::exists('color', 'server_id')],
-            'products.*.size_id'    => ['required', 'integer', Rule::exists('size', 'server_id')],
+            'products.*.color_id'   => ['nullable', 'integer', Rule::exists('color', 'server_id')],
+            'products.*.size_id'    => ['nullable', 'integer', Rule::exists('size', 'server_id')],
             'products.*.quantity'   => ['required', 'integer', 'min:1'],
             'products.*.price'      => ['required', 'numeric', 'min:0'],
             'products.*.notes'      => ['nullable', 'string'],
@@ -158,7 +159,6 @@ class StoreOrderRequest extends StoreRequest
 
             //cupon
             'coupon_id.nullable'            => 'El cupón puede estar vacío.',
-
             'coupon_id.integer'             => 'El cupón debe ser un valor numérico entero.',
             'coupon_id.exists'              => 'El cupón especificado no existe en nuestros registros.',
 
@@ -206,10 +206,8 @@ class StoreOrderRequest extends StoreRequest
             'products.*.id.required'        => 'El ID del producto es obligatorio.',
             'products.*.id.integer'         => 'El ID del producto debe ser un número.',
             'products.*.id.exists'          => 'El producto no existe.',
-            'products.*.color_id.required'  => 'El ID del color es obligatorio.',
             'products.*.color_id.integer'   => 'El ID del color debe ser un número.',
             'products.*.color_id.exists'    => 'El color seleccionado no es válido.',
-            'products.*.size_id.required'   => 'El ID de la talla es obligatorio.',
             'products.*.size_id.integer'    => 'El ID de la talla debe ser un número.',
             'products.*.size_id.exists'     => 'La talla seleccionada no es válida.',
             'products.*.quantity.required'  => 'La cantidad es obligatoria.',
@@ -221,7 +219,6 @@ class StoreOrderRequest extends StoreRequest
             'products.*.notes.string'       => 'Las notas del producto deben ser texto.',
         ];
     }
-
     public function prepareForValidation()
     {
         $data = $this->all();
@@ -279,5 +276,6 @@ class StoreOrderRequest extends StoreRequest
             }
         });
     }
+
 
 }
