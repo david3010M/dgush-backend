@@ -39,6 +39,8 @@ class OrderResource extends JsonResource
             'cancelado'           => 7,
         ];
 
+        
+
         return [
             'id'               => $this->id,
             'number'           => $this->number,
@@ -60,7 +62,7 @@ class OrderResource extends JsonResource
             'user'             => $this->user ? new UserResource($this->user) : null,
 
             //campos agreegados
-            'invoices'          => $this->invoices ?? null,
+            'invoices'         => $this->invoices ? json_decode($this->invoices, true) : null,
             'quantity'         => $this->quantity ?? null,
             'user_id'          => $this->user_id ?? null,
             'stage'            => $this->stage ?? null,
@@ -80,7 +82,8 @@ class OrderResource extends JsonResource
             'currency'         => $this->currency ?? null,
             'payment_date'     => $this->payment_date ?? null,
             'customer'         => $this->customer ? json_decode($this->customer, true) : null,
-            'payments'         => $this->payments ? json_decode($this->payments, true) : null,
+           'payments' => $this->payments ? json_decode($this->payments, true) : [],
+
             'products'         => $this->products ? json_decode($this->products, true) : null,
         ];
     }

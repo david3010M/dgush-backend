@@ -123,12 +123,14 @@ class OrderService
     public function getOrdertosave(
         string $order_id,
         string $authorizationUuid,
+        array $others_fields = [],
         string $modelClass = Order::class,
         array $fields = Order::getfields360
     ) {
+
         try {
-            $url               = "https://sistema.360sys.com.pe/api/online-store/order/" . $order_id;
-            $authorizationUuid = ! empty($authorizationUuid) ? $authorizationUuid : env('APP_UUID_DEMO_360');
+            $url               = "https://sistema.360sys.com.pe/api/online-store/orders/" . $order_id;
+            $authorizationUuid = ! empty($authorizationUuid) ? $authorizationUuid : env('APP_UUID');
 
             $response = Http::withHeaders([
                 'Authorization' => $authorizationUuid,
@@ -140,6 +142,12 @@ class OrderService
             if ($response->successful() && isset($responseData['data']['order'])) {
                 $order            = $responseData['data']['order'];
                 $order['user_id'] = Auth::user()->id;
+                if ($others_fields != []) {
+                    $order['coupon_id'] = $others_fields['coupon_id'];
+                    $fields             = array_merge($fields, [
+                        "coupon_id" => "coupon_id",
+                    ]);
+                }
 
                 // Guardar o actualizar usando método genérico
                 $this->update_or_create_item($order, $modelClass, $fields);
@@ -147,7 +155,7 @@ class OrderService
                 return [
                     'status'  => true,
                     'message' => 'Pedido registrado exitosamente.',
-                    'data'    => $responseData['data'],
+                    'data'    => ($order),
                 ];
             }
 
@@ -272,7 +280,7 @@ class OrderService
             }
 
             // Convertir arrays a JSON si existen
-            foreach (['customer', 'payments', 'products'] as $jsonField) {
+            foreach (['customer', 'payments', 'products', 'invoices'] as $jsonField) {
                 if (isset($data[$jsonField]) && is_array($data[$jsonField])) {
                     $data[$jsonField] = json_encode($data[$jsonField]);
                 }

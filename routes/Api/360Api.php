@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SedeController;
 use App\Http\Controllers\SizeController;
@@ -23,5 +24,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::put('products/{id}/consultar-stock', [ProductController::class, 'consultar_stock_360']);
 
+    //API LIBRE PARA SER USADA DESDE 360 PARA SINCRONIZAR ORDENES
+    Route::get('getdata-sincronizarOrdenes360', [OrderController::class, 'sincronizarOrders360']);
+    Route::get('orden/{id}/actualizar360', [OrderController::class, 'sincronizar_orden_by_id']);
 
 });
