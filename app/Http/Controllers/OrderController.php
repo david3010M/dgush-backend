@@ -1437,7 +1437,7 @@ class OrderController extends Controller
 
     public function sincronizarOrders360(ListOrders360Request $request)
     {
-        $uuid = $request->header('UUID') ?? env('APP_UUID_DEMO_360');
+        $uuid = $request->header('UUID') ?? env('APP_UUID');
 
         // 🔹 Obtener fechas si están presentes en la request
         $start = $request->input('start');
