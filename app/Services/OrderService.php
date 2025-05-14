@@ -2,10 +2,14 @@
 namespace App\Services;
 
 use App\Jobs\FetchSincronizarOrdenesJob;
+use App\Models\Color;
 use App\Models\Coupon;
 use App\Models\District;
 use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\Product;
 use App\Models\Sede;
+use App\Models\Size;
 use App\Models\Zone;
 use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
@@ -123,24 +127,72 @@ class OrderService
     public function createOrder(array $data): Order
     {
         $data['user_id'] = Auth::id();
-        $data['status']  = 'VERIFICANDO';
-    
-        $orderModel = new Order();
-        $fillableFields = $orderModel->getFillable();
-    
-        // Convertir arrays a JSON si están en los fillables
-        foreach ($data as $key => $value) {
-            if (in_array($key, $fillableFields) && is_array($value)) {
-                $data[$key] = json_encode($value);
+        $data['status']  = 'verificado';
+
+        // Mapear IDs de zona, distrito y sede
+        foreach ([
+            'zone_id'     => Zone::class,
+            'district_id' => District::class,
+            'branch_id'   => Sede::class,
+        ] as $key => $model) {
+            if (! empty($data[$key]) && $found = $this->api360Service->find_by_server_id($model, $data[$key])) {
+                $data[$key] = $found['data']->id;
+            } else {
+                unset($data[$key]);
             }
         }
-    
-        $filteredData = array_intersect_key($data, array_flip($fillableFields));
-    
-        return Order::create($filteredData);
+
+        // Convertir arrays a JSON
+        foreach (['customer', 'payments', 'products', 'invoices'] as $jsonField) {
+            if (isset($data[$jsonField]) && is_array($data[$jsonField])) {
+                $data[$jsonField] = json_encode($data[$jsonField]);
+            }
+        }
+
+        $fillableFields = (new Order())->getFillable();
+        $filteredData   = array_intersect_key($data, array_flip($fillableFields));
+
+        $order = Order::create($filteredData);
+
+        // Procesar productos del pedido
+        $productDetails = isset($data['products']) ? json_decode($data['products'], true) : [];
+
+        foreach ($productDetails as $item) {
+            // Mapeo de server_id a IDs locales
+            $ids = [
+                'product_id' => Product::class,
+                'color_id'   => Color::class,
+                'talla_id'   => Size::class,
+            ];
+        
+            $mappedIds = [];
+            foreach ($ids as $key => $model) {
+                $serverId = match ($key) {
+                    'product_id' => $item['id']        ?? null,
+                    'color_id'   => $item['color_id']  ?? null,
+                    'talla_id'   => $item['size_id']   ?? null, // <-- size_id llega, se guarda como talla_id
+                };
+        
+                $mappedIds[$key] = !empty($serverId) && ($found = $this->api360Service->find_by_server_id($model, $serverId))
+                    ? $found['data']->id
+                    : null;
+            }
+        
+            // Crear detalle de orden
+            OrderDetail::create([
+                'order_id'   => $order->id,
+                'product_id' => $mappedIds['product_id'],
+                'color_id'   => $mappedIds['color_id'],
+                'talla_id'   => $mappedIds['talla_id'],
+                'quantity'   => (int) ($item['quantity'] ?? 0),
+                'price'      => $item['price'] ?? 0,
+                'note'       => $item['notes'] ?? null,
+            ]);
+        }
+        
+
+        return $order;
     }
-    
-    
 
     public function getOrdertosave(
         string $order_id,
@@ -196,8 +248,8 @@ class OrderService
                 'message' => 'Error interno del servidor. Revisa el log.',
             ];
         }
-    }  
-    
+    }
+
     public function update_or_create_item(array $data, string $modelClass, array $fields): void
     {
         try {
@@ -335,7 +387,5 @@ class OrderService
             ], 500);
         }
     }
-
-  
 
 }

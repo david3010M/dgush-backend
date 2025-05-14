@@ -51,7 +51,7 @@ class OrderResource extends JsonResource
             'status'           => $this->status,
             'statusNumber'     => $statusDictionary[$this->status],
             'description'      => $this->description ?? '-',
-            'image'            => $this->orderItems[0] ? $this->orderItems[0]->productDetail ? $this->orderItems[0]->productDetail->product->image : null : null,
+            'image'            => null,
             'date'             => $this->date,
             'shippingDate'     => $this->shippingDate ? Carbon::parse($this->shippingDate)->format('Y-m-d') : null,
             'deliveryDate'     => $this->deliveryDate ? Carbon::parse($this->deliveryDate)->format('Y-m-d') : null,
@@ -85,6 +85,9 @@ class OrderResource extends JsonResource
            'payments' => $this->payments ? json_decode($this->payments, true) : [],
 
             'products'         => $this->products ? json_decode($this->products, true) : null,
+            'order_details' => OrderDetailResource::collection(
+                collect($this->orderDetails ?: [])
+            ),
         ];
     }
 }

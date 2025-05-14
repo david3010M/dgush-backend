@@ -420,7 +420,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Orden creada correctamente',
-                'order'   => $order,
+                'order'   => new OrderResource(Order::find($order->id)),
             ], 201);
 
         } catch (\Exception $e) {

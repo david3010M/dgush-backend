@@ -33,7 +33,7 @@ class ProductResource extends JsonResource
             'image'              => $this->image ? (new ImageResource($this->image))->url : url('images/placeholder.svg'),
             'status_server'      => $this->status_server,
             'currency'           => $this->currency,
-            'server_id'          => $this->sever_id,
+            'server_id'          => $this->server_id,
         ];
     }
 }
