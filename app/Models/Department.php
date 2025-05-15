@@ -23,9 +23,9 @@ class Department extends Model
 
     protected $table = 'department';
 
-    protected $fillable = ['name','location_code','server_id'];
+    protected $fillable = ['name', 'location_code', 'server_id'];
     const getfields360 = [
-        'name'       => 'name',
+        'name' => 'name',
         'location_code' => 'location_code',
     ];
 

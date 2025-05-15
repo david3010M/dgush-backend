@@ -138,7 +138,7 @@ class OrderController extends Controller
             ->when($request->filled('date'), function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
                     $q->whereDate('date', $request->input('date'))
-                      ->orWhereDate('created_at', $request->input('date'));
+                        ->orWhereDate('created_at', $request->input('date'));
                 });
             });
 
@@ -394,7 +394,6 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         try {
-
             // Validar cálculos antes de hacer el cargo
             $calculatedValues = $this->orderService->calculate($request);
 

@@ -26,9 +26,9 @@ class DatabaseSeeder extends Seeder
         $this->call(OptionMenuSeeder::class);
         $this->call(AccessSeeder::class);
 
-        $this->call(DepartmentSeeder::class);
-        $this->call(ProvinceSeeder::class);
-        $this->call(DistrictSeeder::class);
+        // $this->call(DepartmentSeeder::class);
+        // $this->call(ProvinceSeeder::class);
+        // $this->call(DistrictSeeder::class);
 
         $this->call(PersonSeeder::class);
         $this->call(UserSeeder::class);

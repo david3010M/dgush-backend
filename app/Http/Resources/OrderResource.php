@@ -81,6 +81,7 @@ class OrderResource extends JsonResource
             'district_id' => $this->district_id ?? null,
             'district' => $this->district_id ? $this->district->name : null,
             'branch_id' => $this->branch_id ?? null,
+            'branch' => $this->branch_id ? $this->sede->name : null,
             'notes' => $this->notes ?? null,
             'currency' => $this->currency ?? null,
             'payment_date' => $this->payment_date ?? null,

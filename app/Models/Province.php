@@ -24,10 +24,10 @@ class Province extends Model
 
     protected $table = 'province';
 
-    protected $fillable = ['name','location_code','department_id','server_id'];
+    protected $fillable = ['name', 'location_code', 'department_id', 'server_id'];
 
     const getfields360 = [
-        'name'       => 'name',
+        'name' => 'name',
         'location_code' => 'location_code',
     ];
 
@@ -39,7 +39,7 @@ class Province extends Model
     }
     public function department()
     {
-        return $this->belongsTo(Department::class,'department_id');
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
 }

@@ -93,7 +93,6 @@ class Order extends Model
         "destiny",
         "zone_id",
         "district_id",
-        "branch_id",
         "notes",
         "currency",
         "payment_date",
@@ -179,6 +178,11 @@ class Order extends Model
     public function district()
     {
         return $this->belongsTo(District::class);
+    }
+
+    public function sede()
+    {
+        return $this->belongsTo(Sede::class, 'branch_id');
     }
 
 }
