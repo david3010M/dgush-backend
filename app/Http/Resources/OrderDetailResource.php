@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 
+use App\Models\Image;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,15 +29,25 @@ class OrderDetailResource extends JsonResource
 {
     public function toArray($request)
     {
+
+        $image = Image::where('product_id', $this->product_id)->where('color_id', $this->color_id)->first();
+        if ($image) {
+            $imageUrl = $image->url;
+        } else {
+            $product = $this->product;
+            $imageUrl = $product->image ? $product->image->url : null;
+        }
+
         return [
-            'id'         => $this->id,
-            'order_id'   => $this->order_id,
-            'product'    => new ProductResource($this->product),
-            'color'      => new ColorResource($this->color),
-            'size'       => new SizeResource($this->size),
-            'quantity'   => $this->quantity,
-            'price'      => $this->price,
-            'note'       => $this->note,
+            'id' => $this->id,
+            'order_id' => $this->order_id,
+            'product' => new ProductResource($this->product),
+            'color' => new ColorResource($this->color),
+            'size' => new SizeResource($this->size),
+            'quantity' => $this->quantity,
+            'price' => $this->price,
+            'image' => $imageUrl,
+            'note' => $this->note,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
