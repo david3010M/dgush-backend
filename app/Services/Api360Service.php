@@ -56,7 +56,7 @@ class Api360Service
         } catch (\Throwable $e) {
             Log::error('Error en sincronización de datos 360', [
                 'message' => $e->getMessage(),
-                'uuid'    => $uuid,
+                'uuid' => $uuid,
             ]);
         }
     }
@@ -108,14 +108,16 @@ class Api360Service
         );
     }
     public function fetch_sedes(?string $uuid = '')
-    {return $this->fetchDataAndSync(
-        'branches',
-        'branches',
-        Sede::class,
-        Sede::getfields360,
-        $uuid,
-        ['district_id' => District::class]// Relación dinámica
-    );}
+    {
+        return $this->fetchDataAndSync(
+            'branches',
+            'branches',
+            Sede::class,
+            Sede::getfields360,
+            $uuid,
+            ['district_id' => District::class]// Relación dinámica
+        );
+    }
 
     public function fetch_category(?string $uuid = '')
     {
@@ -183,8 +185,8 @@ class Api360Service
         array $relations = []      // Relaciones externas (campo => modelo)
     ) {
         try {
-            $endpoint          = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
+            $endpoint = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
+            $authorizationUiid = !empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
 
             $response = Http::withHeaders(['Authorization' => $authorizationUiid])->get($endpoint);
 
@@ -197,7 +199,7 @@ class Api360Service
                     $items = [$items];
                 }
 
-                if (! empty($items)) {
+                if (!empty($items)) {
                     foreach ($items as $item) {
 
                         $processedFields = [];
@@ -208,7 +210,7 @@ class Api360Service
                         foreach ($relations as $field => $relatedModel) {
 
                             if (isset($item[$field])) {
-                                $relatedInstance         = $relatedModel::where('server_id', $item[$field])->first();
+                                $relatedInstance = $relatedModel::where('server_id', $item[$field])->first();
                                 $processedFields[$field] = $relatedInstance?->id ?? null;
                             }
                         }
@@ -220,27 +222,27 @@ class Api360Service
                     }
 
                     return [
-                        'status'  => true,
+                        'status' => true,
                         'message' => "Datos sincronizados correctamente para el modelo {$modelClass}.",
-                        'data'    => $data['data'],
+                        'data' => $data['data'],
                     ];
                 }
 
                 return [
-                    'status'  => false,
+                    'status' => false,
                     'message' => "No se encontraron datos en la clave '{$dataKey}'.",
-                    'data'    => [],
+                    'data' => [],
                 ];
             }
 
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'La solicitud a la API no fue exitosa.',
-                'data'    => [],
+                'data' => [],
             ];
         } catch (\Exception $e) {
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'Error interno: ' . $e->getMessage(),
             ];
         }
@@ -256,23 +258,23 @@ class Api360Service
         array $relations = []
     ) {
         try {
-            $endpoint          = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
+            $endpoint = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
+            $authorizationUiid = !empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID');
 
             $response = Http::timeout(120) // segundos
-    ->connectTimeout(30)
-    ->withHeaders(['Authorization' => $authorizationUiid])
-    ->get($endpoint);
+                ->connectTimeout(30)
+                ->withHeaders(['Authorization' => $authorizationUiid])
+                ->get($endpoint);
 
             if ($response->successful()) {
-                $data  = $response->json();
+                $data = $response->json();
                 $items = $data['data'][$dataKey] ?? [];
 
                 if (isset($items['id'])) {
                     $items = [$items];
                 }
 
-                if (! empty($items)) {
+                if (!empty($items)) {
                     foreach ($items as $item) {
                         $processedFields = [];
                         foreach ($fields as $dbField => $apiField) {
@@ -282,14 +284,14 @@ class Api360Service
                         foreach ($relations as $field => $relatedModel) {
 
                             if (isset($item[$field])) {
-                                $relatedInstance                   = $relatedModel::where('server_id', $item[$field])->first();
+                                $relatedInstance = $relatedModel::where('server_id', $item[$field])->first();
                                 $processedFields['subcategory_id'] = $relatedInstance?->id ?? null;
                             }
                         }
 
                         // Procesar precios
                         $price1 = $price2 = $price12 = 0;
-                        if (! empty($item['prices'])) {
+                        if (!empty($item['prices'])) {
                             foreach ($item['prices'] as $priceData) {
                                 if ($priceData['quantity'] <= 2) {
                                     $price1 = $priceData['price'];
@@ -301,8 +303,8 @@ class Api360Service
                             }
                         }
                         $processedFields = array_merge($processedFields, [
-                            'price1'  => $price1,
-                            'price2'  => $price2,
+                            'price1' => $price1,
+                            'price2' => $price2,
                             'price12' => $price12,
                         ]);
                         $processedFields['price12'] = $price12;
@@ -314,11 +316,11 @@ class Api360Service
 
                         // Procesar imágenes
                         foreach (['photo', 'photo2', 'photo3'] as $photoField) {
-                            if (! empty($item[$photoField])) {
+                            if (!empty($item[$photoField])) {
                                 $imageName = basename($item[$photoField]);
                                 Image::updateOrCreate(
                                     [
-                                        'url'        => $item[$photoField],
+                                        'url' => $item[$photoField],
                                         'product_id' => $product->id,
                                     ],
                                     [
@@ -340,8 +342,8 @@ class Api360Service
                                             ProductDetails::updateOrCreate(
                                                 [
                                                     'product_id' => $product->id,
-                                                    'color_id'   => $colorInstance->id,
-                                                    'size_id'    => $sizeInstance->id,
+                                                    'color_id' => $colorInstance->id,
+                                                    'size_id' => $sizeInstance->id,
                                                 ],
                                                 ['stock' => $size['stock']]
                                             );
@@ -350,14 +352,14 @@ class Api360Service
 
                                 }
 
-                                if (! empty($color['images'])) {
+                                if (!empty($color['images'])) {
                                     foreach ($color['images'] as $imageUrl) {
                                         $imageName = basename($imageUrl);
                                         Image::updateOrCreate(
                                             [
-                                                'url'        => $imageUrl,
+                                                'url' => $imageUrl,
                                                 'product_id' => $product->id,
-                                                'color_id'   => $colorInstance->id,
+                                                'color_id' => $colorInstance->id,
                                             ],
                                             [
                                                 'name' => $imageName,
@@ -370,27 +372,27 @@ class Api360Service
 
                     }
                     return [
-                        'status'  => true,
+                        'status' => true,
                         'message' => "Datos sincronizados correctamente para el modelo {$modelClass}.",
-                        'data'    => $data['data'],
+                        'data' => $data['data'],
                     ];
                 }
 
                 return [
-                    'status'  => false,
+                    'status' => false,
                     'message' => "No se encontraron datos en la clave '{$dataKey}'.",
-                    'data'    => [],
+                    'data' => [],
                 ];
             }
 
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'La solicitud a la API no fue exitosa.',
-                'data'    => [],
+                'data' => [],
             ];
         } catch (\Exception $e) {
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'Error interno: ' . $e->getMessage(),
             ];
         }
@@ -402,15 +404,15 @@ class Api360Service
 
         foreach ($data['items'] as $item) {
             $product = Product::firstWhere('server_id', $item['product_id']);
-            $color   = Color::firstWhere('server_id', $item['color_id']);
-            $size    = Size::firstWhere('server_id', $item['size_id']);
+            $color = Color::firstWhere('server_id', $item['color_id']);
+            $size = Size::firstWhere('server_id', $item['size_id']);
 
             if ($product && $color && $size) {
                 $detail = ProductDetails::updateOrCreate(
                     [
                         'product_id' => $product->id,
-                        'color_id'   => $color->id,
-                        'size_id'    => $size->id,
+                        'color_id' => $color->id,
+                        'size_id' => $size->id,
                     ],
                     ['stock' => $item['stock']]
                 );
@@ -421,12 +423,12 @@ class Api360Service
         return $updatedDetails;
     }
 
-    public function update_stock_consultando_360(array $data, $authorizationUuid='')
+    public function update_stock_consultando_360(array $data, $authorizationUuid = '')
     {
         // Consultar el stock desde la API externa
 
-        if(empty($authorizationUuid)){
-            $authorizationUuid =env('APP_UUID');
+        if (empty($authorizationUuid)) {
+            $authorizationUuid = env('APP_UUID');
         }
 
         $endpoint = 'https://sistema.360sys.com.pe/api/online-store/products/' . $data['product_id'] . '/stock';
@@ -434,25 +436,25 @@ class Api360Service
         $response = Http::withHeaders([
             'Authorization' => $authorizationUuid,
         ])->get($endpoint, [
-            'color_id' => $data['color_id'],
-            'size_id'  => $data['size_id'],
-        ]);
+                    'color_id' => $data['color_id'],
+                    'size_id' => $data['size_id'],
+                ]);
 
         // Verificar que la respuesta sea exitosa
         if ($response->successful()) {
-                                                    // Obtener el stock desde la respuesta
+            // Obtener el stock desde la respuesta
             $apiStock = $response->json()['stock']; // Suponiendo que el campo de stock es 'stock'
 
             // Obtener los detalles del producto, color y tamaño
             $product = Product::firstWhere('server_id', $data['product_id']);
-            $color   = Color::firstWhere('server_id', $data['color_id']);
-            $size    = Size::firstWhere('server_id', $data['size_id']);
+            $color = Color::firstWhere('server_id', $data['color_id']);
+            $size = Size::firstWhere('server_id', $data['size_id']);
             // Actualizar o crear el registro de ProductDetails
             return ProductDetails::updateOrCreate(
                 [
                     'product_id' => $product->id,
-                    'color_id'   => $color->id,
-                    'size_id'    => $size->id,
+                    'color_id' => $color->id,
+                    'size_id' => $size->id,
                 ],
                 ['stock' => $apiStock]// Usamos el stock consultado de la API
             );
@@ -466,7 +468,7 @@ class Api360Service
     {
         $data = $modelClass::where('server_id', $id)->first();
         return $data
-        ? ['status' => true, 'data' => $data]
-        : ['status' => false, 'data' => [],'model' => $modelClass, 'message' => "No se encontró server_id: {$id} en {$modelClass}"];
+            ? ['status' => true, 'data' => $data]
+            : ['status' => false, 'data' => [], 'model' => $modelClass, 'message' => "No se encontró server_id: {$id} en {$modelClass}"];
     }
 }

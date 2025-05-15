@@ -85,18 +85,6 @@ class Order extends Model
         'bill_number',
         'server_id',
         "scheduled_date",
-        "end_date", 
-        "mode",             
-        "cellphone_number", 
-        "email_address",    
-        "address",          
-        "destiny",          
-        "zone_id",          
-        "district_id",      
-        "branch_id",        
-        "notes",            
-        "currency",         
-        "payment_date",
         "end_date",
         "mode",
         "cellphone_number",
@@ -107,6 +95,17 @@ class Order extends Model
         "district_id",
         "branch_id",
         "notes",
+        "currency",
+        "payment_date",
+        "end_date",
+        "mode",
+        "cellphone_number",
+        "email_address",
+        "address",
+        "destiny",
+        "district_id",
+        "branch_id",
+        "notes",
 
         "customer",
         "payments",
@@ -114,31 +113,31 @@ class Order extends Model
     ];
 
     const getfields360 = [
-        "number"           => 'number',           
-        "date"             => 'date',             
-        "scheduled_date"   => 'scheduled_date',   
-        "payment_date"     => 'payment_date',     
-        "shipping_date"    => 'shippingDate',     
-        "end_date"         => 'end_date',         
-        "stage"            => 'stage',            
-        "status"           => 'status',           
-        "mode"             => 'mode',             
-        "cellphone_number" => 'cellphone_number', 
-        "email_address"    => 'email_address',    
-        "address"          => 'address',          
-        "destiny"          => 'destiny',          
-        "zone_id"          => 'zone_id',          
-        "district_id"      => 'district_id',      
-        "branch_id"        => 'branch_id',        
-        "notes"            => 'notes',            
-        "total"            => 'total',            
-        "currency"         => 'currency',         
-        "shipping_cost"    => 'sendCost',    
-        "invoices"    => 'invoices',      
+        "number" => 'number',
+        "date" => 'date',
+        "scheduled_date" => 'scheduled_date',
+        "payment_date" => 'payment_date',
+        "shipping_date" => 'shippingDate',
+        "end_date" => 'end_date',
+        "stage" => 'stage',
+        "status" => 'status',
+        "mode" => 'mode',
+        "cellphone_number" => 'cellphone_number',
+        "email_address" => 'email_address',
+        "address" => 'address',
+        "destiny" => 'destiny',
+        "zone_id" => 'zone_id',
+        "district_id" => 'district_id',
+        "branch_id" => 'branch_id',
+        "notes" => 'notes',
+        "total" => 'total',
+        "currency" => 'currency',
+        "shipping_cost" => 'sendCost',
+        "invoices" => 'invoices',
 
-        "customer"         => 'customer', 
-        "payments"         => 'payments', 
-        "products"         => 'products', 
+        "customer" => 'customer',
+        "payments" => 'payments',
+        "products" => 'products',
 
     ];
 
@@ -170,6 +169,16 @@ class Order extends Model
     public function sendInformation()
     {
         return $this->hasOne(SendInformation::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
     }
 
 }

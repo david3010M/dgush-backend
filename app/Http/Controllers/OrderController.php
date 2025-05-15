@@ -38,8 +38,8 @@ class OrderController extends Controller
     public function __construct(Api360Service $api360Service, CulquiService $culqiService, OrderService $orderService)
     {
         $this->api360Service = $api360Service;
-        $this->culqiService  = $culqiService;
-        $this->orderService  = $orderService;
+        $this->culqiService = $culqiService;
+        $this->orderService = $orderService;
     }
 
     /**
@@ -78,13 +78,18 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $pageSize = $request->input('per_page');
-        $orders   = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+        $orders = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon'
+        )
             ->where('user_id', auth()->user()->id)
             ->orderBy('id', 'desc');
 
         return $pageSize ? OrderResource::collection($orders->simplePaginate($pageSize))
-        : response()->json(OrderResource::collection($orders->get()));
+            : response()->json(OrderResource::collection($orders->get()));
     }
 
     /**
@@ -111,18 +116,31 @@ class OrderController extends Controller
     {
         $validator = validator($request->all(), [
             'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
-            'sort'   => 'nullable|string|in:none,date-asc,date-desc',
-            'date'   => 'nullable|date_format:Y-m-d',
+            'sort' => 'nullable|string|in:none,date-asc,date-desc',
+            'date' => 'nullable|date_format:Y-m-d',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $orders = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
-            ->where('status', 'like', '%' . $request->input('status') . '%')
-            ->whereDate('date', 'like', '%' . $request->input('date') . '%');
+        $orders = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon',
+            'sendInformation.district'
+        )
+            ->when($request->filled('status'), function ($query) use ($request) {
+                $query->where('status', 'like', '%' . $request->input('status') . '%');
+            })
+            ->when($request->filled('date'), function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->whereDate('date', $request->input('date'))
+                      ->orWhereDate('created_at', $request->input('date'));
+                });
+            });
 
         $sort = $request->input('sort');
 
@@ -137,14 +155,19 @@ class OrderController extends Controller
 
     public function showOrder(int $id)
     {
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon'
+        )
             ->find($id);
 
         $user = auth()->user();
         $user = User::find($user->id);
 
-        if (! $order || $order->user_id !== $user->id && $user->typeuser->name !== 'Admin') {
+        if (!$order || $order->user_id !== $user->id && $user->typeuser->name !== 'Admin') {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -177,24 +200,30 @@ class OrderController extends Controller
     public function searchPaginate(Request $request)
     {
         $validator = validator($request->all(), [
-            'status'    => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
-            'sort'      => 'nullable|string|in:none,date-asc,date-desc',
+            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
+            'sort' => 'nullable|string|in:none,date-asc,date-desc',
             'direction' => 'nullable|string|in:asc,desc',
-            'date'      => 'nullable|date_format:Y-m-d',
-            'per_page'  => 'nullable|integer',
-            'page'      => 'nullable|integer',
+            'date' => 'nullable|date_format:Y-m-d',
+            'per_page' => 'nullable|integer',
+            'page' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $orders = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation.district')
+        $orders = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon',
+            'sendInformation.district'
+        )
             ->where('status', 'like', '%' . $request->input('status') . '%')
             ->whereDate('date', 'like', '%' . $request->input('date') . '%');
 
-        $sort      = $request->input('sort', 'none');
+        $sort = $request->input('sort', 'none');
         $direction = $request->input('direction', 'desc');
 
         if ($sort === 'date-asc') {
@@ -204,48 +233,48 @@ class OrderController extends Controller
         }
 
         $per_page = $request->input('per_page', 10);
-        $page     = $request->input('page', 1);
-        $orders   = $orders->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
+        $page = $request->input('page', 1);
+        $orders = $orders->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
         OrderResource::collection($orders);
         return response()->json($orders);
     }
 
-/**
- * @OA\Post(
- *     path="/dgush-backend/public/api/order",
- *     summary="Create a new order",
- *     security={{"bearerAuth": {}}},
- *     tags={"Order"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\MediaType(
- *             mediaType="multipart/form-data",
- *             @OA\Schema(
- *                 ref="#/components/schemas/360StoreOrderRequest"
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Order created successfully",
- *         @OA\JsonContent(ref="#/components/schemas/Order")
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Validation error",
- *         @OA\JsonContent(
- *             @OA\Property(property="error", type="string")
- *         )
- *     )
- * )
- */
+    /**
+     * @OA\Post(
+     *     path="/dgush-backend/public/api/order",
+     *     summary="Create a new order",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Order"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 ref="#/components/schemas/360StoreOrderRequest"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Order created successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Order")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
 
     public function pay_order($id_order, PayOrderRequest $request)
     {
         try {
 
             $order = Order::find($id_order);
-            if (! $order) {
+            if (!$order) {
                 return response()->json([
                     'error' => 'Orden No encontrada',
                 ], 422);
@@ -256,58 +285,58 @@ class OrderController extends Controller
             // Verificar si hubo algún error en el cálculo
             if (isset($calculatedValues['error'])) {
                 return response()->json([
-                    'error'   => 'Error en los cálculos',
+                    'error' => 'Error en los cálculos',
                     'message' => $calculatedValues['message'],
                 ], 400);
             }
 
-            $total         = $calculatedValues['total'];
+            $total = $calculatedValues['total'];
             $shipping_cost = $calculatedValues['sendCost'];
 
             // 1. Procesar el pago con Culqi
             $result = $this->culqiService->createCharge($request);
             AuditLogService::log('culqi_create_charge', $request->all(), $result);
 
-            if (! $result['success']) {
+            if (!$result['success']) {
                 return response()->json([
                     'success' => false,
                     'message' => 'El pago falló.',
-                    'error'   => $result['message'] ?? 'Error desconocido en el pago.',
+                    'error' => $result['message'] ?? 'Error desconocido en el pago.',
                 ], 400);
             }
 
             // 2. Preparar el payload para 360
             $data_adicional = [];
-            $payload        = [
-                "mode"             => $request->mode, //RECOJO, DELIVERY, ENVIO
-                "scheduled_date"   => $request->scheduled_date,
+            $payload = [
+                "mode" => $request->mode, //RECOJO, DELIVERY, ENVIO
+                "scheduled_date" => $request->scheduled_date,
                 "cellphone_number" => $request->cellphone,
-                "email_address"    => $request->email_address,
-                "address"          => $request->address,
-                "zone_id"          => $request->zone_id,     // Requerido cuando el modo es DELIVERY
-                "district_id"      => $request->district_id, // Requerido cuando el modo es ENVIO
-                "branch_id"        => $request->branch_id,   // Requerido cuando el modo es RECOJO
-                "customer"         => [
-                    "dni"        => $request->customer_dni,
+                "email_address" => $request->email_address,
+                "address" => $request->address,
+                "zone_id" => $request->zone_id,     // Requerido cuando el modo es DELIVERY
+                "district_id" => $request->district_id, // Requerido cuando el modo es ENVIO
+                "branch_id" => $request->branch_id,   // Requerido cuando el modo es RECOJO
+                "customer" => [
+                    "dni" => $request->customer_dni,
                     "first_name" => $request->customer_first_name,
-                    "last_name"  => $request->customer_last_name,
+                    "last_name" => $request->customer_last_name,
                 ],
-                "notes"            => $request->notes,
-                "total"            => $total, //calcular de los detalles
-                "currency"         => "PEN",
-                "payment"          => [
-                    "method"        => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
-                    "pos"           => "CULQI",                               // Opciones válidas: IZIPAY, NIUBIZ, CULQI
-                    "card"          => [
+                "notes" => $request->notes,
+                "total" => $total, //calcular de los detalles
+                "currency" => "PEN",
+                "payment" => [
+                    "method" => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
+                    "pos" => "CULQI",                               // Opciones válidas: IZIPAY, NIUBIZ, CULQI
+                    "card" => [
                         "name" => $request->payment_card_name ?? "VISA",    // Opciones válidas: VISA, MASTERCARD, AMERICAN EXPRESS, DINERS CLUB INTERNATIONAL
                         "type" => $request->payment_card_type ?? "CREDITO", // Opciones válidas: CREDITO, DEBITO
                     ],
                     "digitalwallet" => $request->payment_digitalwallet ?? null, // Opcional, puede ser YAPE o null
                 ],
-//verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
-                "shipping_cost"    => $shipping_cost ?? 0, // puede ser 0, no negativo
+                //verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
+                "shipping_cost" => $shipping_cost ?? 0, // puede ser 0, no negativo
 
-                "products"         => $request->products ?? [],
+                "products" => $request->products ?? [],
             ];
             if (isset($request->coupon_id)) {
                 $data_adicional['coupon_id'] = $request->coupon_id ?? null;
@@ -321,11 +350,11 @@ class OrderController extends Controller
             AuditLogService::log('api360_order_post', ['uuid' => $uuid, 'payload' => $payload], $api360Response);
 
             // Verificar la respuesta de la API 360
-            if (! $api360Response['status']) {
+            if (!$api360Response['status']) {
                 return response()->json([
-                    'success'     => false,
-                    'message'     => 'Error al registrar el pedido.',
-                    'api_error'   => $api360Response['message'],
+                    'success' => false,
+                    'message' => 'Error al registrar el pedido.',
+                    'api_error' => $api360Response['message'],
                     'api_details' => $api360Response['data'] ?? [],
                 ]);
             }
@@ -333,7 +362,7 @@ class OrderController extends Controller
             // 4. Obtener y guardar la orden usando el ID recibido
             $orderId360 = $api360Response['data']['id'];
             //actualizar id de servide_id de la orden
-            $order->serverid=$orderId360;
+            $order->serverid = $orderId360;
             $order->save();
             $orderInfo = $this->orderService->getOrdertosave(
 
@@ -347,9 +376,9 @@ class OrderController extends Controller
 
             // 5. Respuesta final con el pago y el pedido procesado correctamente
             return response()->json([
-                'success'        => true,
-                'message'        => 'Pago y pedido registrados correctamente.',
-                'payment_data'   => $result['object'],
+                'success' => true,
+                'message' => 'Pago y pedido registrados correctamente.',
+                'payment_data' => $result['object'],
                 'api_360_result' => $api360Response,
             ]);
 
@@ -370,7 +399,7 @@ class OrderController extends Controller
             $calculatedValues = $this->orderService->calculate($request);
 
             // Verificar si hubo algún error en el cálculo
-            if (! empty($calculatedValues['error'])) {
+            if (!empty($calculatedValues['error'])) {
                 return response()->json([
                     'success' => false,
                     'message' => $calculatedValues['message'] ?? 'Error en los cálculos',
@@ -379,39 +408,39 @@ class OrderController extends Controller
 
             // Obtener datos validados y combinar con los cálculos
 
-            $total         = $calculatedValues['total'] ?? 0;
+            $total = $calculatedValues['total'] ?? 0;
             $shipping_cost = $calculatedValues['sendCost'] ?? 0;
 
             $payload = [
-                "mode"             => $request->mode, //RECOJO, DELIVERY, ENVIO
-                "scheduled_date"   => $request->scheduled_date,
+                "mode" => $request->mode, //RECOJO, DELIVERY, ENVIO
+                "scheduled_date" => $request->scheduled_date,
                 "cellphone_number" => $request->cellphone,
-                "email_address"    => $request->email_address,
-                "address"          => $request->address,
-                "zone_id"          => $request->zone_id,     // Requerido cuando el modo es DELIVERY
-                "district_id"      => $request->district_id, // Requerido cuando el modo es ENVIO
-                "branch_id"        => $request->branch_id,   // Requerido cuando el modo es RECOJO
-                "customer"         => [
-                    "dni"        => $request->customer_dni,
+                "email_address" => $request->email_address,
+                "address" => $request->address,
+                "zone_id" => $request->zone_id,     // Requerido cuando el modo es DELIVERY
+                "district_id" => $request->district_id, // Requerido cuando el modo es ENVIO
+                "branch_id" => $request->branch_id,   // Requerido cuando el modo es RECOJO
+                "customer" => [
+                    "dni" => $request->customer_dni,
                     "first_name" => $request->customer_first_name,
-                    "last_name"  => $request->customer_last_name,
+                    "last_name" => $request->customer_last_name,
                 ],
-                "notes"            => $request->notes,
-                "total"            => $total, //calcular de los detalles
-                "currency"         => "PEN",
-                "payment"          => [
-                    "method"        => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
-                    "pos"           => "CULQI",                               // Opciones válidas: IZIPAY, NIUBIZ, CULQI
-                    "card"          => [
+                "notes" => $request->notes,
+                "total" => $total, //calcular de los detalles
+                "currency" => "PEN",
+                "payment" => [
+                    "method" => $request->payment_method ?? 'TARJETA', // Opciones válidas: TARJETA, BILLETERA DIGITAL
+                    "pos" => "CULQI",                               // Opciones válidas: IZIPAY, NIUBIZ, CULQI
+                    "card" => [
                         "name" => $request->payment_card_name ?? "VISA",    // Opciones válidas: VISA, MASTERCARD, AMERICAN EXPRESS, DINERS CLUB INTERNATIONAL
                         "type" => $request->payment_card_type ?? "CREDITO", // Opciones válidas: CREDITO, DEBITO
                     ],
                     "digitalwallet" => $request->payment_digitalwallet ?? null, // Opcional, puede ser YAPE o null
                 ],
-//verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
-                "shipping_cost"    => $shipping_cost ?? 0, // puede ser 0, no negativo
+                //verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
+                "shipping_cost" => $shipping_cost ?? 0, // puede ser 0, no negativo
 
-                "products"         => $request->products ?? [],
+                "products" => $request->products ?? [],
             ];
 
             // Crear la orden
@@ -420,7 +449,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Orden creada correctamente',
-                'order'   => new OrderResource(Order::find($order->id)),
+                'order' => new OrderResource(Order::find($order->id)),
             ], 201);
 
         } catch (\Exception $e) {
@@ -466,12 +495,12 @@ class OrderController extends Controller
     public function updateStatus(Request $request, int $id)
     {
         $order = Order::find($id);
-        if (! $order) {
+        if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
         $validator = Validator::make($request->all(), [
-            'status'      => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto,agencia',
+            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto,agencia',
             'description' => 'nullable|string',
         ]);
 
@@ -480,69 +509,76 @@ class OrderController extends Controller
         }
 
         if ($request->input('status') === 'agencia') {
-            if (! $order->sendInformation) {
+            if (!$order->sendInformation) {
                 return response()->json(['error' => 'Send information not found'], 404);
             }
 
             $validator = Validator::make($request->all(), [
                 'tracking' => 'nullable|string',
-                'voucher'  => 'required|string',
-                'image'    => 'required|image',
+                'voucher' => 'required|string',
+                'image' => 'required|image',
             ]);
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()->first()], 422);
             }
 
-            $image    = $request->file('image');
+            $image = $request->file('image');
             $fileName = 'vouchers_envio/' . $order->number . '/' . $image->getClientOriginalName();
             Storage::disk('spaces')->put($fileName, file_get_contents($image), 'private');
-            $imageUrl        = Storage::disk('spaces')->url($fileName);
+            $imageUrl = Storage::disk('spaces')->url($fileName);
             $sendInformation = SendInformation::where('order_id', $order->id)->first();
             $sendInformation->update([
-                'tracking'        => $request->input('tracking'),
-                'voucher'         => $request->input('voucher'),
-                'voucherUrl'      => $imageUrl,
+                'tracking' => $request->input('tracking'),
+                'voucher' => $request->input('voucher'),
+                'voucherUrl' => $imageUrl,
                 'voucherFileName' => $fileName,
             ]);
         }
 
         $data = [
-            'status'      => $request->input('status'),
+            'status' => $request->input('status'),
             'description' => $request->input('description'),
         ];
 
         $order->update($data);
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon'
+        )
             ->find($order->id);
 
         $dictionaryMessages = [
-            'enviado'             => '¡Buenas noticias! Tu pedido ha sido enviado y está en camino. Gracias por tu paciencia. Si tienes alguna duda, no dudes en contactarnos.',
-            'entregado'           => 'Queremos informarte que tu pedido ha sido entregado con éxito. Esperamos que disfrutes de tu compra. Si tienes alguna duda, no dudes en contactarnos.',
+            'enviado' => '¡Buenas noticias! Tu pedido ha sido enviado y está en camino. Gracias por tu paciencia. Si tienes alguna duda, no dudes en contactarnos.',
+            'entregado' => 'Queremos informarte que tu pedido ha sido entregado con éxito. Esperamos que disfrutes de tu compra. Si tienes alguna duda, no dudes en contactarnos.',
             'recojotiendaproceso' => 'Tu pedido está en proceso de preparación para el recojo en tienda. Te informaremos cuando esté listo para que puedas pasar a retirarlo.',
-            'recojotiendalisto'   => '¡Tu pedido está listo para ser recogido en nuestra tienda! Puedes pasar por él en cualquier momento dentro de nuestro horario de atención.',
-            'agencia'             => 'Tu pedido ha sido enviado a la agencia de transporte. Pronto te llegará a la dirección que nos proporcionaste. Si tienes alguna duda, no dudes en contactarnos.',
+            'recojotiendalisto' => '¡Tu pedido está listo para ser recogido en nuestra tienda! Puedes pasar por él en cualquier momento dentro de nuestro horario de atención.',
+            'agencia' => 'Tu pedido ha sido enviado a la agencia de transporte. Pronto te llegará a la dirección que nos proporcionaste. Si tienes alguna duda, no dudes en contactarnos.',
         ];
 
         $dictonarySubject = [
-            'enviado'             => ' Pedido ' . $order->number . ' Enviado',
-            'entregado'           => 'Pedido ' . $order->number . ' Entregado',
+            'enviado' => ' Pedido ' . $order->number . ' Enviado',
+            'entregado' => 'Pedido ' . $order->number . ' Entregado',
             'recojotiendaproceso' => 'Pedido ' . $order->number . ' en Proceso para Recojo en Tienda',
-            'recojotiendalisto'   => 'Pedido ' . $order->number . ' Listo para Recojo en Tienda',
-            'agencia'             => 'Pedido ' . $order->number . ' Enviado a la Agencia de Transporte',
+            'recojotiendalisto' => 'Pedido ' . $order->number . ' Listo para Recojo en Tienda',
+            'agencia' => 'Pedido ' . $order->number . ' Enviado a la Agencia de Transporte',
         ];
 
         $statusDictionary = [
-            'enviado'             => 'Enviado',
-            'entregado'           => 'Entregado',
+            'enviado' => 'Enviado',
+            'entregado' => 'Entregado',
             'recojotiendaproceso' => 'En Proceso para Recojo en Tienda',
-            'recojotiendalisto'   => 'Listo para Recojo en Tienda',
-            'agencia'             => 'Enviado a la Agencia de Transporte',
+            'recojotiendalisto' => 'Listo para Recojo en Tienda',
+            'agencia' => 'Enviado a la Agencia de Transporte',
         ];
 
-        if ($order->status !== 'verificado' &&
+        if (
+            $order->status !== 'verificado' &&
             $order->status !== 'confirmado' &&
-            $order->status !== 'cancelado') {
+            $order->status !== 'cancelado'
+        ) {
             Mail::to($order->user->email)->send(new StatusOrder(
                 $order,
                 $order->user,
@@ -572,16 +608,16 @@ class OrderController extends Controller
     public function downloadVoucherSend(int $id)
     {
         $order = Order::find($id);
-        if (! $order) {
+        if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
         $sendInformation = SendInformation::where('order_id', $order->id)->first();
-        if (! $sendInformation) {
+        if (!$sendInformation) {
             return response()->json(['error' => 'Send information not found'], 404);
         }
 
-        if (! $sendInformation->voucherFileName) {
+        if (!$sendInformation->voucherFileName) {
             return response()->json(['error' => 'Voucher not found'], 404);
         }
 
@@ -604,14 +640,20 @@ class OrderController extends Controller
      */
     public function show(int $id)
     {
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon',
+            'sendInformation'
+        )
             ->find($id);
 
         $user = auth()->user();
         $user = User::find($user->id);
 
-        if (! $order || $order->user_id !== $user->id && $user->typeuser->name !== 'Admin') {
+        if (!$order || $order->user_id !== $user->id && $user->typeuser->name !== 'Admin') {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -622,8 +664,8 @@ class OrderController extends Controller
     {
         // Encontrar la orden existente
         $order = Order::find($id);
-        $user  = auth()->user();
-        if (! $order || $order->user_id !== $user->id) {
+        $user = auth()->user();
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -633,12 +675,12 @@ class OrderController extends Controller
 
         // Validar los datos de entrada
         $validator = Validator::make($request->all(), [
-            'orderItems'              => 'required|array',
+            'orderItems' => 'required|array',
             'orderItems.*.product_id' => 'required|exists:product,id',
-            'orderItems.*.color_id'   => 'required|exists:color,id',
-            'orderItems.*.size_id'    => 'required|exists:size,id',
-            'orderItems.*.quantity'   => 'required|integer',
-            'coupon_id'               => 'nullable|exists:coupon,id',
+            'orderItems.*.color_id' => 'required|exists:color,id',
+            'orderItems.*.size_id' => 'required|exists:size,id',
+            'orderItems.*.quantity' => 'required|integer',
+            'coupon_id' => 'nullable|exists:coupon,id',
         ]);
 
         if ($validator->fails()) {
@@ -655,7 +697,7 @@ class OrderController extends Controller
         }
 
         // Encontrar los detalles del nuevo producto
-        $products       = $request->input('orderItems');
+        $products = $request->input('orderItems');
         $productDetails = [];
         foreach ($products as $product) {
             $productDetail = ProductDetails::where('product_id', $product['product_id'])
@@ -681,17 +723,17 @@ class OrderController extends Controller
             }
 
             $quantityOfProduct = $products[$key]['quantity'];
-            $priceChose        = ($productDetail->product->liquidacion == true) ? $productDetail->product->priceLiquidacion :
-            ($productDetail->product->status == 'onsale' ? $productDetail->product->priceOferta :
-                ($quantityOfProduct >= 12 ? $productDetail->product->price12 :
-                    ($quantityOfProduct >= 3 ? $productDetail->product->price2 :
-                        $productDetail->product->price1)));
+            $priceChose = ($productDetail->product->liquidacion == true) ? $productDetail->product->priceLiquidacion :
+                ($productDetail->product->status == 'onsale' ? $productDetail->product->priceOferta :
+                    ($quantityOfProduct >= 12 ? $productDetail->product->price12 :
+                        ($quantityOfProduct >= 3 ? $productDetail->product->price2 :
+                            $productDetail->product->price1)));
 
             OrderItem::create([
-                'quantity'          => $quantityOfProduct,
-                'price'             => $priceChose,
+                'quantity' => $quantityOfProduct,
+                'price' => $priceChose,
                 'product_detail_id' => $productDetail->id,
-                'order_id'          => $order->id,
+                'order_id' => $order->id,
             ]);
 
             $productDetail->update([
@@ -704,15 +746,20 @@ class OrderController extends Controller
 
         // Actualizar la orden con el nuevo subtotal y cantidad
         $order->update([
-            'subtotal'  => $subtotal,
-            'total'     => $subtotal, // Puedes aplicar descuentos o impuestos aquí si es necesario
-            'quantity'  => $quantity,
+            'subtotal' => $subtotal,
+            'total' => $subtotal, // Puedes aplicar descuentos o impuestos aquí si es necesario
+            'quantity' => $quantity,
             'coupon_id' => $request->input('coupon_id'),
         ]);
 
         // Devolver la orden actualizada
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon'
+        )
             ->find($order->id);
 
         return response()->json($order);
@@ -721,9 +768,10 @@ class OrderController extends Controller
     public function destroy(int $id)
     {
         $order = Order::find($id);
-        $user  = auth()->user();
+        $user = auth()->user();
 
-        if (! $order
+        if (
+            !$order
             || $order->status !== 'verificado'
             || $order->user_id !== $user->id
         ) {
@@ -783,9 +831,9 @@ class OrderController extends Controller
     public function applyCoupon(Request $request, int $id)
     {
         $order = Order::find($id);
-        $user  = auth()->user();
+        $user = auth()->user();
 
-        if (! $order || $order->user_id !== $user->id) {
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -802,11 +850,11 @@ class OrderController extends Controller
         }
 
         $coupon = Coupon::where('code', $request->input('coupon'))->first();
-        if (! $coupon) {
+        if (!$coupon) {
             return response()->json(['error' => 'Coupon not found'], 404);
         }
 
-        if (! $coupon->active) {
+        if (!$coupon->active) {
             return response()->json(['error' => 'Coupon is not active'], 422);
         }
 
@@ -833,12 +881,17 @@ class OrderController extends Controller
 
         $order->update([
             'coupon_id' => $coupon->id,
-            'discount'  => $discount,
-            'total'     => $total,
+            'discount' => $discount,
+            'total' => $total,
         ]);
 
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon'
+        )
             ->find($order->id);
 
         return response()->json($order);
@@ -898,9 +951,9 @@ class OrderController extends Controller
     public function confirmOrder(Request $request, int $id)
     {
         $order = Order::find($id);
-        $user  = auth()->user();
+        $user = auth()->user();
 
-        if (! $order || $order->user_id !== $user->id) {
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -909,15 +962,15 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'names'         => 'required|string',
-            'dni'           => 'required|string|size:8',
-            'email'         => 'required|string',
-            'phone'         => 'required|string|min:9|max:9',
-            'address'       => 'required|string',
-            'reference'     => 'required|string',
-            'comment'       => 'nullable|string',
-            'method'        => 'required|string|in:delivery,pickup,send',
-            'paymentId'     => 'required|string',
+            'names' => 'required|string',
+            'dni' => 'required|string|size:8',
+            'email' => 'required|string',
+            'phone' => 'required|string|min:9|max:9',
+            'address' => 'required|string',
+            'reference' => 'required|string',
+            'comment' => 'nullable|string',
+            'method' => 'required|string|in:delivery,pickup,send',
+            'paymentId' => 'required|string',
             'paymentNumber' => 'nullable|string',
         ]);
 
@@ -948,41 +1001,41 @@ class OrderController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        if ($request->input('method') === 'delivery' && ! $request->input('zone_id')) {
+        if ($request->input('method') === 'delivery' && !$request->input('zone_id')) {
             return response()->json(['error' => 'The zone field is required'], 422);
         }
 
-        if ($request->input('method') === 'pickup' && ! $request->input('sede_id')) {
+        if ($request->input('method') === 'pickup' && !$request->input('sede_id')) {
             return response()->json(['error' => 'The sede field is required'], 422);
         }
 
-        if ($request->input('method') === 'send' && ! $request->input('district_id')) {
+        if ($request->input('method') === 'send' && !$request->input('district_id')) {
             return response()->json(['error' => 'The district field is required'], 422);
         }
 
         $method = $request->input('method');
 
         $data = [
-            'names'         => $request->input('names'),
-            'dni'           => $request->input('dni'),
-            'email'         => $request->input('email'),
-            'phone'         => $request->input('phone'),
-            'address'       => $request->input('address'),
-            'reference'     => $request->input('reference'),
-            'comment'       => $request->input('comment'),
-            'method'        => $method,
-            'zone_id'       => $method === 'delivery' ? $request->input('zone_id') : null,
-            'sede_id'       => $method === 'pickup' ? $request->input('sede_id') : null,
-            'district_id'   => $method === 'send' ? $request->input('district_id') : null,
-            'order_id'      => $id,
-//            NUMBER OF PAYMENT
-            'paymentId'     => $request->input('paymentId'),
+            'names' => $request->input('names'),
+            'dni' => $request->input('dni'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'reference' => $request->input('reference'),
+            'comment' => $request->input('comment'),
+            'method' => $method,
+            'zone_id' => $method === 'delivery' ? $request->input('zone_id') : null,
+            'sede_id' => $method === 'pickup' ? $request->input('sede_id') : null,
+            'district_id' => $method === 'send' ? $request->input('district_id') : null,
+            'order_id' => $id,
+            //            NUMBER OF PAYMENT
+            'paymentId' => $request->input('paymentId'),
             'paymentNumber' => $request->input('paymentNumber'),
         ];
 
         $sendInformation = SendInformation::create($data);
 
-        if (! $sendInformation) {
+        if (!$sendInformation) {
             return response()->json(['error' => 'Error creating send information'], 500);
         }
 
@@ -990,11 +1043,11 @@ class OrderController extends Controller
             $zone = Zone::find($request->input('zone_id'));
             $order->update([
                 'sendCost' => $zone->sendCost,
-                'total'    => $order->subtotal + $zone->sendCost,
+                'total' => $order->subtotal + $zone->sendCost,
             ]);
 
             if ($order->coupon_id) {
-                $coupon   = Coupon::find($order->coupon_id);
+                $coupon = Coupon::find($order->coupon_id);
                 $discount = 0;
 
                 if ($coupon->type === 'percentage') {
@@ -1011,16 +1064,16 @@ class OrderController extends Controller
                 }
 
                 $order->update([
-                    'status'   => 'confirmado',
+                    'status' => 'confirmado',
                     'sendCost' => $zone->sendCost,
                     'discount' => $discount,
-                    'total'    => $order->subtotal + $zone->sendCost - $discount,
+                    'total' => $order->subtotal + $zone->sendCost - $discount,
                 ]);
             } else {
                 $order->update([
-                    'status'   => 'confirmado',
+                    'status' => 'confirmado',
                     'sendCost' => $zone->sendCost,
-                    'total'    => $order->subtotal + $zone->sendCost,
+                    'total' => $order->subtotal + $zone->sendCost,
                 ]);
             }
         } elseif ($request->input('method') === 'send') {
@@ -1028,11 +1081,11 @@ class OrderController extends Controller
 
             $order->update([
                 'sendCost' => $district->sendCost,
-                'total'    => $order->subtotal + $district->sendCost,
+                'total' => $order->subtotal + $district->sendCost,
             ]);
 
             if ($order->coupon_id) {
-                $coupon   = Coupon::find($order->coupon_id);
+                $coupon = Coupon::find($order->coupon_id);
                 $discount = 0;
 
                 if ($coupon->type === 'percentage') {
@@ -1049,31 +1102,31 @@ class OrderController extends Controller
                 }
 
                 $order->update([
-                    'status'   => 'confirmado',
+                    'status' => 'confirmado',
                     'sendCost' => $district->sendCost,
                     'discount' => $discount,
-                    'total'    => $order->subtotal + $district->sendCost - $discount,
+                    'total' => $order->subtotal + $district->sendCost - $discount,
                 ]);
             } else {
                 $order->update([
-                    'status'   => 'confirmado',
+                    'status' => 'confirmado',
                     'sendCost' => $district->sendCost,
-                    'total'    => $order->subtotal + $district->sendCost,
+                    'total' => $order->subtotal + $district->sendCost,
                 ]);
             }
 
         } else {
             $order->update([
-                'status'        => 'confirmado',
-                'paymentId'     => $request->input('paymentId'),
+                'status' => 'confirmado',
+                'paymentId' => $request->input('paymentId'),
                 'paymentNumber' => $request->input('paymentNumber'),
-                'sendCost'      => 0,
-                'total'         => $order->subtotal - $order->discount,
+                'sendCost' => 0,
+                'total' => $order->subtotal - $order->discount,
             ]);
         }
 
         $isAnyPreSale = false;
-        $orderItems   = $order->orderItems;
+        $orderItems = $order->orderItems;
         foreach ($orderItems as $orderItem) {
             if ($orderItem->productDetail->product->status === 'preventa') {
                 $isAnyPreSale = true;
@@ -1085,8 +1138,14 @@ class OrderController extends Controller
             'shippingDate' => $order->sendInformation->method === 'pickup' ? now()->addDays($isAnyPreSale ? 12 : 3) : null,
         ]);
 
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon',
+            'sendInformation'
+        )
             ->find($order->id);
 
         $orderItems = OrderItem::where('order_id', $order->id)->get();
@@ -1123,9 +1182,9 @@ class OrderController extends Controller
     public function updateDates(Request $request, int $id)
     {
         $order = Order::find($id);
-        $user  = auth()->user();
+        $user = auth()->user();
 
-        if (! $order || $order->user_id !== $user->id) {
+        if (!$order || $order->user_id !== $user->id) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -1153,8 +1212,14 @@ class OrderController extends Controller
             ]);
         }
 
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon',
+            'sendInformation'
+        )
             ->find($order->id);
 
         return response()->json($order);
@@ -1191,7 +1256,7 @@ class OrderController extends Controller
     public function cancelOrder(int $id)
     {
         $order = Order::find($id);
-        if (! $order) {
+        if (!$order) {
             return response()->json(['error' => 'Orden no encontrada'], 404);
         }
 
@@ -1234,24 +1299,24 @@ class OrderController extends Controller
      */
     public function orderStatus()
     {
-        $orders              = Order::all();
-        $verificado          = $orders->where('status', 'verificado')->count();
-        $confirmado          = $orders->where('status', 'confirmado')->count();
-        $enviado             = $orders->where('status', 'enviado')->count();
+        $orders = Order::all();
+        $verificado = $orders->where('status', 'verificado')->count();
+        $confirmado = $orders->where('status', 'confirmado')->count();
+        $enviado = $orders->where('status', 'enviado')->count();
         $recojotiendaproceso = $orders->where('status', 'recojotiendaproceso')->count();
-        $recojotiendalisto   = $orders->where('status', 'recojotiendalisto')->count();
-        $entregado           = $orders->where('status', 'entregado')->count();
-        $agencia             = $orders->where('status', 'agencia')->count();
-        $cancelado           = $orders->where('status', 'cancelado')->count();
+        $recojotiendalisto = $orders->where('status', 'recojotiendalisto')->count();
+        $entregado = $orders->where('status', 'entregado')->count();
+        $agencia = $orders->where('status', 'agencia')->count();
+        $cancelado = $orders->where('status', 'cancelado')->count();
         return response()->json([
-            'verificado'          => $verificado,
-            'confirmado'          => $confirmado,
-            'enviado'             => $enviado,
+            'verificado' => $verificado,
+            'confirmado' => $confirmado,
+            'enviado' => $enviado,
             'recojotiendaproceso' => $recojotiendaproceso,
-            'recojotiendalisto'   => $recojotiendalisto,
-            'entregado'           => $entregado,
-            'agencia'             => $agencia,
-            'cancelado'           => $cancelado,
+            'recojotiendalisto' => $recojotiendalisto,
+            'entregado' => $entregado,
+            'agencia' => $agencia,
+            'cancelado' => $cancelado,
         ]);
     }
 
@@ -1277,7 +1342,7 @@ class OrderController extends Controller
     public function setOrderMethod(Request $request, int $id)
     {
         $order = Order::find($id);
-        if (! $order) {
+        if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 
@@ -1286,37 +1351,37 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'method'      => 'required|string|in:send,pickup,delivery',
+            'method' => 'required|string|in:send,pickup,delivery',
             'district_id' => 'nullable|integer|exists:district,id',
-            'zone_id'     => 'nullable|integer|exists:zones,id',
+            'zone_id' => 'nullable|integer|exists:zones,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        if ($request->input('method') === 'send' && ! $request->input('district_id')) {
+        if ($request->input('method') === 'send' && !$request->input('district_id')) {
             return response()->json(['error' => 'The district field is required'], 422);
         }
 
-        if ($request->input('method') === 'delivery' && ! $request->input('zone_id')) {
+        if ($request->input('method') === 'delivery' && !$request->input('zone_id')) {
             return response()->json(['error' => 'The zone field is required'], 422);
         }
 
         if ($request->input('method') === 'send') {
             $district = District::find($request->input('district_id'));
-            if (! $district) {
+            if (!$district) {
                 return response()->json(['error' => 'District not found'], 404);
             }
 
             $order->update([
                 'sendCost' => $district->sendCost,
-                'total'    => $order->subtotal + $district->sendCost,
+                'total' => $order->subtotal + $district->sendCost,
             ]);
 
-//            VALIDAR EL CUPON
+            //            VALIDAR EL CUPON
             if ($order->coupon_id) {
-                $coupon   = Coupon::find($order->coupon_id);
+                $coupon = Coupon::find($order->coupon_id);
                 $discount = 0;
 
                 if ($coupon->type === 'percentage') {
@@ -1335,27 +1400,27 @@ class OrderController extends Controller
                 $order->update([
                     'sendCost' => $district->sendCost,
                     'discount' => $discount,
-                    'total'    => $order->subtotal + $district->sendCost - $discount,
+                    'total' => $order->subtotal + $district->sendCost - $discount,
                 ]);
             } else {
                 $order->update([
                     'sendCost' => $district->sendCost,
-                    'total'    => $order->subtotal + $district->sendCost,
+                    'total' => $order->subtotal + $district->sendCost,
                 ]);
             }
         } elseif ($request->input('method') === 'delivery') {
             $zone = Zone::find($request->input('zone_id'));
-            if (! $zone) {
+            if (!$zone) {
                 return response()->json(['error' => 'Zone not found'], 404);
             }
 
             $order->update([
                 'sendCost' => $zone->sendCost,
-                'total'    => $order->subtotal + $zone->sendCost,
+                'total' => $order->subtotal + $zone->sendCost,
             ]);
 
             if ($order->coupon_id) {
-                $coupon   = Coupon::find($order->coupon_id);
+                $coupon = Coupon::find($order->coupon_id);
                 $discount = 0;
 
                 if ($coupon->type === 'percentage') {
@@ -1374,12 +1439,12 @@ class OrderController extends Controller
                 $order->update([
                     'sendCost' => $zone->sendCost,
                     'discount' => $discount,
-                    'total'    => $order->subtotal + $zone->sendCost - $discount,
+                    'total' => $order->subtotal + $zone->sendCost - $discount,
                 ]);
             } else {
                 $order->update([
                     'sendCost' => $zone->sendCost,
-                    'total'    => $order->subtotal + $zone->sendCost,
+                    'total' => $order->subtotal + $zone->sendCost,
                 ]);
             }
         } else {
@@ -1388,7 +1453,7 @@ class OrderController extends Controller
             ]);
 
             if ($order->coupon_id) {
-                $coupon   = Coupon::find($order->coupon_id);
+                $coupon = Coupon::find($order->coupon_id);
                 $discount = 0;
 
                 if ($coupon->type === 'percentage') {
@@ -1406,18 +1471,24 @@ class OrderController extends Controller
 
                 $order->update([
                     'discount' => $discount,
-                    'total'    => $order->subtotal - $discount,
+                    'total' => $order->subtotal - $discount,
                 ]);
             } else {
                 $order->update([
                     'sendCost' => 0,
-                    'total'    => $order->subtotal,
+                    'total' => $order->subtotal,
                 ]);
             }
         }
 
-        $order = Order::with('user', 'orderItems.productDetail.product.image',
-            'orderItems.productDetail.color', 'orderItems.productDetail.size', 'coupon', 'sendInformation')
+        $order = Order::with(
+            'user',
+            'orderItems.productDetail.product.image',
+            'orderItems.productDetail.color',
+            'orderItems.productDetail.size',
+            'coupon',
+            'sendInformation'
+        )
             ->find($order->id);
 
         if ($request->input('method') === 'send') {
@@ -1451,53 +1522,53 @@ class OrderController extends Controller
      */
     public function dashboardOrders()
     {
-        $orders              = Order::all();
-        $total               = $orders->count();
-        $verificado          = $orders->where('status', 'verificado')->count();
-        $confirmado          = $orders->where('status', 'confirmado')->count();
-        $enviado             = $orders->where('status', 'enviado')->count();
-        $entregado           = $orders->where('status', 'entregado')->count();
-        $cancelado           = $orders->where('status', 'cancelado')->count();
+        $orders = Order::all();
+        $total = $orders->count();
+        $verificado = $orders->where('status', 'verificado')->count();
+        $confirmado = $orders->where('status', 'confirmado')->count();
+        $enviado = $orders->where('status', 'enviado')->count();
+        $entregado = $orders->where('status', 'entregado')->count();
+        $cancelado = $orders->where('status', 'cancelado')->count();
         $recojotiendaproceso = $orders->where('status', 'recojotiendaproceso')->count();
-        $recojotiendalisto   = $orders->where('status', 'recojotiendalisto')->count();
-        $agency              = $orders->where('status', 'agencia')->count();
+        $recojotiendalisto = $orders->where('status', 'recojotiendalisto')->count();
+        $agency = $orders->where('status', 'agencia')->count();
 
         return response()->json([
             [
                 'description' => 'Total de Órdenes',
-                'value'       => $total,
+                'value' => $total,
             ],
             [
                 'description' => 'Órdenes Generadas',
-                'value'       => $verificado,
+                'value' => $verificado,
             ],
             [
                 'description' => 'Órdenes Pagadas',
-                'value'       => $confirmado,
+                'value' => $confirmado,
             ],
             [
                 'description' => 'Órdenes Enviadas',
-                'value'       => $enviado,
+                'value' => $enviado,
             ],
             [
                 'description' => 'Órdenes en Proceso para Recojo en Tienda',
-                'value'       => $recojotiendaproceso,
+                'value' => $recojotiendaproceso,
             ],
             [
                 'description' => 'Órdenes Listas para Recojo en Tienda',
-                'value'       => $recojotiendalisto,
+                'value' => $recojotiendalisto,
             ],
             [
                 'description' => 'Órdenes Entregadas',
-                'value'       => $entregado,
+                'value' => $entregado,
             ],
             [
                 'description' => 'Órdenes en Agencia',
-                'value'       => $agency,
+                'value' => $agency,
             ],
             [
                 'description' => 'Órdenes Canceladas',
-                'value'       => $cancelado,
+                'value' => $cancelado,
             ],
         ]);
     }
@@ -1507,10 +1578,10 @@ class OrderController extends Controller
         $pedido = $this->api360Service->find_by_server_id(Order::class, $id);
 
         // Verifica si se encontró el pedido en la API externa
-        if (! $pedido || empty($pedido['data'])) {
+        if (!$pedido || empty($pedido['data'])) {
             return response()->json([
                 'message' => 'Orden no encontrado.',
-                'id'      => $id,
+                'id' => $id,
             ], 422);
         }
 
@@ -1526,7 +1597,7 @@ class OrderController extends Controller
 
         // 🔹 Obtener fechas si están presentes en la request
         $start = $request->input('start');
-        $end   = $request->input('end');
+        $end = $request->input('end');
 
         // 🔹 Comando base
         // $cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
@@ -1553,13 +1624,13 @@ class OrderController extends Controller
         $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
 
         Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
-            'uuid'  => $uuid,
+            'uuid' => $uuid,
             'start' => $start,
-            'end'   => $end,
+            'end' => $end,
         ]);
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
         ]);
     }
@@ -1591,8 +1662,8 @@ class OrderController extends Controller
 
         // Si se actualizaron órdenes correctamente, devolvemos las órdenes actualizadas
         return response()->json([
-            'status'         => true,
-            'message'        => 'Órdenes actualizadas correctamente.',
+            'status' => true,
+            'message' => 'Órdenes actualizadas correctamente.',
             'updated_orders' => ($updatedOrders), // Usamos la colección de OrderResource si es necesario
         ]);
     }

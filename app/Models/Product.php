@@ -78,6 +78,7 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'server_id' => 'integer',
         'liquidacion' => 'boolean',
     ];
 
@@ -140,10 +141,12 @@ class Product extends Model
     public static function withImage()
     {
         $query = Product::query();
-        $query->addSelect(['image' => Image::select('url')
-            ->whereColumn('product_id', 'product.id')
-            ->orderBy('id')
-            ->limit(1)]);
+        $query->addSelect([
+            'image' => Image::select('url')
+                ->whereColumn('product_id', 'product.id')
+                ->orderBy('id')
+                ->limit(1)
+        ]);
 
         return $query->orderBy('id', 'desc')->simplePaginate(12);
     }
@@ -343,9 +346,9 @@ class Product extends Model
             ->orderBy('color.id')
             ->get()
             ->map(function ($item) {
-                $item->id = (int)$item->id;
-                $item->color_id = (int)$item->color_id;
-                $item->size_id = (int)$item->size_id;
+                $item->id = (int) $item->id;
+                $item->color_id = (int) $item->color_id;
+                $item->size_id = (int) $item->size_id;
                 $item->stock = round($item->stock, 2);
                 return $item;
             });
@@ -367,7 +370,10 @@ class Product extends Model
                 'size.id as size_id',
                 'size.name as size_name',
                 'size.value as size_value',
-                'product_details.stock'
+                'product_details.stock',
+                'color.server_id as color_server_id',
+                'size.server_id as size_server_id',
+
             )
             ->orderBy('color.id')
             ->orderBy('size.id')
@@ -380,12 +386,14 @@ class Product extends Model
                 'name' => $items->first()->color_name,
                 'value' => $items->first()->color_value,
                 'hex' => $items->first()->color_hex,
+                'server_id' => (int) $items->first()->color_server_id,
                 'sizes' => $items->map(function ($item) {
                     return [
                         'id' => $item->size_id,
                         'name' => $item->size_name,
                         'value' => $item->size_value,
                         'stock' => round($item->stock, 2),
+                        'server_id' => (int) $item->size_server_id,
                     ];
                 })->toArray(),
             ];
@@ -446,10 +454,12 @@ class Product extends Model
             $query->where('category_id', $categoryId);
         })
             ->where('id', '!=', $id)
-            ->addSelect(['image' => Image::select('url')
-                ->whereColumn('product_id', 'product.id')
-                ->orderBy('id')
-                ->limit(1)])
+            ->addSelect([
+                'image' => Image::select('url')
+                    ->whereColumn('product_id', 'product.id')
+                    ->orderBy('id')
+                    ->limit(1)
+            ])
             ->orderBy('score', 'desc')
             ->limit(4)
             ->get()->transform(function ($item) {

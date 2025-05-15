@@ -3586,7 +3586,7 @@
                     "Order"
                 ],
                 "summary": "Create a new order",
-                "operationId": "e1343e60962174d24371218cc3018e2c",
+                "operationId": "b341caf324b55e70d1f375a716dac32e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -8284,6 +8284,212 @@
                     "error": {
                         "type": "string",
                         "example": "Unauthenticated."
+                    }
+                },
+                "type": "object"
+            },
+            "ListOrders360Request": {
+                "required": [
+                    "start",
+                    "end"
+                ],
+                "properties": {
+                    "start": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-05-01"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-05-31"
+                    }
+                },
+                "type": "object"
+            },
+            "360PayOrderRequest": {
+                "required": [
+                    "amount",
+                    "description",
+                    "email",
+                    "token",
+                    "mode",
+                    "cellphone",
+                    "email_address",
+                    "address",
+                    "customer_dni",
+                    "customer_first_name",
+                    "customer_last_name",
+                    "payment_method",
+                    "products"
+                ],
+                "properties": {
+                    "coupon_id": {
+                        "description": "ID del cupón de descuento (opcional, debe existir en la tabla 'coupon')",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "amount": {
+                        "description": "Monto total del cobro (mínimo 600)",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 600
+                    },
+                    "description": {
+                        "description": "Descripción del cobro",
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "description": "Correo electrónico del cliente para la transacción",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "token": {
+                        "description": "Token generado por Culqi",
+                        "type": "string"
+                    },
+                    "mode": {
+                        "description": "Modo del pedido",
+                        "type": "string",
+                        "enum": [
+                            "RECOJO",
+                            "DELIVERY",
+                            "ENVIO"
+                        ]
+                    },
+                    "scheduled_date": {
+                        "description": "Fecha programada (opcional)",
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "cellphone": {
+                        "description": "Número de celular del cliente",
+                        "type": "string"
+                    },
+                    "email_address": {
+                        "description": "Correo electrónico de contacto",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "address": {
+                        "description": "Dirección de entrega",
+                        "type": "string"
+                    },
+                    "zone_id": {
+                        "description": "ID de zona (requerido si mode=DELIVERY)",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "district_id": {
+                        "description": "ID de distrito (requerido si mode=ENVIO)",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "branch_id": {
+                        "description": "ID de sede (requerido si mode=RECOJO)",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "customer_dni": {
+                        "description": "DNI del cliente (máx. 8 caracteres)",
+                        "type": "string",
+                        "maxLength": 8
+                    },
+                    "customer_first_name": {
+                        "description": "Nombres del cliente",
+                        "type": "string"
+                    },
+                    "customer_last_name": {
+                        "description": "Apellidos del cliente",
+                        "type": "string"
+                    },
+                    "notes": {
+                        "description": "Notas adicionales del pedido",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "payment_method": {
+                        "description": "Método de pago",
+                        "type": "string",
+                        "enum": [
+                            "TARJETA",
+                            "BILLETERA DIGITAL"
+                        ]
+                    },
+                    "payment_card_name": {
+                        "description": "Marca de tarjeta (si es pago con tarjeta)",
+                        "type": "string",
+                        "enum": [
+                            "VISA",
+                            "MASTERCARD",
+                            "AMERICAN EXPRESS",
+                            "DINERS CLUB INTERNATIONAL"
+                        ],
+                        "nullable": true
+                    },
+                    "payment_card_type": {
+                        "description": "Tipo de tarjeta (si es pago con tarjeta)",
+                        "type": "string",
+                        "enum": [
+                            "CREDITO",
+                            "DEBITO"
+                        ],
+                        "nullable": true
+                    },
+                    "payment_digitalwallet": {
+                        "description": "Nombre de la billetera digital (si aplica)",
+                        "type": "string",
+                        "enum": [
+                            "YAPE"
+                        ],
+                        "nullable": true
+                    },
+                    "products": {
+                        "description": "Lista de productos del pedido",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "id",
+                                "quantity",
+                                "price"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "description": "ID del producto",
+                                    "type": "integer"
+                                },
+                                "color_id": {
+                                    "description": "ID del color del producto (opcional)",
+                                    "type": "integer",
+                                    "nullable": true
+                                },
+                                "size_id": {
+                                    "description": "ID de la talla del producto (opcional)",
+                                    "type": "integer",
+                                    "nullable": true
+                                },
+                                "quantity": {
+                                    "description": "Cantidad solicitada del producto",
+                                    "type": "integer",
+                                    "minimum": 1
+                                },
+                                "price": {
+                                    "description": "Precio unitario del producto",
+                                    "type": "number",
+                                    "format": "float",
+                                    "minimum": 0
+                                },
+                                "notes": {
+                                    "description": "Notas adicionales para el producto",
+                                    "type": "string",
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "minItems": 1
                     }
                 },
                 "type": "object"
