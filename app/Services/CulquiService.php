@@ -26,29 +26,29 @@ class CulquiService
     public function createCharge(Request $request): array
     {
         $charge = $this->culqi->Charges->create([
-            "amount"        => $request->amount,
-            "capture"       => true,
+            "amount" => $request->amount,
+            "capture" => true,
             "currency_code" => "PEN",
-            "description"   => $request->description,
-            "email"         => $request->email,
-            "installments"  => 0,
-            "source_id"     => $request->token,
+            "description" => $request->description !== '-' ? $request->description : 'Pago de pedido',
+            "email" => $request->email_address,
+            "installments" => 0,
+            "source_id" => $request->token,
         ]);
 
-        if (! isset($charge->id)) {
+        if (!isset($charge->id)) {
             return [
                 'success' => false,
                 'message' => $charge->user_message ?? $charge->merchant_message ?? 'Error al procesar el pago',
-                'object'  => $charge,
-                'status'  => 400,
+                'object' => $charge,
+                'status' => 400,
             ];
         }
 
         return [
             'success' => true,
             'message' => 'Pago procesado correctamente',
-            'object'  => $charge,
-            'status'  => 200,
+            'object' => $charge,
+            'status' => 200,
         ];
     }
 
@@ -58,32 +58,32 @@ class CulquiService
         array $postBody = []
     ) {
         try {
-            $url               = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = ! empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID_DEMO_360');
+            $url = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
+            $authorizationUiid = !empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID_DEMO_360');
 
             $response = HttP::withHeaders([
                 'Authorization' => $authorizationUiid,
-                'Accept'        => 'application/json',
+                'Accept' => 'application/json',
             ])->post($url, $postBody);
 
             if ($response->successful()) {
                 return [
-                    'status'  => true,
+                    'status' => true,
                     'message' => 'Solicitud POST exitosa.',
-                    'data'    => $response->json(),
+                    'data' => $response->json(),
                 ];
             }
 
             // Log de error si la respuesta no fue exitosa
             Log::error("POST Fallido a {$url}", [
                 'status_code' => $response->status(),
-                'body'        => $response->body(),
+                'body' => $response->body(),
             ]);
 
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'La solicitud POST falló.',
-                'data'    => $response->json(),
+                'data' => $response->json(),
             ];
         } catch (\Exception $e) {
             Log::error("Excepción en POST a {$url}", [
@@ -92,7 +92,7 @@ class CulquiService
             ]);
 
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'Error interno, revisa el log.',
             ];
         }

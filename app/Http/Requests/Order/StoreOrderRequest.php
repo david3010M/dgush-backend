@@ -27,7 +27,7 @@ class StoreOrderRequest extends StoreRequest
      *         "payment_method", "products"
      *     },
      * @OA\Property(
-     *     property="coupon_id",
+     *     property="coupon",
      *     type="integer",
      *     nullable=true,
      *     description="ID del cupón de descuento (opcional, debe existir en la tabla 'coupon')"
@@ -81,7 +81,7 @@ class StoreOrderRequest extends StoreRequest
             'token' => ['nullable', 'string'],             // Token no debe estar vacío
 
             //cupon
-            'coupon_id' => ['nullable', 'integer', Rule::exists('coupon', 'id')],
+            'coupon' => ['nullable', 'string', Rule::exists('coupon', 'code')],
 
             //Validaciones para el POST pedido 360
 
@@ -152,10 +152,10 @@ class StoreOrderRequest extends StoreRequest
             'token.required' => 'El token de pago es obligatorio.',
 
             //cupon
-            'coupon_id.nullable' => 'El cupón puede estar vacío.',
+            'coupon.nullable' => 'El cupón puede estar vacío.',
 
-            'coupon_id.integer' => 'El cupón debe ser un valor numérico entero.',
-            'coupon_id.exists' => 'El cupón especificado no existe en nuestros registros.',
+            'coupon.integer' => 'El cupón debe ser un valor numérico entero.',
+            'coupon.exists' => 'El cupón especificado no existe en nuestros registros.',
 
             // Pedido 360
             'mode.required' => 'El modo de entrega es obligatorio.',

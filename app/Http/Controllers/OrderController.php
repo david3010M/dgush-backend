@@ -321,7 +321,7 @@ class OrderController extends Controller
                     "first_name" => $request->customer_first_name,
                     "last_name" => $request->customer_last_name,
                 ],
-                "notes" => $request->notes,
+                "notes" => $request->notes ?? "-",
                 "total" => $total, //calcular de los detalles
                 "currency" => "PEN",
                 "payment" => [
@@ -334,19 +334,20 @@ class OrderController extends Controller
                     "digitalwallet" => $request->payment_digitalwallet ?? null, // Opcional, puede ser YAPE o null
                 ],
                 //verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
-                "shipping_cost" => $shipping_cost ?? 0, // puede ser 0, no negativo
+                "shipping_cost" => (float) $shipping_cost ?? 0, // puede ser 0, no negativo
 
                 "products" => $request->products ?? [],
             ];
-            if (isset($request->coupon_id)) {
-                $data_adicional['coupon_id'] = $request->coupon_id ?? null;
+            if (isset($request->coupon)) {
+                $coupon = Coupon::where('code', $request->coupon)->first();
+                $data_adicional['coupon_id'] = $coupon->id;
             }
 
             // Si el UUID no está presente, lo dejamos vacío
             $uuid = $request->input('UUID', '');
 
             // 3. Enviar el pedido a la API externa (360)
-            $api360Response = $this->culqiService->orderPostRequest('order', $uuid, $payload);
+            $api360Response = $this->culqiService->orderPostRequest('orders', $uuid, $payload);
             AuditLogService::log('api360_order_post', ['uuid' => $uuid, 'payload' => $payload], $api360Response);
 
             // Verificar la respuesta de la API 360
@@ -360,12 +361,11 @@ class OrderController extends Controller
             }
 
             // 4. Obtener y guardar la orden usando el ID recibido
-            $orderId360 = $api360Response['data']['id'];
+            $orderId360 = $api360Response['data']['data']['id'] ?? null;
             //actualizar id de servide_id de la orden
-            $order->serverid = $orderId360;
+            $order->server_id = $orderId360;
             $order->save();
             $orderInfo = $this->orderService->getOrdertosave(
-
                 $orderId360,
                 $uuid,
                 $data_adicional,
@@ -407,8 +407,10 @@ class OrderController extends Controller
 
             // Obtener datos validados y combinar con los cálculos
 
+            $subtotal = $calculatedValues['subtotal'] ?? 0;
             $total = $calculatedValues['total'] ?? 0;
             $shipping_cost = $calculatedValues['sendCost'] ?? 0;
+            $discount = $calculatedValues['discount'] ?? 0;
 
             $payload = [
                 "mode" => $request->mode, //RECOJO, DELIVERY, ENVIO
@@ -425,6 +427,7 @@ class OrderController extends Controller
                     "last_name" => $request->customer_last_name,
                 ],
                 "notes" => $request->notes,
+                "subtotal" => $subtotal,
                 "total" => $total, //calcular de los detalles
                 "currency" => "PEN",
                 "payment" => [
@@ -438,7 +441,8 @@ class OrderController extends Controller
                 ],
                 //verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
                 "shipping_cost" => $shipping_cost ?? 0, // puede ser 0, no negativo
-
+                "sendCost" => $shipping_cost ?? 0, // puede ser 0, no negativo
+                "discount" => $discount ?? 0, // puede ser 0, no negativo
                 "products" => $request->products ?? [],
             ];
 

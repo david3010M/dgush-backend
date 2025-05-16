@@ -50,7 +50,7 @@ class OrderResource extends JsonResource
             'sendCost' => $this->sendCost,
             'total' => $this->total,
             'status' => $this->status,
-            'statusNumber' => $statusDictionary[$this->status],
+            // 'statusNumber' => $statusDictionary[$this->status],
             'description' => $this->description ?? '-',
             'image' => $this->orderDetails->count() > 0 ? $this->orderDetails[0]->product->image->url : null,
             'date' => $this->date,

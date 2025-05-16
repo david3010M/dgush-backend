@@ -37,19 +37,19 @@ class OrderService
                 return $item['price'] * $item['quantity'];
             });
 
-            $total    = 0;
+            $total = 0;
             $sendCost = 0;
 
             // 2. Calcular envío según modo
             $mode = $request->mode ?? '';
 
             if ($mode === 'DELIVERY') {
-                if (isset($request->zone_id) && ! empty($request->zone_id)) {
-                    $zone     = Zone::firstWhere('server_id', $request->zone_id);
+                if (isset($request->zone_id) && !empty($request->zone_id)) {
+                    $zone = Zone::firstWhere('server_id', $request->zone_id);
                     $sendCost = $zone && $zone->sendCost !== null ? $zone->sendCost : 0;
                 }
             } elseif ($mode === 'ENVIO') {
-                if (isset($request->district_id) && ! empty($request->district_id)) {
+                if (isset($request->district_id) && !empty($request->district_id)) {
                     $district = District::firstWhere('server_id', $request->district_id);
                     $sendCost = $district && $district->sendCost !== null ? $district->sendCost : 0;
                 }
@@ -58,7 +58,7 @@ class OrderService
             // Validar que el costo de envío no sea negativo
             if ($sendCost < 0) {
                 return [
-                    'error'   => 'Error en el cálculo del costo de envío',
+                    'error' => 'Error en el cálculo del costo de envío',
                     'message' => 'El costo de envío no puede ser negativo.',
                 ];
             }
@@ -66,8 +66,8 @@ class OrderService
             // 3. Calcular descuento si hay cupón
             $discount = 0;
 
-            if (isset($request->coupon_id) && ! empty($request->coupon_id)) {
-                $coupon = Coupon::find($request->coupon_id);
+            if (isset($request->coupon) && !empty($request->coupon)) {
+                $coupon = Coupon::where('code', $request->coupon)->first();
 
                 if ($coupon) {
                     if ($coupon->type === 'percentage') {
@@ -86,18 +86,18 @@ class OrderService
             // Validar que el descuento no sea negativo
             if ($discount < 0) {
                 return [
-                    'error'   => 'Error en el cálculo del descuento',
+                    'error' => 'Error en el cálculo del descuento',
                     'message' => 'El descuento no puede ser negativo.',
                 ];
             }
 
-                                                                // 4. Total
+            // 4. Total
             $total = max(0, $subtotal + $sendCost - $discount); // evitar negativos
 
             // Validar que el total no sea negativo
             if ($total < 0) {
                 return [
-                    'error'   => 'Error en el cálculo del total',
+                    'error' => 'Error en el cálculo del total',
                     'message' => 'El total no puede ser negativo.',
                 ];
             }
@@ -106,7 +106,7 @@ class OrderService
                 'subtotal' => $subtotal,
                 'sendCost' => $sendCost,
                 'discount' => $discount,
-                'total'    => $total,
+                'total' => $total,
             ];
 
         } catch (\Exception $e) {
@@ -118,7 +118,7 @@ class OrderService
 
             // Enviar respuesta de error
             return [
-                'error'   => 'Ocurrió un error al calcular el pedido.',
+                'error' => 'Ocurrió un error al calcular el pedido.',
                 'message' => $e->getMessage(),
             ];
         }
@@ -127,15 +127,11 @@ class OrderService
     public function createOrder(array $data): Order
     {
         $data['user_id'] = Auth::id();
-        $data['status']  = 'verificado';
+        $data['status'] = 'verificado';
 
         // Mapear IDs de zona, distrito y sede
-        foreach ([
-            'zone_id'     => Zone::class,
-            'district_id' => District::class,
-            'branch_id'   => Sede::class,
-        ] as $key => $model) {
-            if (! empty($data[$key]) && $found = $this->api360Service->find_by_server_id($model, $data[$key])) {
+        foreach (['zone_id' => Zone::class, 'district_id' => District::class, 'branch_id' => Sede::class,] as $key => $model) {
+            if (!empty($data[$key]) && $found = $this->api360Service->find_by_server_id($model, $data[$key])) {
                 $data[$key] = $found['data']->id;
             } else {
                 unset($data[$key]);
@@ -150,7 +146,7 @@ class OrderService
         }
 
         $fillableFields = (new Order())->getFillable();
-        $filteredData   = array_intersect_key($data, array_flip($fillableFields));
+        $filteredData = array_intersect_key($data, array_flip($fillableFields));
 
         $order = Order::create($filteredData);
 
@@ -161,35 +157,35 @@ class OrderService
             // Mapeo de server_id a IDs locales
             $ids = [
                 'product_id' => Product::class,
-                'color_id'   => Color::class,
-                'talla_id'   => Size::class,
+                'color_id' => Color::class,
+                'talla_id' => Size::class,
             ];
-        
+
             $mappedIds = [];
             foreach ($ids as $key => $model) {
                 $serverId = match ($key) {
-                    'product_id' => $item['id']        ?? null,
-                    'color_id'   => $item['color_id']  ?? null,
-                    'talla_id'   => $item['size_id']   ?? null, // <-- size_id llega, se guarda como talla_id
+                    'product_id' => $item['id'] ?? null,
+                    'color_id' => $item['color_id'] ?? null,
+                    'talla_id' => $item['size_id'] ?? null, // <-- size_id llega, se guarda como talla_id
                 };
-        
+
                 $mappedIds[$key] = !empty($serverId) && ($found = $this->api360Service->find_by_server_id($model, $serverId))
                     ? $found['data']->id
                     : null;
             }
-        
+
             // Crear detalle de orden
             OrderDetail::create([
-                'order_id'   => $order->id,
+                'order_id' => $order->id,
                 'product_id' => $mappedIds['product_id'],
-                'color_id'   => $mappedIds['color_id'],
-                'talla_id'   => $mappedIds['talla_id'],
-                'quantity'   => (int) ($item['quantity'] ?? 0),
-                'price'      => $item['price'] ?? 0,
-                'note'       => $item['notes'] ?? null,
+                'color_id' => $mappedIds['color_id'],
+                'talla_id' => $mappedIds['talla_id'],
+                'quantity' => (int) ($item['quantity'] ?? 0),
+                'price' => $item['price'] ?? 0,
+                'note' => $item['notes'] ?? null,
             ]);
         }
-        
+
 
         return $order;
     }
@@ -203,22 +199,22 @@ class OrderService
     ) {
 
         try {
-            $url               = "https://sistema.360sys.com.pe/api/online-store/orders/" . $order_id;
-            $authorizationUuid = ! empty($authorizationUuid) ? $authorizationUuid : env('APP_UUID');
+            $url = "https://sistema.360sys.com.pe/api/online-store/orders/" . $order_id;
+            $authorizationUuid = !empty($authorizationUuid) ? $authorizationUuid : env('APP_UUID');
 
             $response = Http::withHeaders([
                 'Authorization' => $authorizationUuid,
-                'Accept'        => 'application/json',
+                'Accept' => 'application/json',
             ])->get($url);
 
             $responseData = $response->json();
 
             if ($response->successful() && isset($responseData['data']['order'])) {
-                $order            = $responseData['data']['order'];
+                $order = $responseData['data']['order'];
                 $order['user_id'] = Auth::user()->id;
                 if ($others_fields != []) {
                     $order['coupon_id'] = $others_fields['coupon_id'];
-                    $fields             = array_merge($fields, [
+                    $fields = array_merge($fields, [
                         "coupon_id" => "coupon_id",
                     ]);
                 }
@@ -227,16 +223,16 @@ class OrderService
                 $this->update_or_create_item($order, $modelClass, $fields);
 
                 return [
-                    'status'  => true,
+                    'status' => true,
                     'message' => 'Pedido registrado exitosamente.',
-                    'data'    => ($order),
+                    'data' => ($order),
                 ];
             }
 
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'La solicitud GET falló o los datos no son válidos.',
-                'data'    => $responseData,
+                'data' => $responseData,
             ];
         } catch (\Throwable $e) {
             Log::error('Error en getOrdertosave: ' . $e->getMessage(), [
@@ -244,7 +240,7 @@ class OrderService
             ]);
 
             return [
-                'status'  => false,
+                'status' => false,
                 'message' => 'Error interno del servidor. Revisa el log.',
             ];
         }
@@ -254,14 +250,14 @@ class OrderService
     {
         try {
             $map = [
-                'zone_id'     => Zone::class,
+                'zone_id' => Zone::class,
                 'district_id' => District::class,
-                'branch_id'   => Sede::class,
+                'branch_id' => Sede::class,
             ];
 
             // Mapear zone_id, district_id, branch_id
             foreach ($map as $key => $model) {
-                if (! empty($data[$key])) {
+                if (!empty($data[$key])) {
                     $found = $this->api360Service->find_by_server_id($model, $data[$key]);
 
                     if ($found) {
@@ -282,7 +278,7 @@ class OrderService
             // Verificar que 'id' exista en los datos antes de continuar
             if (empty($data['id'])) {
                 Log::error("Missing 'id' in the data for model {$modelClass}", [
-                    'data'   => $data,
+                    'data' => $data,
                     'fields' => $fields,
                 ]);
                 return; // O lanzar una excepción si prefieres
@@ -299,9 +295,9 @@ class OrderService
 
         } catch (\Throwable $e) {
             Log::error("Error in update_or_create_item for model {$modelClass}: " . $e->getMessage(), [
-                'data'   => $data,
+                'data' => $data,
                 'fields' => $fields,
-                'trace'  => $e->getTraceAsString(),
+                'trace' => $e->getTraceAsString(),
             ]);
         }
     }
@@ -322,7 +318,7 @@ class OrderService
         } catch (\Throwable $e) {
             Log::error('Error en sincronización de ordenes 360', [
                 'message' => $e->getMessage(),
-                'uuid'    => $uuid,
+                'uuid' => $uuid,
             ]);
         }
     }
@@ -354,9 +350,9 @@ class OrderService
 
             $response = Http::timeout(120) // segundos
                 ->connectTimeout(30)->withHeaders([
-                'Authorization' => $uuid,
-                'Accept'        => 'application/json',
-            ])->get($url, $request->only('start', 'end'));
+                        'Authorization' => $uuid,
+                        'Accept' => 'application/json',
+                    ])->get($url, $request->only('start', 'end'));
 
             $responseData = $response->json();
 
@@ -366,23 +362,23 @@ class OrderService
                 }
 
                 return response()->json([
-                    'status'  => true,
+                    'status' => true,
                     'message' => 'Datos sincronizados correctamente.',
-                    'data'    => $responseData['data'],
+                    'data' => $responseData['data'],
                 ]);
             }
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'No se pudieron obtener los datos.',
-                'data'    => $responseData,
+                'data' => $responseData,
             ], $response->status());
 
         } catch (\Throwable $e) {
             Log::error("Error en listarPedidosPorFechas: " . $e->getMessage());
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Error interno del servidor.',
             ], 500);
         }
