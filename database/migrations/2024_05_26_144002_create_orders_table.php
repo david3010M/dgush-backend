@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->timestamp('date');
             $table->date('deliveryDate')->nullable();
             $table->date('shippingDate')->nullable();
-            $table->string('status')->default('verificado');
+            $table->string('status')->default('VERIFICANDO');
             $table->string('description')->nullable();
             $table->string('numberPayment')->nullable();
             $table->string('paymentId')->nullable();

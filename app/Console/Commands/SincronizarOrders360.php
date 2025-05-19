@@ -22,11 +22,11 @@ class SincronizarOrders360 extends Command
 
     public function handle()
     {
-  
+
         // Obtener el UUID y fechas desde la entrada
-        $uuid  = $this->argument('uuid');
+        $uuid = $this->argument('uuid');
         $start = $this->option('start') ?? now()->subDay()->toDateString(); // ayer
-        $end   = $this->option('end') ?? now()->toDateString();             // hoy
+        $end = $this->option('end') ?? now()->toDateString();             // hoy
 
         // Mostrar información al usuario en consola
         $this->info(" Iniciando sincronización de órdenes desde 360");
@@ -47,7 +47,7 @@ class SincronizarOrders360 extends Command
             $this->error('❌ Error en la sincronización: ' . $e->getMessage());
             Log::error('Error durante la sincronización de órdenes 360.', [
                 'exception' => $e,
-                'uuid'      => $uuid,
+                'uuid' => $uuid,
             ]);
         }
     }

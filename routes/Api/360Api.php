@@ -27,7 +27,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     //API LIBRE PARA SER USADA DESDE 360 PARA SINCRONIZAR ORDENES
     Route::get('getdata-sincronizarOrdenes360', [OrderController::class, 'sincronizarOrders360']);
     Route::get('orden/{id}/actualizar360', [OrderController::class, 'sincronizar_orden_by_id']);
-    
+
     Route::post('order/{id}/pay', [OrderController::class, 'pay_order']);
 
 });

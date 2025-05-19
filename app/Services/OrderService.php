@@ -127,7 +127,7 @@ class OrderService
     public function createOrder(array $data): Order
     {
         $data['user_id'] = Auth::id();
-        $data['status'] = 'verificado';
+        $data['status'] = 'VERIFICANDO';
 
         // Mapear IDs de zona, distrito y sede
         foreach (['zone_id' => Zone::class, 'district_id' => District::class, 'branch_id' => Sede::class,] as $key => $model) {
@@ -275,6 +275,10 @@ class OrderService
                 }
             }
 
+            if (isset($data['stage'])) {
+                $data['status'] = $data['stage'];
+            }
+
             // Verificar que 'id' exista en los datos antes de continuar
             if (empty($data['id'])) {
                 Log::error("Missing 'id' in the data for model {$modelClass}", [
@@ -285,13 +289,13 @@ class OrderService
             }
 
             // Realizar updateOrCreate si 'id' está presente
-            $modelClass::updateOrCreate(
-                ['server_id' => $data['id']], // Condición de búsqueda
-                collect($fields)
-                    ->filter(fn($f) => isset($data[$f]))       // Solo usar campos presentes
-                    ->mapWithKeys(fn($f) => [$f => $data[$f]]) // Mapear los campos
-                    ->toArray()
-            );
+            $condition = ['server_id' => $data['id']];
+            $values = collect($fields)
+                ->filter(fn($f) => isset($data[$f]))
+                ->mapWithKeys(fn($f) => [$f => $data[$f]])
+                ->toArray();
+
+            $modelClass::updateOrCreate($condition, $values);
 
         } catch (\Throwable $e) {
             Log::error("Error in update_or_create_item for model {$modelClass}: " . $e->getMessage(), [

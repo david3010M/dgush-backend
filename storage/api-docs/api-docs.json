@@ -3646,7 +3646,7 @@
                                 "properties": {
                                     "status": {
                                         "type": "string",
-                                        "example": "verificado"
+                                        "example": "VERIFICANDO"
                                     },
                                     "sort": {
                                         "type": "string",
@@ -3729,7 +3729,7 @@
                                 "properties": {
                                     "status": {
                                         "type": "string",
-                                        "example": "verificado"
+                                        "example": "VERIFICANDO"
                                     },
                                     "sort": {
                                         "type": "string",
@@ -3839,8 +3839,8 @@
                                     "status": {
                                         "type": "string",
                                         "enum": [
-                                            "verificado",
-                                            "confirmado",
+                                            "VERIFICANDO",
+                                            "CONFIRMADO",
                                             "enviado",
                                             "entregado",
                                             "cancelado",
@@ -4444,11 +4444,11 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "verificado": {
+                                        "VERIFICANDO": {
                                             "type": "integer",
                                             "example": "10"
                                         },
-                                        "confirmado": {
+                                        "CONFIRMADO": {
                                             "type": "integer",
                                             "example": "5"
                                         },
@@ -4591,7 +4591,7 @@
                                             "type": "integer",
                                             "example": "1"
                                         },
-                                        "confirmado": {
+                                        "CONFIRMADO": {
                                             "type": "integer",
                                             "example": "1"
                                         }

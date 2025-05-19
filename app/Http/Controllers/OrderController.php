@@ -102,7 +102,7 @@ class OrderController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="verificado"),
+     *             @OA\Property(property="status", type="string", example="VERIFICANDO"),
      *             @OA\Property(property="sort", type="string", example="date-asc"),
      *             @OA\Property(property="date", type="string", example="2024-05-26")
      *         )
@@ -116,7 +116,7 @@ class OrderController extends Controller
     public function search(Request $request)
     {
         $validator = validator($request->all(), [
-            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
+            'status' => 'nullable|string|in:VERIFICANDO,CONFIRMADO,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
             'sort' => 'nullable|string|in:none,date-asc,date-desc',
             'date' => 'nullable|date_format:Y-m-d',
         ]);
@@ -184,7 +184,7 @@ class OrderController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="verificado"),
+     *             @OA\Property(property="status", type="string", example="VERIFICANDO"),
      *             @OA\Property(property="sort", type="string", example="date-asc"),
      *             @OA\Property(property="direction", type="string", example="asc"),
      *             @OA\Property(property="date", type="string", example="2024-05-26"),
@@ -201,7 +201,7 @@ class OrderController extends Controller
     public function searchPaginate(Request $request)
     {
         $validator = validator($request->all(), [
-            'status' => 'nullable|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
+            'status' => 'nullable|string|in:VERIFICANDO,CONFIRMADO,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto',
             'sort' => 'nullable|string|in:none,date-asc,date-desc',
             'direction' => 'nullable|string|in:asc,desc',
             'date' => 'nullable|date_format:Y-m-d',
@@ -524,7 +524,7 @@ class OrderController extends Controller
      *              mediaType="multipart/form-data",
      *              @OA\Schema(
      *                  required={"status"},
-     *                  @OA\Property(property="status", type="string", enum={"verificado", "confirmado", "enviado", "entregado", "cancelado", "recojotiendaproceso", "recojotiendalisto", "agencia"}),
+     *                  @OA\Property(property="status", type="string", enum={"VERIFICANDO", "CONFIRMADO", "enviado", "entregado", "cancelado", "recojotiendaproceso", "recojotiendalisto", "agencia"}),
      *                  @OA\Property(property="description", type="string", example="Order confirmed"),
      *                  @OA\Property(property="tracking", type="string", example="123456"),
      *                  @OA\Property(property="voucher", type="string", example="123456"),
@@ -546,7 +546,7 @@ class OrderController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:verificado,confirmado,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto,agencia',
+            'status' => 'required|string|in:VERIFICANDO,CONFIRMADO,enviado,entregado,cancelado,recojotiendaproceso,recojotiendalisto,agencia',
             'description' => 'nullable|string',
         ]);
 
@@ -621,8 +621,8 @@ class OrderController extends Controller
         ];
 
         if (
-            $order->status !== 'verificado' &&
-            $order->status !== 'confirmado' &&
+            $order->status !== 'VERIFICANDO' &&
+            $order->status !== 'CONFIRMADO' &&
             $order->status !== 'cancelado'
         ) {
             Mail::to($order->user->email)->send(new StatusOrder(
@@ -715,7 +715,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($order->status !== 'verificado') {
+        if ($order->status !== 'VERIFICANDO') {
             return response()->json(['error' => 'Order has already been confirmed'], 422);
         }
 
@@ -818,7 +818,7 @@ class OrderController extends Controller
 
         if (
             !$order
-            || $order->status !== 'verificado'
+            || $order->status !== 'VERIFICANDO'
             || $order->user_id !== $user->id
         ) {
             return response()->json(['error' => 'Order not found'], 404);
@@ -883,7 +883,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($order->status !== 'verificado') {
+        if ($order->status !== 'VERIFICANDO') {
             return response()->json(['error' => 'Order has already been verified'], 422);
         }
 
@@ -1003,7 +1003,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($order->status !== 'verificado') {
+        if ($order->status !== 'VERIFICANDO') {
             return response()->json(['error' => 'Order has already been confirmed'], 422);
         }
 
@@ -1110,14 +1110,14 @@ class OrderController extends Controller
                 }
 
                 $order->update([
-                    'status' => 'confirmado',
+                    'status' => 'CONFIRMADO',
                     'sendCost' => $zone->sendCost,
                     'discount' => $discount,
                     'total' => $order->subtotal + $zone->sendCost - $discount,
                 ]);
             } else {
                 $order->update([
-                    'status' => 'confirmado',
+                    'status' => 'CONFIRMADO',
                     'sendCost' => $zone->sendCost,
                     'total' => $order->subtotal + $zone->sendCost,
                 ]);
@@ -1148,14 +1148,14 @@ class OrderController extends Controller
                 }
 
                 $order->update([
-                    'status' => 'confirmado',
+                    'status' => 'CONFIRMADO',
                     'sendCost' => $district->sendCost,
                     'discount' => $discount,
                     'total' => $order->subtotal + $district->sendCost - $discount,
                 ]);
             } else {
                 $order->update([
-                    'status' => 'confirmado',
+                    'status' => 'CONFIRMADO',
                     'sendCost' => $district->sendCost,
                     'total' => $order->subtotal + $district->sendCost,
                 ]);
@@ -1163,7 +1163,7 @@ class OrderController extends Controller
 
         } else {
             $order->update([
-                'status' => 'confirmado',
+                'status' => 'CONFIRMADO',
                 'paymentId' => $request->input('paymentId'),
                 'paymentNumber' => $request->input('paymentNumber'),
                 'sendCost' => 0,
@@ -1242,7 +1242,7 @@ class OrderController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        if ($order->status !== 'confirmado') {
+        if ($order->status !== 'CONFIRMADO') {
             return response()->json(['error' => 'Order has not been confirmed'], 422);
         }
 
@@ -1306,7 +1306,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Orden no encontrada'], 404);
         }
 
-        if ($order->status !== 'verificado') {
+        if ($order->status !== 'VERIFICANDO') {
             return response()->json(['error' => 'La orden ya ha sido confirmada'], 422);
         }
 
@@ -1333,8 +1333,8 @@ class OrderController extends Controller
      *     summary="Get order status",
      *     tags={"Order"},
      *     @OA\Response( response=200, description="Order status retrieved successfully", @OA\JsonContent(
-     *     @OA\Property(property="verificado", type="integer", example="10"),
-     *     @OA\Property(property="confirmado", type="integer", example="5"),
+     *     @OA\Property(property="VERIFICANDO", type="integer", example="10"),
+     *     @OA\Property(property="CONFIRMADO", type="integer", example="5"),
      *     @OA\Property(property="enviado", type="integer", example="3"),
      *     @OA\Property(property="recojotiendaproceso", type="integer", example="1"),
      *     @OA\Property(property="recojotiendalisto", type="integer", example="1"),
@@ -1346,8 +1346,8 @@ class OrderController extends Controller
     public function orderStatus()
     {
         $orders = Order::all();
-        $verificado = $orders->where('status', 'verificado')->count();
-        $confirmado = $orders->where('status', 'confirmado')->count();
+        $VERIFICANDO = $orders->where('status', 'VERIFICANDO')->count();
+        $CONFIRMADO = $orders->where('status', 'CONFIRMADO')->count();
         $enviado = $orders->where('status', 'enviado')->count();
         $recojotiendaproceso = $orders->where('status', 'recojotiendaproceso')->count();
         $recojotiendalisto = $orders->where('status', 'recojotiendalisto')->count();
@@ -1355,8 +1355,8 @@ class OrderController extends Controller
         $agencia = $orders->where('status', 'agencia')->count();
         $cancelado = $orders->where('status', 'cancelado')->count();
         return response()->json([
-            'verificado' => $verificado,
-            'confirmado' => $confirmado,
+            'VERIFICANDO' => $VERIFICANDO,
+            'CONFIRMADO' => $CONFIRMADO,
             'enviado' => $enviado,
             'recojotiendaproceso' => $recojotiendaproceso,
             'recojotiendalisto' => $recojotiendalisto,
@@ -1392,7 +1392,7 @@ class OrderController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($order->status !== 'verificado') {
+        if ($order->status !== 'VERIFICANDO') {
             return response()->json(['error' => 'Order has already been verified'], 422);
         }
 
@@ -1561,7 +1561,7 @@ class OrderController extends Controller
      *             @OA\Property(property="pending", type="integer", example="5"),
      *             @OA\Property(property="confirmed", type="integer", example="3"),
      *             @OA\Property(property="cancelado", type="integer", example="1"),
-     *             @OA\Property(property="confirmado", type="integer", example="1")
+     *             @OA\Property(property="CONFIRMADO", type="integer", example="1")
      *         )
      *     )
      * )
@@ -1570,8 +1570,8 @@ class OrderController extends Controller
     {
         $orders = Order::all();
         $total = $orders->count();
-        $verificado = $orders->where('status', 'verificado')->count();
-        $confirmado = $orders->where('status', 'confirmado')->count();
+        $VERIFICANDO = $orders->where('status', 'VERIFICANDO')->count();
+        $CONFIRMADO = $orders->where('status', 'CONFIRMADO')->count();
         $enviado = $orders->where('status', 'enviado')->count();
         $entregado = $orders->where('status', 'entregado')->count();
         $cancelado = $orders->where('status', 'cancelado')->count();
@@ -1586,11 +1586,11 @@ class OrderController extends Controller
             ],
             [
                 'description' => 'Órdenes Generadas',
-                'value' => $verificado,
+                'value' => $VERIFICANDO,
             ],
             [
                 'description' => 'Órdenes Pagadas',
-                'value' => $confirmado,
+                'value' => $CONFIRMADO,
             ],
             [
                 'description' => 'Órdenes Enviadas',
@@ -1639,17 +1639,17 @@ class OrderController extends Controller
 
     public function sincronizarOrders360(ListOrders360Request $request)
     {
-        $uuid = $request->header('Authorization') ?? env('APP_UUID');
+        $uuid = $request->header('Authorization2') ?? env('APP_UUID');
 
-        // 🔹 Obtener fechas si están presentes en la request
         $start = $request->input('start');
         $end = $request->input('end');
 
-        // 🔹 Comando base
-        // $cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
-        $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+        // Ruta del ejecutable PHP en XAMPP
+        $phpPath = base_path('C:\\xampp\\php\\php.exe'); // Ajusta si usas otra ruta
 
-        // 🔹 Añadir opciones correctamente formateadas
+        // Comando base con 'start /B' para ejecutar en segundo plano
+        $cmd = 'start /B "' . $phpPath . '" ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+
         if ($start) {
             $cmd .= ' --start=' . escapeshellarg($start);
         }
@@ -1658,16 +1658,8 @@ class OrderController extends Controller
             $cmd .= ' --end=' . escapeshellarg($end);
         }
 
-        // 🔹 Definir manejo de salida
-        $descriptorspec = [
-            0 => ['pipe', 'r'],                                                           // stdin
-            1 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stdout
-            2 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stderr
-        ];
-
-        // 🔹 Ejecutar el comando en segundo plano (solo Windows con `start /B`)
-        // proc_open($cmd, $descriptorspec, $pipes);
-        $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+        // Sin manejo de salida por redirección; solo se ejecuta en background
+        pclose(popen($cmd, 'r'));
 
         Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
             'uuid' => $uuid,
@@ -1680,6 +1672,52 @@ class OrderController extends Controller
             'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
         ]);
     }
+
+
+
+    // public function sincronizarOrders360(ListOrders360Request $request)
+    // {
+    //     $uuid = $request->header('Authorization2') ?? env('APP_UUID');
+
+    //     // 🔹 Obtener fechas si están presentes en la request
+    //     $start = $request->input('start');
+    //     $end = $request->input('end');
+
+    //     // 🔹 Comando base
+    //     // $cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+    //     $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+
+    //     // 🔹 Añadir opciones correctamente formateadas
+    //     if ($start) {
+    //         $cmd .= ' --start=' . escapeshellarg($start);
+    //     }
+
+    //     if ($end) {
+    //         $cmd .= ' --end=' . escapeshellarg($end);
+    //     }
+
+    //     // 🔹 Definir manejo de salida
+    //     $descriptorspec = [
+    //         0 => ['pipe', 'r'],                                                           // stdin
+    //         1 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stdout
+    //         2 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stderr
+    //     ];
+
+    //     // 🔹 Ejecutar el comando en segundo plano (solo Windows con `start /B`)
+    //     // proc_open($cmd, $descriptorspec, $pipes);
+    //     $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+
+    //     Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
+    //         'uuid' => $uuid,
+    //         'start' => $start,
+    //         'end' => $end,
+    //     ]);
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
+    //     ]);
+    // }
 
     public function updatepedidos(UpdateOrderRequest $request)
     {

@@ -273,7 +273,8 @@ class ProductDetailsController extends Controller
     public function destroy(int $id)
     {
         $productDetails = ProductDetails::withTrashed()->find($id);
-        if (!$productDetails) return response()->json(['error' => 'Product details not found'], 404);
+        if (!$productDetails)
+            return response()->json(['error' => 'Product details not found'], 404);
         $product = Product::find($productDetails->product_id);
 
         if (!$productDetails) {
@@ -343,11 +344,11 @@ class ProductDetailsController extends Controller
             'product' => 'nullable|array',
             'product.*' => 'integer|exists:product,id',
             'color' => 'nullable|array',
-            'color.*' => 'string|exists:color,value',
+            'color.*' => 'string|exists:color,id',
             'size' => 'nullable|array',
-            'size.*' => 'string|exists:size,value',
+            'size.*' => 'string|exists:size,id',
             'category' => 'nullable|array',
-            'category.*' => 'string|exists:subcategory,value',
+            'category.*' => 'string|exists:subcategory,id',
             'sort' => 'nullable|string',
             'direction' => 'nullable|string|in:asc,desc',
         ]);

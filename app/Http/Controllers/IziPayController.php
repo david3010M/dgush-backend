@@ -49,7 +49,7 @@ class IziPayController extends Controller
             ->where('id', $orderId)
             ->where('user_id', $user->id)->first();
         if (!$order) return response()->json(['status' => 0, 'message' => 'Order not found'], 404);
-        if ($order->status !== 'verificado') return response()->json(['status' => 0, 'message' => 'Order must be verified'], 422);
+        if ($order->status !== 'VERIFICANDO') return response()->json(['status' => 0, 'message' => 'Order must be verified'], 422);
 
         $store = array(
             "amount" => 100 * round((float)$order->total, 2),

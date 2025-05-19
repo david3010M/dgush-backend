@@ -30,8 +30,8 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         $statusDictionary = [
-            'verificado' => 0,
-            'confirmado' => 1,
+            'VERIFICANDO' => 0,
+            'CONFIRMADO' => 1,
             'enviado' => 2,
             'recojotiendaproceso' => 3,
             'recojotiendalisto' => 4,

@@ -73,20 +73,17 @@ class ProductDetails extends Model
         }
 
         if ($subcategory) {
-            $subcategory = Subcategory::whereIn('value', $subcategory)->pluck('id');
             $query->whereHas('product', function ($query) use ($subcategory) {
-                $query->whereIn('subcategory_id', $subcategory);
+                $query->where('subcategory_id', $subcategory);
             });
         }
 
         if ($color) {
-            $color = Color::whereIn('value', $color)->pluck('id');
-            $query->whereIn('color_id', $color);
+            $query->where('color_id', $color);
         }
 
         if ($size) {
-            $size = Size::whereIn('value', $size)->pluck('id');
-            $query->whereIn('size_id', $size);
+            $query->where('size_id', $size);
         }
 
         if ($sort == 'price-asc') {

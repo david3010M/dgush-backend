@@ -35,7 +35,7 @@ class OrderFactory extends Factory
             'sendCost' => $sendCost,
             'total' => $total,
             'quantity' => 2,
-            'date' => $date, 'status' => $this->faker->randomElement(['verificado', 'confirmado', 'enviado', 'entregado', 'cancelado', 'recojotiendaproceso', 'recojotiendalisto']),
+            'date' => $date, 'status' => $this->faker->randomElement(['VERIFICANDO', 'CONFIRMADO', 'enviado', 'entregado', 'cancelado', 'recojotiendaproceso', 'recojotiendalisto']),
             'user_id' => $this->faker->numberBetween(1, $countUsers),
             'coupon_id' => $this->faker->numberBetween(1, $countCoupons)
         ];

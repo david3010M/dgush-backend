@@ -118,8 +118,7 @@ class Order extends Model
         "payment_date" => 'payment_date',
         "shipping_date" => 'shippingDate',
         "end_date" => 'end_date',
-        "stage" => 'stage',
-        "status" => 'status',
+        "stage" => 'status',
         "mode" => 'mode',
         "cellphone_number" => 'cellphone_number',
         "email_address" => 'email_address',
@@ -137,7 +136,6 @@ class Order extends Model
         "customer" => 'customer',
         "payments" => 'payments',
         "products" => 'products',
-
     ];
 
     protected $hidden = [
