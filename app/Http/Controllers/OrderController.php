@@ -307,6 +307,23 @@ class OrderController extends Controller
 
             // 2. Preparar el payload para 360
             $data_adicional = [];
+
+
+            $districtServer = null;
+
+            if ($request->mode === 'ENVIO') {
+                $district = District::find($request->district_id);
+                if ($district) {
+                    $districtServer = $district->server_id;
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Distrito no encontrado.',
+                    ], 422);
+                }
+            }
+
+
             $payload = [
                 "mode" => $request->mode, //RECOJO, DELIVERY, ENVIO
                 "scheduled_date" => $request->scheduled_date,
@@ -314,7 +331,7 @@ class OrderController extends Controller
                 "email_address" => $request->email_address,
                 "address" => $request->address,
                 "zone_id" => $request->zone_id,     // Requerido cuando el modo es DELIVERY
-                "district_id" => $request->district_id, // Requerido cuando el modo es ENVIO
+                "district_id" => $districtServer, // Requerido cuando el modo es ENVIO
                 "branch_id" => $request->branch_id,   // Requerido cuando el modo es RECOJO
                 "customer" => [
                     "dni" => $request->customer_dni,

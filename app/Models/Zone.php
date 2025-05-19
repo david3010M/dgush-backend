@@ -24,6 +24,10 @@ class Zone extends Model
         'deleted_at',
     ];
 
+    protected $casts = [
+        'server_id' => 'integer',
+    ];
+
     const getfields360 = [
         'name'=>'name',
         'sendCost'=>'price',

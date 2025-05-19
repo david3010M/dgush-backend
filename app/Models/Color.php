@@ -44,6 +44,10 @@ class Color extends Model
         'deleted_at',
     ];
 
+    protected $casts = [
+        'server_id' => 'integer',
+    ];
+
     public function productDetails()
     {
         return $this->hasMany(ProductDetails::class);

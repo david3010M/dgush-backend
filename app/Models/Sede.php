@@ -28,24 +28,29 @@ class Sede extends Model
         'deleted_at',
     ];
 
-    const filters = [
-        'name'       => 'like',
-        'address'    => 'like',
-        'phone'      => 'like',
-        'email'      => 'like',
+    protected $casts = [
+        'server_id' => 'integer',
+        'district_id' => 'integer',
+    ];
 
-        'ruc'        => 'like',
+    const filters = [
+        'name' => 'like',
+        'address' => 'like',
+        'phone' => 'like',
+        'email' => 'like',
+
+        'ruc' => 'like',
         'brand_name' => 'like',
-        'server_id'  => '=',
+        'server_id' => '=',
     ];
 
     const getfields360 = [
-        'name'       => 'name',
-        'address'    => 'address',
-        'phone'      => 'phone',
-        'email'      => 'email',
+        'name' => 'name',
+        'address' => 'address',
+        'phone' => 'phone',
+        'email' => 'email',
 
-        'ruc'        => 'ruc',
+        'ruc' => 'ruc',
         'brand_name' => 'brand_name',
     ];
 

@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\ProductDetails;
 use App\Models\WishItem;
-use App\Http\Requests\StoreWishItemRequest;
-use App\Http\Requests\UpdateWishItemRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,9 +24,9 @@ class WishItemController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_id' => 'required|integer|exists:product,id',
-            'color' => 'required|string|exists:color,value',
-            'size' => 'required|string|exists:size,value',
-            'quantity' => 'integer|min:1'
+            'color_id' => 'required|integer|exists:color,id',
+            'size_id' => 'required|integer|exists:size,id',
+
         ]);
 
         if ($validator->fails()) {
@@ -39,28 +35,32 @@ class WishItemController extends Controller
 
         // Encontrar los detalles del producto
         $productDetails = ProductDetails::where('product_id', $request->input('product_id'))
-            ->whereHas('color', function ($query) use ($request) {
-                $query->where('value', $request->input('color'));
-            })
-            ->whereHas('size', function ($query) use ($request) {
-                $query->where('value', $request->input('size'));
-            })
-            ->get()->first();
+            ->where('color_id', $request->input('color_id'))
+            ->where('size_id', $request->input('size_id'))
+            ->first();
 
         if (!$productDetails) {
             return response()->json(['error' => 'Product details not found'], 404);
+        }
+
+        // Verificar si el producto ya está en la lista de deseos
+        $existingWishItem = WishItem::with('productDetails.product', 'productDetails.color', 'productDetails.size')
+            ->where('product_details_id', $productDetails->id)
+            ->where('user_id', auth()->user()->id)
+            ->first();
+        if ($existingWishItem) {
+            return response()->json($existingWishItem);
         }
 
         // Crear el WishItem
         $wishItem = WishItem::create([
             'product_details_id' => $productDetails->id,
             'user_id' => auth()->user()->id,
-            'quantity' => $request->input('quantity', 1)
         ]);
 
         $wishItem = WishItem::with('productDetails.product', 'productDetails.color', 'productDetails.size')
             ->where('id', $wishItem->id)
-            ->get()->first();
+            ->first();
 
         return response()->json($wishItem);
     }
