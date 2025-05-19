@@ -101,7 +101,7 @@ class PayOrderRequest extends StoreRequest
                 'required_if:mode,DELIVERY',
                 'nullable',
                 'integer',
-                Rule::exists('zones', 'server_id'),
+                Rule::exists('zones', 'id'),
             ],
             'district_id' => [
                 'required_if:mode,ENVIO',
@@ -113,7 +113,7 @@ class PayOrderRequest extends StoreRequest
                 'required_if:mode,RECOJO',
                 'nullable',
                 'integer',
-                Rule::exists('sedes', 'server_id'),
+                Rule::exists('sedes', 'id'),
             ],
 
             'customer_dni' => ['required', 'max:8'],

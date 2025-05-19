@@ -14,6 +14,7 @@ use App\Models\Image;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductDetails;
+use App\Models\Sede;
 use App\Models\SendInformation;
 use App\Models\User;
 use App\Models\Zone;
@@ -310,6 +311,8 @@ class OrderController extends Controller
 
 
             $districtServer = null;
+            $zoneServer = null;
+            $branchServer = null;
 
             if ($request->mode === 'ENVIO') {
                 $district = District::find($request->district_id);
@@ -323,6 +326,29 @@ class OrderController extends Controller
                 }
             }
 
+            if ($request->mode === 'DELIVERY') {
+                $zone = Zone::find($request->zone_id);
+                if ($zone) {
+                    $zoneServer = $zone->server_id;
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Zona no encontrada.',
+                    ], 422);
+                }
+            }
+
+            if ($request->mode === 'RECOJO') {
+                $branch = Sede::find($request->branch_id);
+                if ($branch) {
+                    $branchServer = $branch->server_id;
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Sucursal no encontrada.',
+                    ], 422);
+                }
+            }
 
             $payload = [
                 "mode" => $request->mode, //RECOJO, DELIVERY, ENVIO
@@ -330,9 +356,9 @@ class OrderController extends Controller
                 "cellphone_number" => $request->cellphone,
                 "email_address" => $request->email_address,
                 "address" => $request->address,
-                "zone_id" => $request->zone_id,     // Requerido cuando el modo es DELIVERY
+                "zone_id" => $zoneServer,     // Requerido cuando el modo es DELIVERY
                 "district_id" => $districtServer, // Requerido cuando el modo es ENVIO
-                "branch_id" => $request->branch_id,   // Requerido cuando el modo es RECOJO
+                "branch_id" => $branchServer,   // Requerido cuando el modo es RECOJO
                 "customer" => [
                     "dni" => $request->customer_dni,
                     "first_name" => $request->customer_first_name,

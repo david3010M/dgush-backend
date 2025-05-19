@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\ProductResource;
+use App\Services\Api360Service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -356,6 +357,22 @@ class Product extends Model
 
     public static function getProductDetailsWithSizes($id)
     {
+        $productDetailsData = ProductDetails::with(['product', 'color', 'size'])
+            ->where('product_id', $id)
+            ->whereNull('deleted_at')
+            ->get();
+
+        foreach ($productDetailsData as $item) {
+            $data = [
+                'product_id' => $item->product->server_id,
+                'color_id' => $item->color->server_id,
+                'size_id' => $item->size->server_id,
+            ];
+            $api360Service = new Api360Service();
+            $api360Service->update_stock_consultando_360($data);
+        }
+
+
         // Consulta para obtener colores y tallas
         $productDetails = Product::join('product_details', 'product.id', '=', 'product_details.product_id')
             ->join('color', 'product_details.color_id', '=', 'color.id')
@@ -378,6 +395,8 @@ class Product extends Model
             ->orderBy('color.id')
             ->orderBy('size.id')
             ->get();
+
+
 
         // Agrupar resultados por color
         $groupedDetails = $productDetails->groupBy('color_id')->map(function ($items) {
