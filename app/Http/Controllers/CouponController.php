@@ -167,6 +167,17 @@ class CouponController extends Controller
         return response()->json($coupon);
     }
 
+    public function showByCode(string $code)
+    {
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (!$coupon) {
+            return response()->json(['error' => 'Coupon not found'], 404);
+        }
+
+        return response()->json($coupon);
+    }
+
     /**
      * Update a specific coupon
      * @OA\Put(

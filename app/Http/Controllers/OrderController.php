@@ -149,6 +149,8 @@ class OrderController extends Controller
             $orders->orderBy('date');
         } else if ($sort === 'date-desc') {
             $orders->orderBy('date', 'desc');
+        } else {
+            $orders->orderBy('id', 'desc');
         }
 
         return response()->json(OrderResource::collection($orders->get()));
@@ -381,6 +383,7 @@ class OrderController extends Controller
 
                 "products" => $request->products ?? [],
             ];
+
             if (isset($request->coupon)) {
                 $coupon = Coupon::where('code', $request->coupon)->first();
                 $data_adicional['coupon_id'] = $coupon->id;

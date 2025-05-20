@@ -99,301 +99,308 @@ Route::post('/video', [VideoController::class, 'update'])->name('video.update');
 Route::get('/zone', [ZoneController::class, 'index'])->name('zone.index');
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(
+    ['middleware' => ['auth:sanctum']],
+    function () {
 
-//    ROUTES JUST FOR ADMIN USERS
-    Route::group(['middleware' => ['checkAccess']], function () {
-        Route::get('/logs', [LogController::class, 'index']);
+        //    ROUTES JUST FOR ADMIN USERS
+        Route::group(['middleware' => ['checkAccess']], function () {
+            Route::get('/logs', [LogController::class, 'index']);
 
-        Route::get('/clients', [PersonController::class, 'index'])->name('person.index');
-        Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
-        Route::post('/image', [ImageController::class, 'uploadAnyImages'])->name('product.anyImages');
+            Route::get('/clients', [PersonController::class, 'index'])->name('person.index');
+            Route::post('/product/image/{id}', [ImageController::class, 'uploadImages'])->name('product.images');
+            Route::post('/image', [ImageController::class, 'uploadAnyImages'])->name('product.anyImages');
 
-        //        GROUPMENU
-        Route::resource('groupmenu', GroupMenuController::class)->only(
+            //        GROUPMENU
+            Route::resource('groupmenu', GroupMenuController::class)->only(
+                ['index', 'show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'groupmenu.index',
+                        'store' => 'groupmenu.store',
+                        'show' => 'groupmenu.show',
+                        'update' => 'groupmenu.update',
+                        'destroy' => 'groupmenu.destroy',
+                    ]
+                );
+
+            //        OPTIONMENU
+            Route::resource('optionmenu', OptionMenuController::class)->only(
+                ['index', 'show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'optionmenu.index',
+                        'store' => 'optionmenu.store',
+                        'show' => 'optionmenu.show',
+                        'update' => 'optionmenu.update',
+                        'destroy' => 'optionmenu.destroy',
+                    ]
+                );
+
+            //    TYPEUSER
+            Route::resource('typeuser', TypeUserController::class)->only(
+                ['index', 'show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'typeuser.index',
+                        'store' => 'typeuser.store',
+                        'show' => 'typeuser.show',
+                        'update' => 'typeuser.update',
+                        'destroy' => 'typeuser.destroy',
+                    ]
+                );
+
+            //    USER
+            Route::resource('user', UserController::class)->only(
+                ['index', 'show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'user.index',
+                        'store' => 'user.store',
+                        'show' => 'user.show',
+                        'update' => 'user.update',
+                        'destroy' => 'user.destroy',
+                    ]
+                );
+
+            //    ACCESS
+            Route::resource('access', AccessController::class)->only(
+                ['index', 'show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'access.index',
+                        'store' => 'access.store',
+                        'show' => 'access.show',
+                        'update' => 'access.update',
+                        'destroy' => 'access.destroy',
+                    ]
+                );
+
+            //    ZONE
+            Route::resource('zone', ZoneController::class)->only(
+                ['show', 'store', 'update', 'destroy']
+            )->names([
+                        'store' => 'zone.store',
+                        'show' => 'zone.show',
+                        'update' => 'zone.update',
+                        'destroy' => 'zone.destroy'
+                    ]);
+
+            //    PRODUCT
+            Route::resource('product', ProductController::class)->only(
+                ['store', 'destroy']
+            )->names(
+                    [
+                        'store' => 'product.store',
+                        'destroy' => 'product.destroy',
+                    ]
+                );
+
+            Route::post('/productsOnSale', [ProductController::class, 'updateProductsOnSale'])->name('product.productsOnSale');
+            Route::post('/updateProduct/{id}', [ProductController::class, 'update'])->name('product.update');
+            Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
+
+            //    CATEGORY
+            Route::resource('category', CategoryController::class)->only(
+                ['store', 'destroy']
+            )->names(
+                    [
+                        'store' => 'category.store',
+                        'destroy' => 'category.destroy',
+                    ]
+                );
+            Route::post('/category/{id}', [CategoryController::class, 'update'])->name('category.update');
+
+            //    SUBCATEGORY
+            Route::resource('subcategory', SubcategoryController::class)->only(
+                ['store', 'destroy']
+            )->names(
+                    [
+                        'update' => 'subcategory.update',
+                        'destroy' => 'subcategory.destroy',
+                    ]
+                );
+            Route::post('/subcategory/{id}', [SubcategoryController::class, 'update'])->name('subcategory.update');
+
+            //    COLOR
+            Route::resource('color', ColorController::class)->only(
+                ['show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'store' => 'color.store',
+                        'show' => 'color.show',
+                        'update' => 'color.update',
+                        'destroy' => 'color.destroy',
+                    ]
+                );
+
+            //    SIZE
+            Route::resource('size', SizeController::class)->only(
+                ['show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'store' => 'size.store',
+                        'show' => 'size.show',
+                        'update' => 'size.update',
+                        'destroy' => 'size.destroy',
+                    ]
+                );
+
+            //        ORDER ADMIN
+            Route::post('/order/search', [OrderController::class, 'search'])->name('order.search');
+            Route::post('/order/searchPaginate', [OrderController::class, 'searchPaginate'])->name('order.searchPaginate');
+            Route::post('/order/updateStatus/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+            Route::get('/orderStatus', [OrderController::class, 'orderStatus'])->name('order.orderStatus');
+            Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
+            Route::get('/showOrder/{id}', [OrderController::class, 'showOrder'])->name('order.showOrder');
+
+            //        PRODUCT DETAILS
+            Route::post('/productdetails/search', [ProductDetailsController::class, 'search'])->name('productdetails.search');
+            Route::post('/productdetails/searchPaginate', [ProductDetailsController::class, 'searchPaginate'])->name('productdetails.searchPaginate');
+
+            Route::resource('productdetails', ProductDetailsController::class)->only(
+                ['index', 'show', 'store', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'productdetails.index',
+                        'store' => 'productdetails.store',
+                        'show' => 'productdetails.show',
+                        'update' => 'productdetails.update',
+                        'destroy' => 'productdetails.destroy',
+                    ]
+                );
+
+            //        IMAGES
+            Route::get('/images', [ImageController::class, 'listImages'])->name('images.all');
+            Route::delete('/deleteDirectoryProduct', [ImageController::class, 'deleteDirectoryProduct'])->name('images.deleteDirectoryProduct');
+
+            //        BANNER
+            Route::resource('banner', BannerController::class)->only(
+                ['store', 'destroy']
+            )->names(
+                    [
+                        'store' => 'banner.store',
+                        'destroy' => 'banner.destroy',
+                    ]
+                );
+            Route::post('/banner-video', [BannerController::class, 'storeVideo'])->name('banner.video');
+
+            //        COUPON
+            Route::resource('coupon', CouponController::class)->only(
+                ['index', 'store', 'show', 'update', 'destroy']
+            )->names(
+                    [
+                        'index' => 'coupon.index',
+                        'store' => 'coupon.store',
+                        'show' => 'coupon.show',
+                        'update' => 'coupon.update',
+                        'destroy' => 'coupon.destroy',
+                    ]
+                );
+
+            //        DISTRICT
+            Route::resource('district', DistrictController::class)->only(
+                ['store', 'update', 'destroy']
+            )->names(
+                    [
+                        'store' => 'district.store',
+                        'update' => 'district.update',
+                        'destroy' => 'district.destroy',
+                    ]
+                );
+
+            //        SEDE
+            Route::resource('sede', SedeController::class)->only(
+                ['store', 'update', 'destroy']
+            )->names(
+                    [
+                        'store' => 'sede.store',
+                        'update' => 'sede.update',
+                        'destroy' => 'sede.destroy',
+                    ]
+                );
+        });
+
+        Route::get('/downloadVoucherSend/{id}', [OrderController::class, 'downloadVoucherSend'])->name('order.downloadVoucherSend');
+        Route::get('/sede', [SedeController::class, 'index'])->name('sede.index');
+        Route::get('/sede/{id}', [SedeController::class, 'show'])->name('sede.show');
+
+        //    IZI PAY
+        Route::post('/izipay/createPaymentToken/{id}', [IziPayController::class, 'createPaymentToken'])->name('izipay.createPaymentToken');
+
+        //    ORDER CLIENT
+        Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
+        Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
+        Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+        Route::post('/updateMethod/{id}', [OrderController::class, 'setOrderMethod'])->name('order.setOrderMethod');
+        Route::post('/updateDates/{id}', [OrderController::class, 'updateDates'])->name('order.updateDates');
+
+        //    WISH ITEM
+        Route::resource('wishitem', WishItemController::class)->only(
+            ['index', 'store', 'show', 'destroy']
+        )->names(
+                [
+                    'index' => 'wishitem.index',
+                    'store' => 'wishitem.store',
+                    'show' => 'wishitem.show',
+                    'destroy' => 'wishitem.destroy',
+                ]
+            );
+
+        //    COMMENT
+        Route::resource('comment', CommentController::class)->only(
             ['index', 'show', 'store', 'update', 'destroy']
         )->names(
-            [
-                'index'   => 'groupmenu.index',
-                'store'   => 'groupmenu.store',
-                'show'    => 'groupmenu.show',
-                'update'  => 'groupmenu.update',
-                'destroy' => 'groupmenu.destroy',
-            ]
-        );
+                [
+                    'index' => 'comment.index',
+                    'store' => 'comment.store',
+                    'show' => 'comment.show',
+                    'update' => 'comment.update',
+                    'destroy' => 'comment.destroy',
+                ]
+            );
 
-        //        OPTIONMENU
-        Route::resource('optionmenu', OptionMenuController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
+        //    ORDER
+        Route::resource('order', OrderController::class)->only(
+            ['index', 'show', 'store', 'update']
         )->names(
-            [
-                'index'   => 'optionmenu.index',
-                'store'   => 'optionmenu.store',
-                'show'    => 'optionmenu.show',
-                'update'  => 'optionmenu.update',
-                'destroy' => 'optionmenu.destroy',
-            ]
-        );
+                [
+                    'index' => 'order.index',
+                    'show' => 'order.show',
+                    'store' => 'order.store',
+                    'update' => 'order.update',
+                ]
+            );
 
-        //    TYPEUSER
-        Route::resource('typeuser', TypeUserController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index'   => 'typeuser.index',
-                'store'   => 'typeuser.store',
-                'show'    => 'typeuser.show',
-                'update'  => 'typeuser.update',
-                'destroy' => 'typeuser.destroy',
-            ]
-        );
-
-        //    USER
-        Route::resource('user', UserController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index'   => 'user.index',
-                'store'   => 'user.store',
-                'show'    => 'user.show',
-                'update'  => 'user.update',
-                'destroy' => 'user.destroy',
-            ]
-        );
-
-        //    ACCESS
-        Route::resource('access', AccessController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index'   => 'access.index',
-                'store'   => 'access.store',
-                'show'    => 'access.show',
-                'update'  => 'access.update',
-                'destroy' => 'access.destroy',
-            ]
-        );
-
-        //    ZONE
-        Route::resource('zone', ZoneController::class)->only(['show', 'store', 'update', 'destroy']
-        )->names(['store' => 'zone.store', 'show'     => 'zone.show',
-            'update'          => 'zone.update', 'destroy' => 'zone.destroy']);
-
-        //    PRODUCT
-        Route::resource('product', ProductController::class)->only(
-            ['store', 'destroy']
-        )->names(
-            [
-                'store'   => 'product.store',
-                'destroy' => 'product.destroy',
-            ]
-        );
-
-        Route::post('/productsOnSale', [ProductController::class, 'updateProductsOnSale'])->name('product.productsOnSale');
-        Route::post('/updateProduct/{id}', [ProductController::class, 'update'])->name('product.update');
-        Route::get('/products', [ProductController::class, 'getAllProducts'])->name('product.all');
-
-        //    CATEGORY
-        Route::resource('category', CategoryController::class)->only(
-            ['store', 'destroy']
-        )->names(
-            [
-                'store'   => 'category.store',
-                'destroy' => 'category.destroy',
-            ]
-        );
-        Route::post('/category/{id}', [CategoryController::class, 'update'])->name('category.update');
-
-        //    SUBCATEGORY
-        Route::resource('subcategory', SubcategoryController::class)->only(
-            ['store', 'destroy']
-        )->names(
-            [
-                'update'  => 'subcategory.update',
-                'destroy' => 'subcategory.destroy',
-            ]
-        );
-        Route::post('/subcategory/{id}', [SubcategoryController::class, 'update'])->name('subcategory.update');
-
-        //    COLOR
-        Route::resource('color', ColorController::class)->only(
-            ['show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'store'   => 'color.store',
-                'show'    => 'color.show',
-                'update'  => 'color.update',
-                'destroy' => 'color.destroy',
-            ]
-        );
-
-        //    SIZE
-        Route::resource('size', SizeController::class)->only(
-            ['show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'store'   => 'size.store',
-                'show'    => 'size.show',
-                'update'  => 'size.update',
-                'destroy' => 'size.destroy',
-            ]
-        );
-
-//        ORDER ADMIN
-        Route::post('/order/search', [OrderController::class, 'search'])->name('order.search');
-        Route::post('/order/searchPaginate', [OrderController::class, 'searchPaginate'])->name('order.searchPaginate');
-        Route::post('/order/updateStatus/{id}', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
-        Route::get('/orderStatus', [OrderController::class, 'orderStatus'])->name('order.orderStatus');
-        Route::get('/dashboardOrders', [OrderController::class, 'dashboardOrders'])->name('order.dashboard');
-        Route::get('/showOrder/{id}', [OrderController::class, 'showOrder'])->name('order.showOrder');
-
-//        PRODUCT DETAILS
-        Route::post('/productdetails/search', [ProductDetailsController::class, 'search'])->name('productdetails.search');
-        Route::post('/productdetails/searchPaginate', [ProductDetailsController::class, 'searchPaginate'])->name('productdetails.searchPaginate');
-
-        Route::resource('productdetails', ProductDetailsController::class)->only(
-            ['index', 'show', 'store', 'update', 'destroy']
-        )->names(
-            [
-                'index'   => 'productdetails.index',
-                'store'   => 'productdetails.store',
-                'show'    => 'productdetails.show',
-                'update'  => 'productdetails.update',
-                'destroy' => 'productdetails.destroy',
-            ]
-        );
-
-//        IMAGES
-        Route::get('/images', [ImageController::class, 'listImages'])->name('images.all');
-        Route::delete('/deleteDirectoryProduct', [ImageController::class, 'deleteDirectoryProduct'])->name('images.deleteDirectoryProduct');
-
-//        BANNER
-        Route::resource('banner', BannerController::class)->only(
-            ['store', 'destroy']
-        )->names(
-            [
-                'store'   => 'banner.store',
-                'destroy' => 'banner.destroy',
-            ]
-        );
-        Route::post('/banner-video', [BannerController::class, 'storeVideo'])->name('banner.video');
-
-        //        COUPON
+        //    COUPON
         Route::resource('coupon', CouponController::class)->only(
-            ['index', 'store', 'show', 'update', 'destroy']
+            ['index', 'show']
         )->names(
-            [
-                'index'   => 'coupon.index',
-                'store'   => 'coupon.store',
-                'show'    => 'coupon.show',
-                'update'  => 'coupon.update',
-                'destroy' => 'coupon.destroy',
-            ]
-        );
+                [
+                    'index' => 'coupon.index',
+                    'show' => 'coupon.show',
+                ]
+            );
 
-//        DISTRICT
-        Route::resource('district', DistrictController::class)->only(
-            ['store', 'update', 'destroy']
+        //    WISH ITEM
+        Route::resource('wishitem', WishItemController::class)->only(
+            ['index', 'show', 'destroy']
         )->names(
-            [
-                'store'   => 'district.store',
-                'update'  => 'district.update',
-                'destroy' => 'district.destroy',
-            ]
-        );
+                [
+                    'index' => 'wishitem.index',
+                    'show' => 'wishitem.show',
+                    'destroy' => 'wishitem.destroy',
+                ]
+            );
 
-//        SEDE
-        Route::resource('sede', SedeController::class)->only(
-            ['store', 'update', 'destroy']
-        )->names(
-            [
-                'store'   => 'sede.store',
-                'update'  => 'sede.update',
-                'destroy' => 'sede.destroy',
-            ]
-        );
-    });
+        //    PERSON
+        Route::get('/person', [PersonController::class, 'show'])->name('person.show');
+        Route::put('/person', [PersonController::class, 'update'])->name('person.update');
 
-    Route::get('/downloadVoucherSend/{id}', [OrderController::class, 'downloadVoucherSend'])->name('order.downloadVoucherSend');
-    Route::get('/sede', [SedeController::class, 'index'])->name('sede.index');
-    Route::get('/sede/{id}', [SedeController::class, 'show'])->name('sede.show');
-
-//    IZI PAY
-    Route::post('/izipay/createPaymentToken/{id}', [IziPayController::class, 'createPaymentToken'])->name('izipay.createPaymentToken');
-
-//    ORDER CLIENT
-    Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
-    Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
-    Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
-    Route::post('/updateMethod/{id}', [OrderController::class, 'setOrderMethod'])->name('order.setOrderMethod');
-    Route::post('/updateDates/{id}', [OrderController::class, 'updateDates'])->name('order.updateDates');
-
-//    WISH ITEM
-    Route::resource('wishitem', WishItemController::class)->only(
-        ['index', 'store', 'show', 'destroy']
-    )->names(
-        [
-            'index'   => 'wishitem.index',
-            'store'   => 'wishitem.store',
-            'show'    => 'wishitem.show',
-            'destroy' => 'wishitem.destroy',
-        ]
-    );
-
-    //    COMMENT
-    Route::resource('comment', CommentController::class)->only(
-        ['index', 'show', 'store', 'update', 'destroy']
-    )->names(
-        [
-            'index'   => 'comment.index',
-            'store'   => 'comment.store',
-            'show'    => 'comment.show',
-            'update'  => 'comment.update',
-            'destroy' => 'comment.destroy',
-        ]
-    );
-
-    //    ORDER
-    Route::resource('order', OrderController::class)->only(
-        ['index', 'show', 'store', 'update']
-    )->names(
-        [
-            'index'  => 'order.index',
-            'show'   => 'order.show',
-            'store'  => 'order.store',
-            'update' => 'order.update',
-        ]
-    );
-
-    //    COUPON
-    Route::resource('coupon', CouponController::class)->only(
-        ['index', 'show']
-    )->names(
-        [
-            'index' => 'coupon.index',
-            'show'  => 'coupon.show',
-        ]
-    );
-
-    //    WISH ITEM
-    Route::resource('wishitem', WishItemController::class)->only(
-        ['index', 'show', 'destroy']
-    )->names(
-        [
-            'index'   => 'wishitem.index',
-            'show'    => 'wishitem.show',
-            'destroy' => 'wishitem.destroy',
-        ]
-    );
-
-    //    PERSON
-    Route::get('/person', [PersonController::class, 'show'])->name('person.show');
-    Route::put('/person', [PersonController::class, 'update'])->name('person.update');
-
-                                         // API 360 PARA ALIMENTAR TABLAS
-    require __DIR__ . '/Api/360Api.php'; //APIS 360
-
-}
+        // API 360 PARA ALIMENTAR TABLAS
+        require __DIR__ . '/Api/360Api.php'; //APIS 360
+    
+    }
 );
 //API LIBRE PARA SER USADA DESDE 360
 Route::get('getdata-sincronizarDatos360', [ProductController::class, 'sincronizarDatos360']);
@@ -403,3 +410,5 @@ Route::post('products/actualizar-stock', [ProductController::class, 'actualizar_
 
 //actualizar campos pedido
 Route::post('orders/actualizarcampos', [OrderController::class, 'updatepedidos']);
+
+Route::get('/couponByCode/{code}', [CouponController::class, 'showByCode'])->name('coupon.showByCode');
