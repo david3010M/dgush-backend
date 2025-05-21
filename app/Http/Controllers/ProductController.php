@@ -854,20 +854,20 @@ class ProductController extends Controller
             return response()->json(['status' => 'unauthorized'], 401);
         }
 
-        $uuid = $request->header('Authorization');
+        $uuid = $request->header('Authorization'); // Puedes usar este como uuid definitivo
 
-        // Ruta del PHP ejecutable en Windows (ajústala según tu instalación de XAMPP)
-        $phpPath = 'C:\xampp\php\php.exe';
+        // 🔹 Incluir el UUID como argumento en el comando
+        $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
+        //$cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
 
-        // Comando para ejecutar el Artisan con el UUID
-        $cmd = "\"$phpPath\" " . base_path('artisan') . ' sincronizar:datos360 ' . escapeshellarg($uuid);
+        $descriptorspec = [
+            0 => ['pipe', 'r'],                                                    // stdin
+            1 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stdout
+            2 => ['file', storage_path('logs/ejecucion_sincronizacion.log'), 'a'], // stderr
+        ];
 
-        // Construcción del comando para ejecución en background (usando start /B)
-        $logPath = storage_path('logs/ejecucion_sincronizacion.log');
-        $fullCommand = "start /B cmd /C \"$cmd >> \"$logPath\" 2>&1\"";
-
-        // Ejecutar el comando
-        pclose(popen($fullCommand, 'r'));
+        $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+        // proc_open($cmd, $descriptorspec, $pipes);
 
         Log::info("Sincronización 360 enviada al fondo para UUID: $uuid");
 

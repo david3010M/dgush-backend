@@ -1640,57 +1640,19 @@ class OrderController extends Controller
         return Order::find($pedido['data']->id);
     }
 
-    public function sincronizarOrders360(ListOrders360Request $request)
-    {
-        $uuid = $request->header('Authorization2') ?? env('APP_UUID');
-
-        $start = $request->input('start');
-        $end = $request->input('end');
-
-        // Ruta del ejecutable PHP en XAMPP
-        $phpPath = base_path('C:\\xampp\\php\\php.exe'); // Ajusta si usas otra ruta
-
-        // Comando base con 'start /B' para ejecutar en segundo plano
-        $cmd = 'start /B "' . $phpPath . '" ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
-
-        if ($start) {
-            $cmd .= ' --start=' . escapeshellarg($start);
-        }
-
-        if ($end) {
-            $cmd .= ' --end=' . escapeshellarg($end);
-        }
-
-        // Sin manejo de salida por redirección; solo se ejecuta en background
-        pclose(popen($cmd, 'r'));
-
-        Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
-            'uuid' => $uuid,
-            'start' => $start,
-            'end' => $end,
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
-        ]);
-    }
-
-
-
     // public function sincronizarOrders360(ListOrders360Request $request)
     // {
     //     $uuid = $request->header('Authorization2') ?? env('APP_UUID');
 
-    //     // 🔹 Obtener fechas si están presentes en la request
     //     $start = $request->input('start');
     //     $end = $request->input('end');
 
-    //     // 🔹 Comando base
-    //     // $cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
-    //     $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+    //     // Ruta del ejecutable PHP en XAMPP
+    //     $phpPath = base_path('C:\\xampp\\php\\php.exe'); // Ajusta si usas otra ruta
 
-    //     // 🔹 Añadir opciones correctamente formateadas
+    //     // Comando base con 'start /B' para ejecutar en segundo plano
+    //     $cmd = 'start /B "' . $phpPath . '" ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+
     //     if ($start) {
     //         $cmd .= ' --start=' . escapeshellarg($start);
     //     }
@@ -1699,16 +1661,8 @@ class OrderController extends Controller
     //         $cmd .= ' --end=' . escapeshellarg($end);
     //     }
 
-    //     // 🔹 Definir manejo de salida
-    //     $descriptorspec = [
-    //         0 => ['pipe', 'r'],                                                           // stdin
-    //         1 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stdout
-    //         2 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stderr
-    //     ];
-
-    //     // 🔹 Ejecutar el comando en segundo plano (solo Windows con `start /B`)
-    //     // proc_open($cmd, $descriptorspec, $pipes);
-    //     $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+    //     // Sin manejo de salida por redirección; solo se ejecuta en background
+    //     pclose(popen($cmd, 'r'));
 
     //     Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
     //         'uuid' => $uuid,
@@ -1721,6 +1675,52 @@ class OrderController extends Controller
     //         'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
     //     ]);
     // }
+
+
+
+    public function sincronizarOrders360(ListOrders360Request $request)
+    {
+        $uuid = $request->header('Authorization2') ?? env('APP_UUID');
+
+        // 🔹 Obtener fechas si están presentes en la request
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        // 🔹 Comando base
+        // $cmd = 'start /B php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+        $cmd = '/usr/bin/php ' . base_path('artisan') . ' sincronizar:ordenes360 ' . escapeshellarg($uuid);
+
+        // 🔹 Añadir opciones correctamente formateadas
+        if ($start) {
+            $cmd .= ' --start=' . escapeshellarg($start);
+        }
+
+        if ($end) {
+            $cmd .= ' --end=' . escapeshellarg($end);
+        }
+
+        // 🔹 Definir manejo de salida
+        $descriptorspec = [
+            0 => ['pipe', 'r'],                                                           // stdin
+            1 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stdout
+            2 => ['file', storage_path('logs/ejecucion_sincronizacion_orders.log'), 'a'], // stderr
+        ];
+
+        // 🔹 Ejecutar el comando en segundo plano (solo Windows con `start /B`)
+        // proc_open($cmd, $descriptorspec, $pipes);
+        $process = proc_open($cmd . ' > /dev/null 2>&1 &', $descriptorspec, $pipes);
+
+        Log::info("🚀 Sincronización de órdenes 360 enviada al fondo", [
+            'uuid' => $uuid,
+            'start' => $start,
+            'end' => $end,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sincronización de órdenes 360 iniciada con éxito.',
+        ]);
+    }
 
     public function updatepedidos(UpdateOrderRequest $request)
     {
