@@ -59,7 +59,7 @@ class CulquiService
     ) {
         try {
             $url = "https://sistema.360sys.com.pe/api/online-store/" . $endpoint;
-            $authorizationUiid = !empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID_DEMO_360');
+            $authorizationUiid = !empty($authorizationUiid) ? $authorizationUiid : env('APP_UUID_TIENDA');
 
             $response = HttP::withHeaders([
                 'Authorization' => $authorizationUiid,
