@@ -52,7 +52,8 @@ class OrderResource extends JsonResource
             'status' => $this->status,
             // 'statusNumber' => $statusDictionary[$this->status],
             'description' => $this->description ?? '-',
-            'image' => $this->orderDetails->count() > 0 ? $this->orderDetails[0]->product->image->url : null,
+            
+            'image' => $this->orderDetails->count() > 0 ? $this->orderDetails[0]?->product?->image?->url : null,
             'date' => $this->date,
             'shippingDate' => $this->shippingDate ? Carbon::parse($this->shippingDate)->format('Y-m-d') : null,
             'deliveryDate' => $this->deliveryDate ? Carbon::parse($this->deliveryDate)->format('Y-m-d') : null,
