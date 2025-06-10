@@ -97,7 +97,7 @@ class ProductDetails extends Model
         if ($per_page && $page) {
             return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->paginate($per_page, ['*'], 'page', $page);
         } else {
-            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->get();
+            return $query->orderBy($sort == 'none' ? 'id' : $sort, $direction)->limit(1000)->get();
         }
     }
 }
