@@ -330,23 +330,45 @@ class Api360Service
                             }
                         }
 
-                        if (isset($item['colors'])) {
+                        if (array_key_exists('colors', $item)) {
+                            $syncedProductDetailIds = [];
+
                             foreach ($item['colors'] as $color) {
                                 $colorInstance = Color::where('server_id', $color['id'])->first();
+                                if (!$colorInstance) {
+                                    continue;
+                                }
 
                                 if ($colorInstance && isset($color['sizes'])) {
+                                    $colorStatus = array_key_exists('status', $color)
+                                        ? $this->normalizeApiStatus($color['status'])
+                                        : $this->normalizeApiStatus($colorInstance->status ?? true);
+
                                     foreach ($color['sizes'] as $size) {
                                         $sizeInstance = Size::where('server_id', $size['id'])->first();
 
                                         if ($sizeInstance) {
-                                            ProductDetails::updateOrCreate(
+                                            $sizeStatus = array_key_exists('status', $size)
+                                                ? $this->normalizeApiStatus($size['status'])
+                                                : $this->normalizeApiStatus($sizeInstance->status ?? true);
+
+                                            $productDetail = ProductDetails::withTrashed()->updateOrCreate(
                                                 [
                                                     'product_id' => $product->id,
                                                     'color_id' => $colorInstance->id,
                                                     'size_id' => $sizeInstance->id,
                                                 ],
-                                                ['stock' => $size['stock']]
+                                                [
+                                                    'stock' => $size['stock'],
+                                                    'status' => $colorStatus && $sizeStatus,
+                                                ]
                                             );
+
+                                            if ($productDetail->trashed()) {
+                                                $productDetail->restore();
+                                            }
+
+                                            $syncedProductDetailIds[] = $productDetail->id;
                                         }
                                     }
 
@@ -368,19 +390,12 @@ class Api360Service
                                     }
                                 }
                             }
-                        }
 
-                        // Procesar Guía de Tallas (Tarea 4)
-                        if (!empty($item['size_guide'])) {
-                            SizeGuide::updateOrCreate(
-                                ['product_id' => $product->id],
-                                [
-                                    'name' => 'Guía de Tallas (360sys)',
-                                    'route' => $item['size_guide']
-                                ]
-                            );
-                        } else {
-                            SizeGuide::where('product_id', $product->id)->delete();
+                            $staleProductDetails = ProductDetails::where('product_id', $product->id);
+                            if (!empty($syncedProductDetailIds)) {
+                                $staleProductDetails->whereNotIn('id', $syncedProductDetailIds);
+                            }
+                            $staleProductDetails->delete();
                         }
 
                     }
@@ -421,13 +436,18 @@ class Api360Service
             $size = Size::firstWhere('server_id', $item['size_id']);
 
             if ($product && $color && $size) {
+                $values = ['stock' => $item['stock']];
+                if (array_key_exists('status', $item)) {
+                    $values['status'] = $this->normalizeApiStatus($item['status']);
+                }
+
                 $detail = ProductDetails::updateOrCreate(
                     [
                         'product_id' => $product->id,
                         'color_id' => $color->id,
                         'size_id' => $size->id,
                     ],
-                    ['stock' => $item['stock']]
+                    $values
                 );
                 $updatedDetails[] = $detail;
             }
@@ -449,9 +469,9 @@ class Api360Service
         $response = Http::withHeaders([
             'Authorization' => $authorizationUuid,
         ])->get($endpoint, [
-                    'color_id' => $data['color_id'],
-                    'size_id' => $data['size_id'],
-                ]);
+            'color_id' => $data['color_id'],
+            'size_id' => $data['size_id'],
+        ]);
 
         // Verificar que la respuesta sea exitosa
         if ($response->successful()) {
@@ -483,5 +503,14 @@ class Api360Service
         return $data
             ? ['status' => true, 'data' => $data]
             : ['status' => false, 'data' => [], 'model' => $modelClass, 'message' => "No se encontró server_id: {$id} en {$modelClass}"];
+    }
+
+    private function normalizeApiStatus($status): bool
+    {
+        if ($status === null) {
+            return true;
+        }
+
+        return filter_var($status, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? (bool) $status;
     }
 }

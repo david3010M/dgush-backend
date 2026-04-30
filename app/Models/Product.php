@@ -204,7 +204,12 @@ class Product extends Model
         if ($color) {
             $color = Color::whereIn('value', $color)->pluck('id');
             $query->whereHas('productColors', function ($query) use ($color) {
-                $query->whereIn('color_id', $color);
+                $query->whereIn('color_id', $color)
+                    ->where('product_details.status', true)
+                    ->where(function ($query) {
+                        $query->whereNull('color.status')
+                            ->orWhereIn('color.status', Color::ACTIVE_STATUS_VALUES);
+                    });
             });
         }
 
@@ -212,7 +217,8 @@ class Product extends Model
         if ($size) {
             $size = Size::whereIn('value', $size)->pluck('id');
             $query->whereHas('productSizes', function ($query) use ($size) {
-                $query->whereIn('size_id', $size);
+                $query->whereIn('size_id', $size)
+                    ->where('product_details.status', true);
             });
         }
 
@@ -274,7 +280,12 @@ class Product extends Model
         if ($color) {
             $color = Color::whereIn('id', $color)->pluck('id');
             $query->whereHas('productColors', function ($query) use ($color) {
-                $query->whereIn('color_id', $color);
+                $query->whereIn('color_id', $color)
+                    ->where('product_details.status', true)
+                    ->where(function ($query) {
+                        $query->whereNull('color.status')
+                            ->orWhereIn('color.status', Color::ACTIVE_STATUS_VALUES);
+                    });
             });
         }
 
@@ -282,7 +293,8 @@ class Product extends Model
         if ($size) {
             $size = Size::whereIn('id', $size)->pluck('id');
             $query->whereHas('productSizes', function ($query) use ($size) {
-                $query->whereIn('size_id', $size);
+                $query->whereIn('size_id', $size)
+                    ->where('product_details.status', true);
             });
         }
 
@@ -309,6 +321,11 @@ class Product extends Model
         return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
             ->join('color', 'product_details.color_id', '=', 'color.id')
             ->where('product.id', $id)
+            ->where('product_details.status', true)
+            ->where(function ($query) {
+                $query->whereNull('color.status')
+                    ->orWhereIn('color.status', Color::ACTIVE_STATUS_VALUES);
+            })
             ->whereNull('product_details.deleted_at')
             ->select('color.id', 'color.name', 'color.value', 'color.hex')
             ->distinct()
@@ -318,8 +335,14 @@ class Product extends Model
     public static function getSizesByProduct($id)
     {
         return Product::join('product_details', 'product.id', '=', 'product_details.product_id')
+            ->join('color', 'product_details.color_id', '=', 'color.id')
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
+            ->where('product_details.status', true)
+            ->where(function ($query) {
+                $query->whereNull('color.status')
+                    ->orWhereIn('color.status', Color::ACTIVE_STATUS_VALUES);
+            })
             ->whereNull('product_details.deleted_at')
             ->select('size.id', 'size.name', 'size.value')
             ->orderBy('size.id')
@@ -333,6 +356,11 @@ class Product extends Model
             ->join('color', 'product_details.color_id', '=', 'color.id')
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
+            ->where('product_details.status', true)
+            ->where(function ($query) {
+                $query->whereNull('color.status')
+                    ->orWhereIn('color.status', Color::ACTIVE_STATUS_VALUES);
+            })
             ->whereNull('product_details.deleted_at')
             ->select(
                 'product_details.id',
@@ -359,7 +387,11 @@ class Product extends Model
     {
         $productDetailsData = ProductDetails::with(['product', 'color', 'size'])
             ->where('product_id', $id)
+            ->where('status', true)
             ->whereNull('deleted_at')
+            ->whereHas('color', function ($query) {
+                $query->active();
+            })
             ->get();
 
         foreach ($productDetailsData as $item) {
@@ -378,6 +410,11 @@ class Product extends Model
             ->join('color', 'product_details.color_id', '=', 'color.id')
             ->join('size', 'product_details.size_id', '=', 'size.id')
             ->where('product.id', $id)
+            ->where('product_details.status', true)
+            ->where(function ($query) {
+                $query->whereNull('color.status')
+                    ->orWhereIn('color.status', Color::ACTIVE_STATUS_VALUES);
+            })
             ->whereNull('product_details.deleted_at')
             ->select(
                 'color.id as color_id',
@@ -449,7 +486,23 @@ class Product extends Model
 
     public function images($id)
     {
-        return Image::where('product_id', $id)->get();
+        return Image::where('product_id', $id)
+            ->where(function ($query) use ($id) {
+                $query->whereNull('color_id')
+                    ->orWhere(function ($query) use ($id) {
+                        $query->whereHas('color', function ($query) {
+                            $query->active();
+                        })->whereExists(function ($query) use ($id) {
+                            $query->selectRaw(1)
+                                ->from('product_details')
+                                ->whereColumn('product_details.color_id', 'image.color_id')
+                                ->where('product_details.product_id', $id)
+                                ->where('product_details.status', true)
+                                ->whereNull('product_details.deleted_at');
+                        });
+                    });
+            })
+            ->get();
     }
 
     public function imagesProduct()

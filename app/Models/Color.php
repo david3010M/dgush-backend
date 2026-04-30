@@ -21,6 +21,8 @@ class Color extends Model
 
     use SoftDeletes;
 
+    public const ACTIVE_STATUS_VALUES = [true, 1, '1', 'true'];
+
     protected $table = 'color';
 
     protected $fillable = [
@@ -46,7 +48,16 @@ class Color extends Model
 
     protected $casts = [
         'server_id' => 'integer',
+        'status' => 'boolean',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where(function ($query) {
+            $query->whereNull('status')
+                ->orWhereIn('status', self::ACTIVE_STATUS_VALUES);
+        });
+    }
 
     public function productDetails()
     {
