@@ -22,6 +22,7 @@ use App\Models\Province;
 use App\Models\Sede;
 use App\Models\Size;
 use App\Models\Subcategory;
+use App\Models\SizeGuide;
 use App\Models\Zone;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
@@ -328,6 +329,19 @@ class Api360Service
                                     ]
                                 );
                             }
+                        }
+
+                        // Procesar Guía de Tallas (Tarea 4)
+                        if (!empty($item['size_guide'])) {
+                            SizeGuide::updateOrCreate(
+                                ['product_id' => $product->id],
+                                [
+                                    'name' => 'Guía de Tallas (360sys)',
+                                    'route' => $item['size_guide']
+                                ]
+                            );
+                        } else {
+                            SizeGuide::where('product_id', $product->id)->delete();
                         }
 
                         if (array_key_exists('colors', $item)) {
