@@ -39,6 +39,7 @@ class UpdateStockRequest extends UpdateRequest
             'items.*.color_id'   => 'required|exists:color,server_id',
             'items.*.size_id'    => 'required|exists:size,server_id',
             'items.*.stock'      => 'required|integer',
+            'items.*.status'     => 'nullable|boolean',
         ];
     }
 
