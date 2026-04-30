@@ -32,6 +32,7 @@ class ProductResource extends JsonResource
             'subcategory_id'     => $this->subcategory_id,
             'image'              => $this->image ? (new ImageResource($this->image))->url : url('images/placeholder.svg'),
             'status_server'      => $this->status_server,
+            'size_guide_url'     => $this->guideSize ? $this->guideSize->route : null,
             'currency'           => $this->currency,
             'server_id'          => $this->server_id,
         ];

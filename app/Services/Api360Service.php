@@ -370,6 +370,19 @@ class Api360Service
                             }
                         }
 
+                        // Procesar Guía de Tallas (Tarea 4)
+                        if (!empty($item['size_guide'])) {
+                            SizeGuide::updateOrCreate(
+                                ['product_id' => $product->id],
+                                [
+                                    'name' => 'Guía de Tallas (360sys)',
+                                    'route' => $item['size_guide']
+                                ]
+                            );
+                        } else {
+                            SizeGuide::where('product_id', $product->id)->delete();
+                        }
+
                     }
                     return [
                         'status' => true,
