@@ -164,7 +164,7 @@ class Product extends Model
 
     public static function search($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction, $per_page, $page)
     {
-        $query = Product::query();
+        $query = Product::query()->where('status_server', 1);
         if ($search) {
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
@@ -236,7 +236,7 @@ class Product extends Model
 
     public static function searchNoLiquidacion($search, $status, $liquidacion, $score, $subcategory, $price, $color, $size, $sort, $direction, $per_page, $page)
     {
-        $query = Product::query();
+        $query = Product::query()->where('status_server', 1);
         if ($search) {
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')

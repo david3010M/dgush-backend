@@ -52,7 +52,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('image')->orderBy('id', 'desc')->simplePaginate(12);
+        $products = Product::where('status_server', 1)->with('image')->orderBy('id', 'desc')->simplePaginate(12);
         ProductResource::collection($products);
         return response()->json($products);
     }
@@ -179,7 +179,7 @@ class ProductController extends Controller
 
     public function getProductLiquidacion()
     {
-        $products = Product::where('liquidacion', true)->get();
+        $products = Product::where('status_server', 1)->where('liquidacion', true)->get();
         return response()->json($products);
     }
 
@@ -403,7 +403,7 @@ class ProductController extends Controller
         }
 
         //        FIND PRODUCT
-        $product = Product::find($id);
+        $product = Product::where('status_server', 1)->find($id);
         if ($product) {
             //            GET COMMENTS
             $colors = $product->getColorsByProduct($id);
@@ -437,7 +437,7 @@ class ProductController extends Controller
         }
 
         // FIND PRODUCT
-        $product = Product::find($id);
+        $product = Product::where('status_server', 1)->find($id);
         if ($product) {
             // GET PRODUCT DETAILS
             $productDetails = $product->getProductDetailsWithSizes($id);
