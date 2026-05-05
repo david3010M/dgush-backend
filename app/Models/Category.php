@@ -24,6 +24,7 @@ class Category extends Model
     protected $fillable = [
         'name',
         'value',
+        'photo',
         
         'status',
         'server_id',
@@ -37,6 +38,7 @@ class Category extends Model
 
     const getfields360 = [
         'name'=>'name',
+        'photo'=>'photo',
         'status'=>'status',
         'server_id'=>'id',
     ];
