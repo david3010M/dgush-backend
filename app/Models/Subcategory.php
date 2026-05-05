@@ -56,6 +56,7 @@ class Subcategory extends Model
     ];
     const getfields360 = [
         'name'      => 'name',
+        'image'     => 'photo',
         'status'    => 'status',
         'server_id' => 'id',
     ];
