@@ -201,7 +201,9 @@ class Api360Service
                 }
 
                 if (!empty($items)) {
+                    $syncedServerIds = [];
                     foreach ($items as $item) {
+                        $syncedServerIds[] = $item['id'];
 
                         $processedFields = [];
                         foreach ($fields as $dbField => $apiField) {
@@ -220,6 +222,11 @@ class Api360Service
                             array_merge($processedFields, ['server_id' => $item['id']])
                         );
 
+                    }
+
+                    // Eliminar registros que ya no vienen en la API (Soft Delete)
+                    if (!empty($syncedServerIds)) {
+                        $modelClass::whereNotIn('server_id', $syncedServerIds)->delete();
                     }
 
                     return [
@@ -276,7 +283,9 @@ class Api360Service
                 }
 
                 if (!empty($items)) {
+                    $syncedServerIds = [];
                     foreach ($items as $item) {
+                        $syncedServerIds[] = $item['id'];
                         $processedFields = [];
                         foreach ($fields as $dbField => $apiField) {
                             $processedFields[$dbField] = $item[$apiField] ?? null;
@@ -413,6 +422,13 @@ class Api360Service
                         }
 
                     }
+
+                    // Eliminar productos que ya no vienen en la API (Soft Delete) y actualizar status_server
+                    if (!empty($syncedServerIds)) {
+                        $modelClass::whereNotIn('server_id', $syncedServerIds)->update(['status_server' => 0]);
+                        $modelClass::whereNotIn('server_id', $syncedServerIds)->delete();
+                    }
+
                     return [
                         'status' => true,
                         'message' => "Datos sincronizados correctamente para el modelo {$modelClass}.",
