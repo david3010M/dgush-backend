@@ -319,9 +319,12 @@ class Api360Service
                         ]);
                         $processedFields['price12'] = $price12;
 
-                        $product = $modelClass::updateOrCreate(
+                        $product = $modelClass::withTrashed()->updateOrCreate(
                             ['server_id' => $item['id']],
-                            array_merge($processedFields, ['server_id' => $item['id']])
+                            array_merge($processedFields, [
+                                'server_id' => $item['id'],
+                                'deleted_at' => null // Restaura si estaba en papelera
+                            ])
                         );
 
                         // Procesar imágenes
