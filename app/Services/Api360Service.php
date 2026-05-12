@@ -429,6 +429,35 @@ class Api360Service
                         $modelClass::whereNotIn('server_id', $syncedServerIds)->delete();
                     }
 
+                    // Eliminar duplicados por server_id: conserva el de menor id (ya actualizado por el sync)
+                    // y hace soft-delete de los extras con id mayor
+                    $duplicateServerIds = $modelClass::selectRaw('server_id')
+                        ->whereNotNull('server_id')
+                        ->groupBy('server_id')
+                        ->havingRaw('COUNT(*) > 1')
+                        ->pluck('server_id');
+
+                    if ($duplicateServerIds->isNotEmpty()) {
+                        foreach ($duplicateServerIds as $dupServerId) {
+                            // Obtener todos los ids con ese server_id, ordenados de menor a mayor
+                            $ids = $modelClass::where('server_id', $dupServerId)
+                                ->orderBy('id')
+                                ->pluck('id');
+
+                            // El primero (menor id) es el que updateOrCreate actualizó → lo conservamos
+                            // Los demás son los duplicados → los eliminamos con soft-delete
+                            $idsToDelete = $ids->slice(1)->values();
+
+                            $modelClass::whereIn('id', $idsToDelete)->delete();
+
+                            Log::warning('Duplicados por server_id eliminados. Se conservó el registro original.', [
+                                'server_id'      => $dupServerId,
+                                'conservado_id'  => $ids->first(),
+                                'eliminados_ids' => $idsToDelete->toArray(),
+                            ]);
+                        }
+                    }
+
                     return [
                         'status' => true,
                         'message' => "Datos sincronizados correctamente para el modelo {$modelClass}.",
