@@ -7,22 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ *
  * @OA\Schema (
- *     schema="OrderResource",
- *     title="OrderResource",
- *     description="Order resource",
+ *     schema="OrderDetailResource",
+ *     title="OrderDetailResource",
+ *     description="Order detail resource",
  *     @OA\Property(property="id", type="integer", example="1"),
- *     @OA\Property(property="number", type="string", example="00000001"),
- *     @OA\Property(property="subtotal", type="decimal", example="100.00"),
- *     @OA\Property(property="discount", type="decimal", example="10.00"),
- *     @OA\Property(property="sendCost", type="decimal", example="5.00"),
- *     @OA\Property(property="total", type="decimal", example="90.00"),
- *     @OA\Property(property="status", type="string", example="pending"),
- *     @OA\Property(property="description", type="string", example="description"),
- *     @OA\Property(property="date", type="timestamp", example="2024-05-26 14:40:02"),
- *     @OA\Property(property="order_items", type="array", @OA\Items(ref="#/components/schemas/OrderItem")),
- *     @OA\Property(property="send_information", type="object", ref="#/components/schemas/SendInformation"),
- *     @OA\Property(property="user", type="object", ref="#/components/schemas/User")
+ *     @OA\Property(property="order_id", type="integer", example="1"),
+ *     @OA\Property(property="product", type="object", ref="#/components/schemas/Product"),
+ *     @OA\Property(property="color", type="object", ref="#/components/schemas/Color"),
+ *     @OA\Property(property="size", type="object", ref="#/components/schemas/Size"),
+ *     @OA\Property(property="quantity", type="integer", example="2"),
+ *     @OA\Property(property="price", type="decimal", example="100.00"),
+ *     @OA\Property(property="image", type="string", example="https://cdn.example.com/p.jpg"),
+ *     @OA\Property(property="note", type="string", example="sin nota"),
+ *     @OA\Property(property="created_at", type="string", example="2024-05-26 14:40:02")
  *   )
  */
 class OrderDetailResource extends JsonResource

@@ -410,6 +410,10 @@ class OrderController extends Controller
             $orderId360 = $api360Response['data']['data']['id'] ?? null;
             //actualizar id de servide_id de la orden
             $order->server_id = $orderId360;
+            // Congelar el desglose del exceso: getfields360 no lo mapea, así que
+            // la re-sincronización posterior no lo pisa.
+            $order->excessAmount = $calculatedValues['excessAmount'] ?? 0;
+            $order->excessUnits = $calculatedValues['excessUnits'] ?? 0;
             $order->save();
             $orderInfo = $this->orderService->getOrdertosave(
                 $orderId360,
@@ -455,7 +459,7 @@ class OrderController extends Controller
 
             $subtotal = $calculatedValues['subtotal'] ?? 0;
             $total = $calculatedValues['total'] ?? 0;
-            $shipping_cost = $calculatedValues['sendCost'] ?? 0;
+            $shipping_cost = $calculatedValues['sendCost'] ?? 0; // ya incluye el exceso por distrito
             $discount = $calculatedValues['discount'] ?? 0;
 
             $payload = [
@@ -488,6 +492,9 @@ class OrderController extends Controller
                 //verificar el requerido para ambos ENVIO(distrito), Delivery(zona)
                 "shipping_cost" => $shipping_cost ?? 0, // puede ser 0, no negativo
                 "sendCost" => $shipping_cost ?? 0, // puede ser 0, no negativo
+                // Desglose congelado del exceso: el distrito puede cambiar después.
+                "excessAmount" => $calculatedValues['excessAmount'] ?? 0,
+                "excessUnits" => $calculatedValues['excessUnits'] ?? 0,
                 "discount" => $discount ?? 0, // puede ser 0, no negativo
                 "products" => $request->products ?? [],
             ];
@@ -499,6 +506,15 @@ class OrderController extends Controller
                 'success' => true,
                 'message' => 'Orden creada correctamente',
                 'order' => new OrderResource(Order::find($order->id)),
+                'shipping' => [
+                    'base' => $calculatedValues['baseSendCost'] ?? 0,
+                    'excess' => $calculatedValues['excess'] ?? 0,
+                    'excess_factor' => $calculatedValues['excessFactor'] ?? 0,
+                    'excess_units' => $calculatedValues['excessUnits'] ?? 0,
+                    'excess_amount' => $calculatedValues['excessAmount'] ?? 0,
+                    'total' => $shipping_cost,
+                    'quantity' => $calculatedValues['quantity'] ?? 0,
+                ],
             ], 201);
 
         } catch (\Exception $e) {
@@ -946,7 +962,10 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    /**
+    /*
+     * Anotación degradada a comentario simple (no `/**`) para que swagger-php
+     * deje de publicar este endpoint. Ver el @deprecated de abajo.
+     *
      * @OA\Post (
      *     path="/dgush-backend/public/api/confirmOrder",
      *     summary="Confirm order",
@@ -996,6 +1015,14 @@ class OrderController extends Controller
      *         )
      *     )
      * )
+     */
+
+    /**
+     * @deprecated 2026-07-29 Checkout pre-360. La ruta devuelve 410 Gone (routes/api.php).
+     *
+     * La rama `method === 'send'` pisa order.sendCost con district->sendCost crudo,
+     * sin el exceso interdepartamental. Si hay que reactivarlo, cambiar esas
+     * asignaciones por District::shippingCostFor($quantity).
      */
     public function confirmOrder(Request $request, int $id)
     {
@@ -1369,7 +1396,10 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
+    /*
+     * Anotación degradada a comentario simple (no `/**`) para que swagger-php
+     * deje de publicar este endpoint. Ver el @deprecated de abajo.
+     *
      * @OA\Post (
      *     path="/dgush-backend/public/api/updateMethod/{id}",
      *     summary="Set order district",
@@ -1387,6 +1417,13 @@ class OrderController extends Controller
      *     @OA\Response( response=404, description="Order not found", @OA\JsonContent(@OA\Property(property="error", type="string", example="Order not found")) ),
      *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(@OA\Property(property="error", type="string", example="The district field is required")) )
      * )
+     */
+
+    /**
+     * @deprecated 2026-07-29 Checkout pre-360. La ruta devuelve 410 Gone (routes/api.php).
+     *
+     * Igual que confirmOrder: la rama `method === 'send'` pisa order.sendCost con
+     * district->sendCost crudo, sin el exceso interdepartamental.
      */
     public function setOrderMethod(Request $request, int $id)
     {
