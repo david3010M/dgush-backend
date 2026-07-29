@@ -16,6 +16,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="subtotal", type="decimal", example="100.00"),
  *     @OA\Property(property="discount", type="decimal", example="10.00"),
  *     @OA\Property(property="sendCost", type="decimal", example="5.00"),
+ *     @OA\Property(property="excessAmount", type="decimal", example="10.00"),
+ *     @OA\Property(property="excessUnits", type="integer", example="2"),
  *     @OA\Property(property="total", type="decimal", example="90.00"),
  *     @OA\Property(property="status", type="string", example="pending"),
  *     @OA\Property(property="description", type="string", example="description"),
@@ -48,6 +50,9 @@ class OrderResource extends JsonResource
             'subtotal' => $this->subtotal,
             'discount' => $this->discount,
             'sendCost' => $this->sendCost,
+            // Desglose del exceso de envío a distrito. sendCost ya lo incluye.
+            'excessAmount' => $this->excessAmount ?? 0,
+            'excessUnits' => $this->excessUnits ?? 0,
             'total' => $this->total,
             'status' => $this->status,
             // 'statusNumber' => $statusDictionary[$this->status],

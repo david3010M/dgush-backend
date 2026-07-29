@@ -37,8 +37,21 @@ class OrderService
                 return $item['price'] * $item['quantity'];
             });
 
+            // Prendas totales del pedido: suma de quantity de todas las líneas,
+            // no número de líneas ni de SKUs. Es la base del exceso de envío.
+            $quantity = collect($request->products)->sum(function ($item) {
+                return (int) ($item['quantity'] ?? 0);
+            });
+
             $total = 0;
             $sendCost = 0;
+
+            // Desglose del envío. Para DELIVERY / RECOJO no hay exceso: base == final.
+            $baseSendCost = 0;
+            $excess = 0;
+            $excessFactor = 0;
+            $excessUnits = 0;
+            $excessAmount = 0;
 
             // 2. Calcular envío según modo
             $mode = $request->mode ?? '';
@@ -47,11 +60,20 @@ class OrderService
                 if (isset($request->zone_id) && !empty($request->zone_id)) {
                     $zone = Zone::firstWhere('server_id', $request->zone_id);
                     $sendCost = $zone && $zone->sendCost !== null ? $zone->sendCost : 0;
+                    $baseSendCost = (float) $sendCost;
                 }
             } elseif ($mode === 'ENVIO') {
                 if (isset($request->district_id) && !empty($request->district_id)) {
                     $district = District::firstWhere('server_id', $request->district_id);
-                    $sendCost = $district && $district->sendCost !== null ? $district->sendCost : 0;
+
+                    if ($district) {
+                        $baseSendCost = (float) ($district->sendCost ?? 0);
+                        $excess = (float) ($district->excess ?? 0);
+                        $excessFactor = (int) ($district->excessFactor ?? 0);
+                        $excessUnits = $district->excessUnitsFor($quantity);
+                        $excessAmount = $district->excessAmountFor($quantity);
+                        $sendCost = $district->shippingCostFor($quantity);
+                    }
                 }
             }
 
@@ -104,6 +126,14 @@ class OrderService
 
             return [
                 'subtotal' => $subtotal,
+                'quantity' => $quantity,
+                // Desglose del envío, para que el carrito explique el cobro sin recalcular.
+                // El cupón se aplica sobre sendCost (base + exceso) y viaja aparte en 'discount'.
+                'baseSendCost' => $baseSendCost,
+                'excess' => $excess,
+                'excessFactor' => $excessFactor,
+                'excessUnits' => $excessUnits,
+                'excessAmount' => $excessAmount,
                 'sendCost' => $sendCost,
                 'discount' => $discount,
                 'total' => $total,

@@ -28,6 +28,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WishItemController;
 use App\Http\Controllers\ZoneController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -329,10 +331,29 @@ Route::group(
         Route::post('/izipay/createPaymentToken/{id}', [IziPayController::class, 'createPaymentToken'])->name('izipay.createPaymentToken');
 
         //    ORDER CLIENT
-        Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
+        // DEPRECADO 2026-07-29 (feat exceso de envío): checkout pre-360.
+        // Pisaba order.sendCost con district->sendCost crudo, sin el exceso.
+        // Reemplazado por POST /api/order (store) + POST 360Api order/{id}/pay.
+        // Si el frontend aún lo llama, reactivar y aplicar District::shippingCostFor().
+        // Route::post('/confirmOrder/{id}', [OrderController::class, 'confirmOrder'])->name('order.confirm');
+        // Route::post('/updateMethod/{id}', [OrderController::class, 'setOrderMethod'])->name('order.setOrderMethod');
+        foreach (['confirmOrder' => 'order.confirm', 'updateMethod' => 'order.setOrderMethod'] as $path => $name) {
+            Route::post("/{$path}/{id}", function (Request $request, $id) use ($path) {
+                // Ruidoso a propósito: si el frontend todavía lo usa, queremos verlo el mismo día.
+                Log::warning("Endpoint deprecado invocado: {$path}", [
+                    'order_id' => $id,
+                    'user_id' => optional(auth()->user())->id,
+                    'payload' => $request->all(),
+                ]);
+
+                return response()->json([
+                    'error' => 'Endpoint deprecado. Usar POST /api/order.',
+                    'contact' => 'backend',
+                ], 410);
+            })->name($name);
+        }
         Route::post('/applyCouponToOrder/{id}', [OrderController::class, 'applyCoupon'])->name('order.applyCoupon');
         Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
-        Route::post('/updateMethod/{id}', [OrderController::class, 'setOrderMethod'])->name('order.setOrderMethod');
         Route::post('/updateDates/{id}', [OrderController::class, 'updateDates'])->name('order.updateDates');
 
         //    WISH ITEM

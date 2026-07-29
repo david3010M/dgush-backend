@@ -37,9 +37,11 @@ class DistrictController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'name'        => 'required|string',
-            'province_id' => 'required|integer',
-            'sendCost'    => 'required|numeric',
+            'name'         => 'required|string',
+            'province_id'  => 'required|integer',
+            'sendCost'     => 'required|numeric',
+            'excess'       => 'nullable|numeric|min:0',
+            'excessFactor' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -47,9 +49,11 @@ class DistrictController extends Controller
         }
 
         $data = [
-            'name'        => $request->input('name'),
-            'province_id' => $request->input('province_id'),
-            'sendCost'    => $request->input('sendCost'),
+            'name'         => $request->input('name'),
+            'province_id'  => $request->input('province_id'),
+            'sendCost'     => $request->input('sendCost'),
+            'excess'       => $request->input('excess', 0),
+            'excessFactor' => $request->input('excessFactor', 0),
         ];
 
         $district = District::create($data);
@@ -91,9 +95,11 @@ class DistrictController extends Controller
         }
 
         $validator = validator()->make($request->all(), [
-            'name'        => 'nullable|string',
-            'province_id' => 'nullable|integer',
-            'sendCost'    => 'nullable|numeric',
+            'name'         => 'nullable|string',
+            'province_id'  => 'nullable|integer',
+            'sendCost'     => 'nullable|numeric',
+            'excess'       => 'nullable|numeric|min:0',
+            'excessFactor' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -101,9 +107,11 @@ class DistrictController extends Controller
         }
 
         $data = [
-            'name'        => $request->input('name', $district->name),
-            'province_id' => $request->input('province_id', $district->province_id),
-            'sendCost'    => $request->input('sendCost', $district->sendCost),
+            'name'         => $request->input('name', $district->name),
+            'province_id'  => $request->input('province_id', $district->province_id),
+            'sendCost'     => $request->input('sendCost', $district->sendCost),
+            'excess'       => $request->input('excess', $district->excess),
+            'excessFactor' => $request->input('excessFactor', $district->excessFactor),
         ];
 
         $district->update($data);
