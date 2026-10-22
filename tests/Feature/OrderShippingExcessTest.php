@@ -139,4 +139,66 @@ class OrderShippingExcessTest extends TestCase
         $this->assertSame(15.0, $result['excessAmount']);
         $this->assertSame(30.0, $result['sendCost']);
     }
+
+    /** SHIPPING_DISTRICT_ENABLED=false: ni envío base ni exceso. */
+    public function test_disabled_district_shipping_charges_nothing(): void
+    {
+        config(['shipping.district_enabled' => false]);
+        $this->district();
+
+        $result = $this->calculate([
+            'mode' => 'ENVIO',
+            'district_id' => self::DISTRICT_SERVER_ID,
+            'products' => [['id' => 1, 'quantity' => 7, 'price' => 100]],
+        ]);
+
+        $this->assertSame(0.0, $result['baseSendCost']);
+        $this->assertSame(0.0, $result['excess']);
+        $this->assertSame(0, $result['excessFactor']);
+        $this->assertSame(0, $result['excessUnits']);
+        $this->assertSame(0.0, $result['excessAmount']);
+        $this->assertSame(0.0, $result['sendCost']);
+        $this->assertEquals(700, $result['total']);
+    }
+
+    public function test_disabled_district_shipping_does_not_affect_delivery(): void
+    {
+        config(['shipping.district_enabled' => false]);
+        Zone::create(['name' => 'LIMA CENTRO', 'server_id' => self::ZONE_SERVER_ID, 'sendCost' => 12, 'status' => true]);
+
+        $result = $this->calculate([
+            'mode' => 'DELIVERY',
+            'zone_id' => self::ZONE_SERVER_ID,
+            'products' => [['id' => 1, 'quantity' => 7, 'price' => 100]],
+        ]);
+
+        $this->assertEquals(12, $result['sendCost']);
+    }
+
+    public function test_district_endpoint_exposes_db_values_when_enabled(): void
+    {
+        $district = $this->district();
+
+        $this->getJson("/api/district/{$district->id}")
+            ->assertOk()
+            ->assertJson(['sendCost' => '15.00', 'excess' => '5.00', 'excessFactor' => 3]);
+    }
+
+    /** Al frontend le llega 0, pero la BD conserva lo sincronizado desde 360Sys. */
+    public function test_district_endpoint_exposes_zeros_when_disabled(): void
+    {
+        config(['shipping.district_enabled' => false]);
+        $district = $this->district();
+
+        $this->getJson("/api/district/{$district->id}")
+            ->assertOk()
+            ->assertJson(['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0]);
+
+        $this->assertDatabaseHas('district', [
+            'id' => $district->id,
+            'sendCost' => 15,
+            'excess' => 5,
+            'excessFactor' => 3,
+        ]);
+    }
 }

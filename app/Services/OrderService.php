@@ -64,7 +64,8 @@ class OrderService
                 }
             } elseif ($mode === 'ENVIO') {
                 if (isset($request->district_id) && !empty($request->district_id)) {
-                    $district = District::firstWhere('server_id', $request->district_id);
+                    // Con SHIPPING_DISTRICT_ENABLED=false el distrito llega en 0 y no se cobra envío.
+                    $district = District::firstWhere('server_id', $request->district_id)?->applyShippingSetting();
 
                     if ($district) {
                         $baseSendCost = (float) ($district->sendCost ?? 0);

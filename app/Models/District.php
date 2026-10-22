@@ -98,6 +98,30 @@ class District extends Model
         return round((float) ($this->sendCost ?? 0) + $this->excessAmountFor($quantity), 2);
     }
 
+    /** SHIPPING_DISTRICT_ENABLED: si la tienda cobra envío y exceso a distritos. */
+    public static function shippingEnabled(): bool
+    {
+        return (bool) config('shipping.district_enabled', true);
+    }
+
+    /**
+     * Con el envío a distritos desactivado, pone sendCost, excess y excessFactor
+     * en 0 solo en memoria, para lo que se expone al frontend y lo que se cobra.
+     * No guardar el modelo después de llamarlo: pisaría los valores de 360Sys.
+     */
+    public function applyShippingSetting(): static
+    {
+        if (! static::shippingEnabled()) {
+            $this->forceFill([
+                'sendCost'     => 0,
+                'excess'       => 0,
+                'excessFactor' => 0,
+            ]);
+        }
+
+        return $this;
+    }
+
     public function province()
     {
         return $this->belongsTo(Province::class);
