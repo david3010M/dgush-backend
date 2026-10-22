@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Department;
 use App\Models\District;
+use App\Models\Province;
 use App\Models\Zone;
 use App\Services\OrderService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -200,5 +202,24 @@ class OrderShippingExcessTest extends TestCase
             'excess' => 5,
             'excessFactor' => 3,
         ]);
+    }
+
+    /** El selector Departamento > Provincia > Distrito del checkout lee los distritos anidados. */
+    public function test_nested_districts_expose_zeros_when_disabled(): void
+    {
+        config(['shipping.district_enabled' => false]);
+        $department = Department::create(['name' => 'TEST_DEPARTAMENTO_999', 'server_id' => 999001]);
+        $province = Province::create(['name' => 'TEST_PROVINCIA_999', 'department_id' => $department->id, 'server_id' => 999027]);
+        $this->district(['province_id' => $province->id]);
+
+        $zeros = ['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0];
+
+        $this->getJson("/api/province/{$province->id}")
+            ->assertOk()
+            ->assertJson(['districts' => [$zeros]]);
+
+        $this->getJson("/api/department/{$department->id}")
+            ->assertOk()
+            ->assertJson(['provinces' => [['districts' => [$zeros]]]]);
     }
 }

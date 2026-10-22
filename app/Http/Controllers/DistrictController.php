@@ -31,7 +31,7 @@ class DistrictController extends Controller
      */
     public function index()
     {
-        return District::all()->each->applyShippingSetting();
+        return District::all();
     }
 
     public function store(Request $request)
@@ -83,7 +83,7 @@ class DistrictController extends Controller
             return response()->json(['error' => 'District not found'], 404);
         }
 
-        return response()->json($district->applyShippingSetting());
+        return response()->json($district);
     }
 
     public function update(Request $request, int $id)

@@ -106,7 +106,7 @@ class District extends Model
 
     /**
      * Con el envío a distritos desactivado, pone sendCost, excess y excessFactor
-     * en 0 solo en memoria, para lo que se expone al frontend y lo que se cobra.
+     * en 0 solo en memoria, para que el cálculo del pedido no cobre envío.
      * No guardar el modelo después de llamarlo: pisaría los valores de 360Sys.
      */
     public function applyShippingSetting(): static
@@ -120,6 +120,23 @@ class District extends Model
         }
 
         return $this;
+    }
+
+    /**
+     * Con el envío a distritos desactivado, toda respuesta JSON con distritos
+     * sale con costos en 0: /api/district y también los anidados en
+     * /api/province y /api/department, que alimentan el selector del checkout.
+     */
+    public function toArray()
+    {
+        $data = parent::toArray();
+
+        if (! static::shippingEnabled()) {
+            $zeros = ['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0];
+            $data = array_merge($data, array_intersect_key($zeros, $data));
+        }
+
+        return $data;
     }
 
     public function province()
