@@ -222,4 +222,18 @@ class OrderShippingExcessTest extends TestCase
             ->assertOk()
             ->assertJson(['provinces' => [['districts' => [$zeros]]]]);
     }
+
+    /** Con costos en 0, el frontend distingue cobertura por 'available', no por sendCost > 0. */
+    public function test_available_reflects_real_coverage_regardless_of_the_flag(): void
+    {
+        $covered = $this->district(['status' => 1]);
+        $uncovered = $this->district(['name' => 'TEST_SIN_ENVIO_999', 'server_id' => 999224, 'sendCost' => 0, 'status' => 1]);
+
+        foreach ([true, false] as $enabled) {
+            config(['shipping.district_enabled' => $enabled]);
+
+            $this->getJson("/api/district/{$covered->id}")->assertJson(['available' => true]);
+            $this->getJson("/api/district/{$uncovered->id}")->assertJson(['available' => false]);
+        }
+    }
 }

@@ -15,7 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="province_id", type="integer", example="1"),
  *     @OA\Property(property="sendCost", type="string", example="15.00", description="Costo base de envío al distrito"),
  *     @OA\Property(property="excess", type="string", example="5.00", description="Monto adicional por exceso de prendas"),
- *     @OA\Property(property="excessFactor", type="integer", example="3", description="Cada cuántas prendas se vuelve a aplicar el excess")
+ *     @OA\Property(property="excessFactor", type="integer", example="3", description="Cada cuántas prendas se vuelve a aplicar el excess"),
+ *     @OA\Property(property="available", type="boolean", example=true, description="Hay envío a este distrito (activo y con precio en 360Sys), aunque SHIPPING_DISTRICT_ENABLED=false exponga los costos en 0")
  * )
  *
  */
@@ -130,6 +131,11 @@ class District extends Model
     public function toArray()
     {
         $data = parent::toArray();
+
+        // Cobertura real del distrito (360Sys le asigna precio solo donde hay envío).
+        // Se calcula antes de los ceros: el frontend no puede deducirla de sendCost
+        // cuando el envío está desactivado.
+        $data['available'] = (bool) $this->status && (float) ($this->sendCost ?? 0) > 0;
 
         if (! static::shippingEnabled()) {
             $zeros = ['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0];
