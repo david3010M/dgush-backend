@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Chatbot\CatalogoController;
 use App\Http\Controllers\Chatbot\DisponibilidadController;
+use App\Http\Controllers\Chatbot\PreciosController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,3 +37,11 @@ Route::prefix('disponibilidad')->name('disponibilidad.')->controller(Disponibili
 
 // CARRITO (solo la lectura de stock en MySQL)
 Route::post('/carrito/verificar-stock', [DisponibilidadController::class, 'verificarStock'])->name('carrito.verificarStock');
+
+// PRECIOS
+Route::prefix('precios')->name('precios.')->controller(PreciosController::class)->group(function () {
+    Route::post('/producto', 'producto')->name('producto');
+    Route::post('/carrito', 'carrito')->name('carrito');
+    Route::post('/validar-cupon', 'validarCupon')->name('validarCupon');
+    Route::get('/cupones-activos', 'cuponesActivos')->name('cuponesActivos');
+});
