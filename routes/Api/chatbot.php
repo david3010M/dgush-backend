@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Chatbot\CatalogoController;
+use App\Http\Controllers\Chatbot\DisponibilidadController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +25,14 @@ Route::prefix('catalogo')->name('catalogo.')->controller(CatalogoController::cla
     Route::post('/fotos', 'fotos')->name('fotos');
     Route::post('/alternativas', 'alternativas')->name('alternativas');
 });
+
+// DISPONIBILIDAD
+Route::prefix('disponibilidad')->name('disponibilidad.')->controller(DisponibilidadController::class)->group(function () {
+    Route::post('/verificar', 'verificar')->name('verificar');
+    Route::post('/tallas-producto', 'tallasProducto')->name('tallasProducto');
+    Route::post('/tallas-de-color', 'tallasDeColor')->name('tallasDeColor');
+    Route::post('/colores-de-talla', 'coloresDeTalla')->name('coloresDeTalla');
+});
+
+// CARRITO (solo la lectura de stock en MySQL)
+Route::post('/carrito/verificar-stock', [DisponibilidadController::class, 'verificarStock'])->name('carrito.verificarStock');
