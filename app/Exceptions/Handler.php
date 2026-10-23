@@ -44,5 +44,11 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (Throwable $e, $request) {
+            return $request->is('api/chatbot', 'api/chatbot/*')
+                ? ChatbotErrorRenderer::render($e)
+                : null;
+        });
     }
 }

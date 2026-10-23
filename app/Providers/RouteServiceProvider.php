@@ -31,6 +31,12 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('/api')
                 ->group(base_path('routes/api.php'));
 
+            // Fuera del grupo 'api': su throttle de 60/min por IP ahogaría al agente.
+            Route::middleware(['throttle:chatbot', 'chatbot.key'])
+                ->prefix('/api/chatbot')
+                ->name('chatbot.')
+                ->group(base_path('routes/Api/chatbot.php'));
+
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
@@ -43,6 +49,10 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('chatbot', function (Request $request) {
+            return Limit::perMinute(config('chatbot.rate_limit'))->by($request->ip());
         });
     }
 }
