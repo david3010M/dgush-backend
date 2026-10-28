@@ -21,4 +21,7 @@ return [
     // Máximo de elementos en los parámetros array (ids, palabras, subcats_grupo).
     'max_items' => (int) env('CHATBOT_MAX_ITEMS', 50),
 
+    // Horas que dura una reserva de stock sin pagar antes de vencer sola.
+    'reserva_horas' => (int) env('CHATBOT_RESERVA_HORAS', 24),
+
 ];
