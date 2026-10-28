@@ -4,67 +4,25 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Testing\TestResponse;
+use Tests\Feature\Concerns\ChatbotFixtures;
 use Tests\TestCase;
 
 /**
  * Endpoints de /api/chatbot contra la BD local real con DatabaseTransactions
- * (rollback al terminar). Los datos usan el prefijo ZZBOT para no chocar con
- * los sincronizados desde 360Sys.
+ * (rollback al terminar). Datos de prueba: ChatbotFixtures.
  */
 class ChatbotApiTest extends TestCase
 {
     use DatabaseTransactions;
+    use ChatbotFixtures;
 
     private const KEY = 'chatbot-test-key';
     private const SUBCATEGORIA = 'ZZBOT SHORTS';
 
-    private int $subcategoryId;
-    private int $colorId;
-    private int $sizeId;
-
     protected function setUp(): void
     {
         parent::setUp();
-        config(['chatbot.api_key' => self::KEY]);
-
-        $now = now();
-        $categoryId = DB::table('category')->insertGetId(['name' => 'ZZBOT', 'created_at' => $now]);
-        $this->subcategoryId = DB::table('subcategory')->insertGetId([
-            'name' => self::SUBCATEGORIA, 'category_id' => $categoryId, 'created_at' => $now,
-        ]);
-        $this->colorId = DB::table('color')->insertGetId(['name' => 'ZZBOT CELESTE', 'hex' => '#AEE', 'created_at' => $now]);
-        $this->sizeId = DB::table('size')->insertGetId(['name' => 'ZZ32', 'value' => 'zz32', 'created_at' => $now]);
-    }
-
-    private function product(string $name, array $overrides = [], float $stock = 5): int
-    {
-        $id = DB::table('product')->insertGetId(array_merge([
-            'name' => $name,
-            'description' => '',
-            'detailweb' => '',
-            'price1' => 65,
-            'price2' => 60,
-            'price12' => null,
-            'priceLiquidacion' => 52,
-            'liquidacion' => true,
-            'status_server' => '1',
-            'subcategory_id' => $this->subcategoryId,
-            'currency' => 'PEN',
-            'created_at' => now(),
-        ], $overrides));
-
-        DB::table('product_details')->insert([
-            'product_id' => $id, 'color_id' => $this->colorId, 'size_id' => $this->sizeId,
-            'stock' => $stock, 'status' => true, 'created_at' => now(),
-        ]);
-
-        return $id;
-    }
-
-    private function chatbot(string $path, array $body = []): TestResponse
-    {
-        return $this->postJson("/api/chatbot/{$path}", $body, ['X-API-Key' => self::KEY]);
+        $this->setUpChatbotFixtures();
     }
 
     public function test_buscar_categoria_castea_precios_y_respeta_null(): void
