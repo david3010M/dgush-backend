@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Chatbot\CatalogoController;
+use App\Http\Controllers\Chatbot\DespachoController;
 use App\Http\Controllers\Chatbot\DisponibilidadController;
 use App\Http\Controllers\Chatbot\NegocioController;
 use App\Http\Controllers\Chatbot\PreciosController;
@@ -63,3 +64,6 @@ Route::prefix('stock')->name('stock.')->controller(StockController::class)->grou
     Route::post('/reservar', 'reservar')->name('reservar');
     Route::post('/liberar', 'liberar')->name('liberar');
 });
+
+// DESPACHO
+Route::post('/despacho/server-ids', [DespachoController::class, 'serverIds'])->name('despacho.serverIds');

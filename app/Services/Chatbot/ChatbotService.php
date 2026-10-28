@@ -62,6 +62,7 @@ abstract class ChatbotService
 
     /**
      * PDO trae DECIMAL como string; el contrato pide números. Se respeta null.
+     * 'server_id': columnas string de 360Sys, entero solo si es numérico.
      * Las claves de $casts ausentes en la fila se ignoran.
      */
     protected function cast(array $rows, array $casts): array
@@ -69,7 +70,11 @@ abstract class ChatbotService
         return array_map(function (array $row) use ($casts) {
             foreach (array_intersect_key($casts, $row) as $key => $type) {
                 if ($row[$key] !== null) {
-                    $row[$key] = $type === 'float' ? (float) $row[$key] : (int) $row[$key];
+                    $row[$key] = match ($type) {
+                        'float' => (float) $row[$key],
+                        'server_id' => is_numeric($row[$key]) ? (int) $row[$key] : $row[$key],
+                        default => (int) $row[$key],
+                    };
                 }
             }
 
