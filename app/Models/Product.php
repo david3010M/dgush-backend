@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Http\Resources\ProductResource;
 use App\Services\Api360Service;
+use App\Services\StockReservationService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -364,7 +366,7 @@ class Product extends Model
             ->whereNull('product_details.deleted_at')
             ->select(
                 'product_details.id',
-                'product_details.stock',
+                DB::raw(StockReservationService::availableSql('product_details') . ' as stock'), // descuenta reservas del chatbot
                 'color.id as color_id',
                 'color.name as color_name',
                 'color.value as color_value',
@@ -424,7 +426,7 @@ class Product extends Model
                 'size.id as size_id',
                 'size.name as size_name',
                 'size.value as size_value',
-                'product_details.stock',
+                DB::raw(StockReservationService::availableSql('product_details') . ' as stock'), // descuenta reservas del chatbot
                 'color.server_id as color_server_id',
                 'size.server_id as size_server_id',
 

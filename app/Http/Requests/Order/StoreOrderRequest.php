@@ -7,6 +7,7 @@ use App\Models\Color;
 use App\Models\Product;
 use App\Models\Size;
 use App\Services\Api360Service;
+use App\Services\StockReservationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -249,6 +250,7 @@ class StoreOrderRequest extends StoreRequest
             }
 
             $api360 = app(Api360Service::class);
+            $reservas = app(StockReservationService::class);
 
             foreach ($this->input('products') as $index => $item) {
                 $stockData = [
@@ -260,7 +262,10 @@ class StoreOrderRequest extends StoreRequest
                 $detail = $api360->update_stock_consultando_360($stockData);
                 $quantity = $item['quantity'] ?? 0;
 
-                if ($detail->stock >= $quantity) {
+                // Descuenta lo reservado por el chatbot (stock_reservations).
+                $disponible = $reservas->availableFor($detail);
+
+                if ($disponible >= $quantity) {
                     continue;
                 }
 
@@ -270,7 +275,7 @@ class StoreOrderRequest extends StoreRequest
 
                 $validator->errors()->add(
                     "products.$index.quantity",
-                    "No hay suficiente stock para {$productName}, {$colorName}, {$sizeName}. Stock disponible: {$detail->stock}, solicitado: {$quantity}."
+                    "No hay suficiente stock para {$productName}, {$colorName}, {$sizeName}. Stock disponible: {$disponible}, solicitado: {$quantity}."
                 );
             }
         });
