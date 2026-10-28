@@ -15,7 +15,7 @@ class CatalogoService extends ChatbotService
     public function buscarCategoria(string $subcategoria): array
     {
         $rows = $this->select(self::PRODUCTO . " " . self::DESDE_PRODUCTO . "
-            WHERE s.name = ? AND " . self::PRODUCTO_VISIBLE . " AND " . self::CON_STOCK . "
+            WHERE s.name = ? AND " . self::PRODUCTO_VISIBLE . " AND " . $this->conStock() . "
             ORDER BY (imagen_url IS NULL) ASC, p.score DESC, p.price1 ASC
             LIMIT 3", [$subcategoria]);
 
@@ -26,7 +26,7 @@ class CatalogoService extends ChatbotService
     public function buscarNombre(string $termino): array
     {
         $rows = $this->select(self::PRODUCTO . ",
-                " . self::CON_STOCK . " AS con_stock
+                " . $this->conStock() . " AS con_stock
             " . self::DESDE_PRODUCTO . "
             WHERE p.name LIKE CONCAT('%', ?, '%') AND " . self::PRODUCTO_VISIBLE . "
             ORDER BY con_stock DESC, p.score DESC
@@ -44,7 +44,7 @@ class CatalogoService extends ChatbotService
         $rows = $this->select("SELECT DISTINCT p.id, p.name, p.score, s.name AS subcategoria,
                 " . self::IMAGEN_PRINCIPAL . " AS imagen_url
             " . self::DESDE_PRODUCTO . "
-            WHERE ({$likes}) AND " . self::PRODUCTO_VISIBLE . " AND " . self::CON_STOCK . "
+            WHERE ({$likes}) AND " . self::PRODUCTO_VISIBLE . " AND " . $this->conStock() . "
             ORDER BY p.score DESC
             LIMIT 3", array_values($palabras));
 
@@ -60,7 +60,7 @@ class CatalogoService extends ChatbotService
             JOIN color col ON col.id = pd.color_id AND col.deleted_at IS NULL
             JOIN size sz ON sz.id = pd.size_id AND sz.deleted_at IS NULL
             WHERE pd.product_id IN ({$this->placeholders($ids)})
-              AND pd.stock > 0 AND pd.status = 1 AND pd.deleted_at IS NULL
+              AND {$this->disponible()} > 0 AND pd.status = 1 AND pd.deleted_at IS NULL
             ORDER BY pd.product_id, col.name, sz.name", array_values($ids));
 
         // Equivale al GROUP_CONCAT del contrato, sin el tope group_concat_max_len.
@@ -103,7 +103,7 @@ class CatalogoService extends ChatbotService
             JOIN color col ON pd.color_id = col.id AND col.deleted_at IS NULL
             JOIN size sz ON pd.size_id = sz.id AND sz.deleted_at IS NULL
             WHERE " . implode(' AND ', $where) . "
-              AND pd.stock > 0 AND pd.status = 1 AND " . self::PRODUCTO_VISIBLE . "
+              AND {$this->disponible()} > 0 AND pd.status = 1 AND " . self::PRODUCTO_VISIBLE . "
             ORDER BY (imagen_url IS NULL) ASC, p.score DESC, p.price1 ASC
             LIMIT 3", $bindings);
 
@@ -116,7 +116,7 @@ class CatalogoService extends ChatbotService
         $rows = $this->select(self::PRODUCTO . " " . self::DESDE_PRODUCTO . "
             WHERE " . self::PRODUCTO_VISIBLE . "
               AND p.liquidacion = 1 AND p.priceLiquidacion > 0
-              AND " . self::CON_STOCK . "
+              AND " . $this->conStock() . "
             ORDER BY (imagen_url IS NULL) ASC, p.score DESC, p.price1 ASC
             LIMIT 3");
 
@@ -144,7 +144,7 @@ class CatalogoService extends ChatbotService
             WHERE s.name IN ({$this->placeholders($subcatsGrupo)})
               AND " . self::PRODUCTO_VISIBLE . "
               AND p.id NOT IN ({$this->placeholders($idsExcluir)})
-              AND " . self::CON_STOCK . "
+              AND " . $this->conStock() . "
             ORDER BY FIELD(s.name, ?) DESC, (imagen_url IS NULL) ASC, p.score DESC
             LIMIT 2", [...array_values($subcatsGrupo), ...array_values($idsExcluir), $subcatOriginal]);
 

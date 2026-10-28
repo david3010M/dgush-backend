@@ -2,6 +2,7 @@
 
 namespace App\Services\Chatbot;
 
+use App\Services\StockReservationService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
  * - Productos: solo status_server = 1, igual que el catálogo de la tienda.
  * - Cupones: beneficio_display según los tipos reales (percentage/discount).
  * - Envío: cobertura y SHIPPING_DISTRICT_ENABLED, igual que el checkout.
+ * - Stock: siempre el disponible (descuenta reservas del chatbot, ver StockReservationService).
  */
 abstract class ChatbotService
 {
@@ -19,9 +21,19 @@ abstract class ChatbotService
     protected const IMAGEN_PRINCIPAL = "(SELECT i.url FROM image i WHERE i.product_id = p.id AND i.deleted_at IS NULL
         ORDER BY i.id ASC LIMIT 1)";
 
-    /** Variante disponible: stock > 0, activa y vigente. */
-    protected const CON_STOCK = "EXISTS (SELECT 1 FROM product_details pd
-        WHERE pd.product_id = p.id AND pd.stock > 0 AND pd.status = 1 AND pd.deleted_at IS NULL)";
+    /** Stock disponible de la variante pd: stock de 360Sys menos reservas vigentes. */
+    protected function disponible(): string
+    {
+        return StockReservationService::availableSql('pd');
+    }
+
+    /** El producto p tiene alguna variante disponible: con stock, activa y vigente. */
+    protected function conStock(): string
+    {
+        return "EXISTS (SELECT 1 FROM product_details pd
+            WHERE pd.product_id = p.id AND pd.status = 1 AND pd.deleted_at IS NULL
+              AND {$this->disponible()} > 0)";
+    }
 
     /** Producto visible en la tienda. */
     protected const PRODUCTO_VISIBLE = "p.deleted_at IS NULL AND p.status_server = 1";
