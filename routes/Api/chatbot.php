@@ -3,6 +3,7 @@
 use App\Http\Controllers\Chatbot\CatalogoController;
 use App\Http\Controllers\Chatbot\DespachoController;
 use App\Http\Controllers\Chatbot\DisponibilidadController;
+use App\Http\Controllers\Chatbot\GeoController;
 use App\Http\Controllers\Chatbot\NegocioController;
 use App\Http\Controllers\Chatbot\PreciosController;
 use App\Http\Controllers\Chatbot\StockController;
@@ -67,3 +68,12 @@ Route::prefix('stock')->name('stock.')->controller(StockController::class)->grou
 
 // DESPACHO
 Route::post('/despacho/server-ids', [DespachoController::class, 'serverIds'])->name('despacho.serverIds');
+
+// GEO-CACHÉ (volcados completos, el agente los consume 1 vez al día)
+Route::prefix('geo')->name('geo.')->controller(GeoController::class)->group(function () {
+    Route::get('/departamentos', 'departamentos')->name('departamentos');
+    Route::get('/provincias', 'provincias')->name('provincias');
+    Route::get('/distritos', 'distritos')->name('distritos');
+    Route::get('/zonas', 'zonas')->name('zonas');
+    Route::get('/sedes', 'sedes')->name('sedes');
+});
