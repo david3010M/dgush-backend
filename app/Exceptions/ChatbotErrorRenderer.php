@@ -27,6 +27,7 @@ class ChatbotErrorRenderer
                 401 => 'no_autorizado',
                 404 => 'no_encontrado',
                 405 => 'metodo_no_permitido',
+                409 => 'conflicto_idempotencia',
                 429 => 'demasiadas_solicitudes',
                 default => 'error_http',
             };

@@ -4,6 +4,7 @@ use App\Http\Controllers\Chatbot\CatalogoController;
 use App\Http\Controllers\Chatbot\DisponibilidadController;
 use App\Http\Controllers\Chatbot\NegocioController;
 use App\Http\Controllers\Chatbot\PreciosController;
+use App\Http\Controllers\Chatbot\StockController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,4 +56,10 @@ Route::prefix('negocio')->name('negocio.')->group(function () {
     // Alias de /precios/cupones-activos y /precios/validar-cupon (mismo SQL y respuesta).
     Route::get('/cupones', [PreciosController::class, 'cuponesActivos'])->name('cupones');
     Route::post('/validar-cupon', [PreciosController::class, 'validarCupon'])->name('validarCupon');
+});
+
+// STOCK (escritura: solo stock_reservations, nunca product_details.stock)
+Route::prefix('stock')->name('stock.')->controller(StockController::class)->group(function () {
+    Route::post('/reservar', 'reservar')->name('reservar');
+    Route::post('/liberar', 'liberar')->name('liberar');
 });

@@ -39,7 +39,8 @@ return new class extends Migration {
             $table->string('idempotency_key', 100);
             $table->string('endpoint', 50);
             $table->char('request_hash', 64);
-            $table->json('response')->nullable();
+            // longText y no json: MySQL reordena las claves del tipo json y el replay saldría distinto.
+            $table->longText('response')->nullable();
             $table->timestamps();
 
             $table->unique(['idempotency_key', 'endpoint']);
