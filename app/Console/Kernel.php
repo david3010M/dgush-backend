@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('sincronizar:datos360')->dailyAt('00:00');
+        $schedule->command('chatbot:cerrar-reservas-vencidas')->hourly();
     }
     
 

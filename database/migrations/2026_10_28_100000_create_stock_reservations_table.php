@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->foreignId('color_id')->constrained('color');
             $table->foreignId('size_id')->constrained('size');
             $table->unsignedInteger('quantity');
-            $table->string('status', 20)->default('activa'); // activa, convertida, liberada
+            $table->string('status', 20)->default('activa'); // activa, convertida, liberada, vencida
             $table->dateTime('expires_at_utc');
             $table->dateTime('closed_at')->nullable();
             $table->timestamps();
