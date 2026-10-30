@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccessController;
+use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CategoryController;
@@ -99,6 +100,9 @@ Route::post('/video', [VideoController::class, 'update'])->name('video.update');
 
 //    ZONE
 Route::get('/zone', [ZoneController::class, 'index'])->name('zone.index');
+
+//    AGENCY (envío interdepartamental, modo ENVIO)
+Route::get('/agency', [AgencyController::class, 'index'])->name('agency.index');
 
 // ROUTES PROTECTED FOR AUTHENTICATED USERS WITH PERMISSIONS
 Route::group(
