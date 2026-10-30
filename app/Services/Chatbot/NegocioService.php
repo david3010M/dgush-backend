@@ -2,8 +2,6 @@
 
 namespace App\Services\Chatbot;
 
-use App\Models\District;
-
 class NegocioService extends ChatbotService
 {
     /** #17 Sedes físicas. */
@@ -31,9 +29,10 @@ class NegocioService extends ChatbotService
      * #19 Costo de envío: zonas locales y luego distritos nacionales.
      *
      * Igual que el checkout: solo distritos con cobertura (status 1 y sendCost > 0,
-     * ver District::toArray 'available') y, con SHIPPING_DISTRICT_ENABLED=false,
-     * costo y exceso en 0. exceso / exceso_factor: se suma `exceso` por cada
-     * `exceso_factor` prendas a partir de la primera (District::excessUnitsFor).
+     * ver District::toArray 'available'). exceso / exceso_factor: se suma `exceso`
+     * por cada `exceso_factor` prendas a partir de la primera (District::excessUnitsFor).
+     * En envio_nacional costo y exceso solo se cobran si la agencia tiene
+     * shipping_cost = 1 (geo/agencias).
      */
     public function costoEnvio(string $ciudad): array
     {
@@ -52,14 +51,6 @@ class NegocioService extends ChatbotService
             ORDER BY costo ASC
             LIMIT 5", [$ciudad, $ciudad]);
 
-        $rows = $this->cast($rows, ['costo' => 'float', 'exceso' => 'float', 'exceso_factor' => 'int']);
-
-        if (District::shippingEnabled()) {
-            return $rows;
-        }
-
-        return array_map(fn (array $row) => $row['tipo'] === 'envio_nacional'
-            ? array_merge($row, ['costo' => 0.0, 'exceso' => 0.0, 'exceso_factor' => 0])
-            : $row, $rows);
+        return $this->cast($rows, ['costo' => 'float', 'exceso' => 'float', 'exceso_factor' => 'int']);
     }
 }

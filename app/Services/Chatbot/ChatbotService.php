@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  * contrato para que el cliente pueda auditarlo; los ajustes acordados son:
  * - Productos: solo status_server = 1, igual que el catálogo de la tienda.
  * - Cupones: beneficio_display según los tipos reales (percentage/discount).
- * - Envío: cobertura y SHIPPING_DISTRICT_ENABLED, igual que el checkout.
+ * - Envío: cobertura igual que el checkout; el cobro lo decide la agencia (shipping_cost).
  * - Stock: siempre el disponible (descuenta reservas del chatbot, ver StockReservationService).
  */
 abstract class ChatbotService

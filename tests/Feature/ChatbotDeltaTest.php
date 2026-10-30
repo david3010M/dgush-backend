@@ -176,7 +176,7 @@ class ChatbotDeltaTest extends TestCase
             ->assertJsonPath('items.1.resuelto', false);
     }
 
-    public function test_geo_distritos_expone_cobertura_y_respeta_flag(): void
+    public function test_geo_distritos_expone_cobertura(): void
     {
         $departmentId = DB::table('department')->insertGetId(['name' => 'ZZBOT DEP', 'created_at' => now()]);
         $provinceId = DB::table('province')->insertGetId(['name' => 'ZZBOT PROV', 'department_id' => $departmentId, 'created_at' => now()]);
@@ -185,14 +185,11 @@ class ChatbotDeltaTest extends TestCase
             'sendCost' => 12, 'excess' => 2, 'excessFactor' => 3, 'created_at' => now(),
         ]);
 
-        $distrito = fn () => collect($this->getJson('/api/chatbot/geo/distritos', ['X-API-Key' => self::KEY])->json('distritos'))
+        $distrito = collect($this->getJson('/api/chatbot/geo/distritos', ['X-API-Key' => self::KEY])->json('distritos'))
             ->firstWhere('id', $districtId);
 
         $this->assertSame(['location_code' => '999999', 'send_cost' => 12.0, 'available' => 1],
-            array_intersect_key($distrito(), array_flip(['location_code', 'send_cost', 'available'])));
-
-        config(['shipping.district_enabled' => false]);
-        $this->assertSame([0.0, 1],[$distrito()['send_cost'], $distrito()['available']]);
+            array_intersect_key($distrito, array_flip(['location_code', 'send_cost', 'available'])));
     }
 
     public function test_geo_zonas_devuelve_status_entero(): void

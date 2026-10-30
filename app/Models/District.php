@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="sendCost", type="string", example="15.00", description="Costo base de envío al distrito"),
  *     @OA\Property(property="excess", type="string", example="5.00", description="Monto adicional por exceso de prendas"),
  *     @OA\Property(property="excessFactor", type="integer", example="3", description="Cada cuántas prendas se vuelve a aplicar el excess"),
- *     @OA\Property(property="available", type="boolean", example=true, description="Hay envío a este distrito (activo y con precio en 360Sys), aunque SHIPPING_DISTRICT_ENABLED=false exponga los costos en 0")
+ *     @OA\Property(property="available", type="boolean", example=true, description="Hay envío a este distrito (activo y con precio en 360Sys). El cobro final depende de la agencia elegida (Agency.shipping_cost)")
  * )
  *
  */
@@ -99,48 +99,16 @@ class District extends Model
         return round((float) ($this->sendCost ?? 0) + $this->excessAmountFor($quantity), 2);
     }
 
-    /** SHIPPING_DISTRICT_ENABLED: si la tienda cobra envío y exceso a distritos. */
-    public static function shippingEnabled(): bool
-    {
-        return (bool) config('shipping.district_enabled', true);
-    }
-
     /**
-     * Con el envío a distritos desactivado, pone sendCost, excess y excessFactor
-     * en 0 solo en memoria, para que el cálculo del pedido no cobre envío.
-     * No guardar el modelo después de llamarlo: pisaría los valores de 360Sys.
-     */
-    public function applyShippingSetting(): static
-    {
-        if (! static::shippingEnabled()) {
-            $this->forceFill([
-                'sendCost'     => 0,
-                'excess'       => 0,
-                'excessFactor' => 0,
-            ]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Con el envío a distritos desactivado, toda respuesta JSON con distritos
-     * sale con costos en 0: /api/district y también los anidados en
-     * /api/province y /api/department, que alimentan el selector del checkout.
+     * available: cobertura real del distrito (360Sys le asigna precio solo
+     * donde hay envío). Si se cobra o no lo decide la agencia elegida en el
+     * checkout (Agency::chargesShipping), no el distrito.
      */
     public function toArray()
     {
         $data = parent::toArray();
 
-        // Cobertura real del distrito (360Sys le asigna precio solo donde hay envío).
-        // Se calcula antes de los ceros: el frontend no puede deducirla de sendCost
-        // cuando el envío está desactivado.
         $data['available'] = (bool) $this->status && (float) ($this->sendCost ?? 0) > 0;
-
-        if (! static::shippingEnabled()) {
-            $zeros = ['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0];
-            $data = array_merge($data, array_intersect_key($zeros, $data));
-        }
 
         return $data;
     }

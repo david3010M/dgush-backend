@@ -2,9 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Department;
+use App\Models\Agency;
 use App\Models\District;
-use App\Models\Province;
 use App\Models\Zone;
 use App\Services\OrderService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -26,6 +25,7 @@ class OrderShippingExcessTest extends TestCase
 
     private const DISTRICT_SERVER_ID = 999223;
     private const ZONE_SERVER_ID = 999044;
+    private const AGENCY_SERVER_ID = 999901;
 
     private function district(array $overrides = []): District
     {
@@ -35,6 +35,17 @@ class OrderShippingExcessTest extends TestCase
             'sendCost' => 15,
             'excess' => 5,
             'excessFactor' => 3,
+        ], $overrides));
+    }
+
+    private function agency(array $overrides = []): Agency
+    {
+        return Agency::create(array_merge([
+            'name' => 'SHALOM',
+            'server_id' => self::AGENCY_SERVER_ID,
+            'shipping_cost' => false,
+            'status' => true,
+            'sort_order' => 1,
         ], $overrides));
     }
 
@@ -142,42 +153,78 @@ class OrderShippingExcessTest extends TestCase
         $this->assertSame(30.0, $result['sendCost']);
     }
 
-    /** SHIPPING_DISTRICT_ENABLED=false: ni envío base ni exceso. */
-    public function test_disabled_district_shipping_charges_nothing(): void
+    /** Agencia con shipping_cost=false (paga en destino): ni envío base ni exceso. */
+    public function test_agency_without_shipping_cost_charges_nothing(): void
     {
-        config(['shipping.district_enabled' => false]);
         $this->district();
+        $this->agency(['shipping_cost' => false]);
 
         $result = $this->calculate([
             'mode' => 'ENVIO',
             'district_id' => self::DISTRICT_SERVER_ID,
+            'agency_id' => self::AGENCY_SERVER_ID,
             'products' => [['id' => 1, 'quantity' => 7, 'price' => 100]],
         ]);
 
-        $this->assertSame(0.0, $result['baseSendCost']);
-        $this->assertSame(0.0, $result['excess']);
-        $this->assertSame(0, $result['excessFactor']);
+        $this->assertSame(0, $result['baseSendCost']);
         $this->assertSame(0, $result['excessUnits']);
-        $this->assertSame(0.0, $result['excessAmount']);
-        $this->assertSame(0.0, $result['sendCost']);
+        $this->assertSame(0, $result['excessAmount']);
+        $this->assertSame(0, $result['sendCost']);
         $this->assertEquals(700, $result['total']);
     }
 
-    public function test_disabled_district_shipping_does_not_affect_delivery(): void
+    /** Agencia con shipping_cost=true: envío base + exceso del distrito. */
+    public function test_agency_with_shipping_cost_charges_base_plus_excess(): void
     {
-        config(['shipping.district_enabled' => false]);
+        $this->district();
+        $this->agency(['shipping_cost' => true]);
+
+        $result = $this->calculate([
+            'mode' => 'ENVIO',
+            'district_id' => self::DISTRICT_SERVER_ID,
+            'agency_id' => self::AGENCY_SERVER_ID,
+            'products' => [['id' => 1, 'quantity' => 7, 'price' => 100]],
+        ]);
+
+        $this->assertSame(15.0, $result['baseSendCost']);
+        $this->assertSame(10.0, $result['excessAmount']);
+        $this->assertSame(25.0, $result['sendCost']);
+        $this->assertSame(725.0, $result['total']);
+    }
+
+    /** 360Sys sin dato de shipping_cost (NULL): se cobra, como antes de las agencias. */
+    public function test_agency_without_shipping_cost_data_charges(): void
+    {
+        $this->district();
+        $this->agency(['shipping_cost' => null]);
+
+        $result = $this->calculate([
+            'mode' => 'ENVIO',
+            'district_id' => self::DISTRICT_SERVER_ID,
+            'agency_id' => self::AGENCY_SERVER_ID,
+            'products' => [['id' => 1, 'quantity' => 1, 'price' => 100]],
+        ]);
+
+        $this->assertSame(15.0, $result['sendCost']);
+    }
+
+    public function test_agency_does_not_affect_delivery(): void
+    {
+        $this->agency(['shipping_cost' => false]);
         Zone::create(['name' => 'LIMA CENTRO', 'server_id' => self::ZONE_SERVER_ID, 'sendCost' => 12, 'status' => true]);
 
         $result = $this->calculate([
             'mode' => 'DELIVERY',
             'zone_id' => self::ZONE_SERVER_ID,
+            'agency_id' => self::AGENCY_SERVER_ID,
             'products' => [['id' => 1, 'quantity' => 7, 'price' => 100]],
         ]);
 
         $this->assertEquals(12, $result['sendCost']);
     }
 
-    public function test_district_endpoint_exposes_db_values_when_enabled(): void
+    /** El distrito siempre expone lo sincronizado: el cero lo decide la agencia en el cálculo. */
+    public function test_district_endpoint_exposes_db_values(): void
     {
         $district = $this->district();
 
@@ -186,54 +233,36 @@ class OrderShippingExcessTest extends TestCase
             ->assertJson(['sendCost' => '15.00', 'excess' => '5.00', 'excessFactor' => 3]);
     }
 
-    /** Al frontend le llega 0, pero la BD conserva lo sincronizado desde 360Sys. */
-    public function test_district_endpoint_exposes_zeros_when_disabled(): void
-    {
-        config(['shipping.district_enabled' => false]);
-        $district = $this->district();
-
-        $this->getJson("/api/district/{$district->id}")
-            ->assertOk()
-            ->assertJson(['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0]);
-
-        $this->assertDatabaseHas('district', [
-            'id' => $district->id,
-            'sendCost' => 15,
-            'excess' => 5,
-            'excessFactor' => 3,
-        ]);
-    }
-
-    /** El selector Departamento > Provincia > Distrito del checkout lee los distritos anidados. */
-    public function test_nested_districts_expose_zeros_when_disabled(): void
-    {
-        config(['shipping.district_enabled' => false]);
-        $department = Department::create(['name' => 'TEST_DEPARTAMENTO_999', 'server_id' => 999001]);
-        $province = Province::create(['name' => 'TEST_PROVINCIA_999', 'department_id' => $department->id, 'server_id' => 999027]);
-        $this->district(['province_id' => $province->id]);
-
-        $zeros = ['sendCost' => '0.00', 'excess' => '0.00', 'excessFactor' => 0];
-
-        $this->getJson("/api/province/{$province->id}")
-            ->assertOk()
-            ->assertJson(['districts' => [$zeros]]);
-
-        $this->getJson("/api/department/{$department->id}")
-            ->assertOk()
-            ->assertJson(['provinces' => [['districts' => [$zeros]]]]);
-    }
-
-    /** Con costos en 0, el frontend distingue cobertura por 'available', no por sendCost > 0. */
-    public function test_available_reflects_real_coverage_regardless_of_the_flag(): void
+    public function test_available_reflects_real_coverage(): void
     {
         $covered = $this->district(['status' => 1]);
         $uncovered = $this->district(['name' => 'TEST_SIN_ENVIO_999', 'server_id' => 999224, 'sendCost' => 0, 'status' => 1]);
 
-        foreach ([true, false] as $enabled) {
-            config(['shipping.district_enabled' => $enabled]);
+        $this->getJson("/api/district/{$covered->id}")->assertJson(['available' => true]);
+        $this->getJson("/api/district/{$uncovered->id}")->assertJson(['available' => false]);
+    }
 
-            $this->getJson("/api/district/{$covered->id}")->assertJson(['available' => true]);
-            $this->getJson("/api/district/{$uncovered->id}")->assertJson(['available' => false]);
-        }
+    /** Método de Envío: solo activas, en el orden de 360Sys. */
+    public function test_agency_endpoint_lists_active_agencies_in_order(): void
+    {
+        $this->agency(['name' => 'TEST_OLVA_999', 'server_id' => 999902, 'sort_order' => 2, 'shipping_cost' => true]);
+        $this->agency(['name' => 'TEST_SHALOM_999', 'server_id' => 999901, 'sort_order' => 1, 'shipping_cost' => false]);
+        $this->agency(['name' => 'TEST_INACTIVA_999', 'server_id' => 999903, 'sort_order' => 0, 'status' => false]);
+
+        $names = collect($this->getJson('/api/agency')->assertOk()->json())
+            ->pluck('name')
+            ->filter(fn ($name) => str_starts_with($name, 'TEST_'))
+            ->values()
+            ->all();
+
+        $this->assertSame(['TEST_SHALOM_999', 'TEST_OLVA_999'], $names);
+
+        $this->getJson('/api/agency')->assertJsonFragment([
+            'server_id' => 999901,
+            'name' => 'TEST_SHALOM_999',
+            'shipping_cost' => false,
+            'status' => true,
+            'sort_order' => 1,
+        ]);
     }
 }

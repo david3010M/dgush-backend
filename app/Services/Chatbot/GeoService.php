@@ -2,8 +2,6 @@
 
 namespace App\Services\Chatbot;
 
-use App\Models\District;
-
 /** D4–D8: volcados completos para el caché diario de geografía del agente (id local + server_id). */
 class GeoService extends ChatbotService
 {
@@ -34,8 +32,8 @@ class GeoService extends ChatbotService
     /**
      * D6. En district el ubigeo está en la columna ubigeo (no location_code).
      * available = cobertura real (status 1 y sendCost > 0), igual que /api/district.
-     * Con SHIPPING_DISTRICT_ENABLED=false los costos salen en 0 (como el checkout):
-     * send_cost 0 deja de significar "sin cobertura"; para eso está available.
+     * Los costos salen tal cual 360Sys: solo se cobran si la agencia elegida tiene
+     * shipping_cost = 1 (ver agencias()).
      */
     public function distritos(): array
     {
@@ -52,17 +50,11 @@ class GeoService extends ChatbotService
             WHERE d.deleted_at IS NULL
             ORDER BY d.id");
 
-        $rows = $this->cast($rows, self::IDS + [
+        return $this->cast($rows, self::IDS + [
             'send_cost' => 'float', 'excess' => 'float', 'excess_factor' => 'int', 'status' => 'int', 'available' => 'int',
             'provincia_id' => 'int', 'provincia_server_id' => 'server_id',
             'departamento_id' => 'int', 'departamento_server_id' => 'server_id',
         ]);
-
-        if (District::shippingEnabled()) {
-            return $rows;
-        }
-
-        return array_map(fn (array $row) => array_merge($row, ['send_cost' => 0.0, 'excess' => 0.0, 'excess_factor' => 0]), $rows);
     }
 
     /** D7. status es string '1' en BD: se devuelve entero. */

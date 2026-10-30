@@ -143,7 +143,7 @@ class ChatbotApiTest extends TestCase
         $this->chatbot('precios/validar-cupon', ['codigo' => 'ZZBOT-PCT'])->assertJsonPath('cupon.es_valido', 1);
     }
 
-    public function test_costo_envio_solo_distritos_con_cobertura_y_respeta_flag(): void
+    public function test_costo_envio_solo_distritos_con_cobertura(): void
     {
         $departmentId = DB::table('department')->insertGetId(['name' => 'ZZBOT DEP', 'created_at' => now()]);
         $provinceId = DB::table('province')->insertGetId(['name' => 'ZZBOT PROV', 'department_id' => $departmentId, 'created_at' => now()]);
@@ -159,11 +159,5 @@ class ChatbotApiTest extends TestCase
                 'tipo' => 'envio_nacional', 'lugar' => 'ZZBOT CON COBERTURA, ZZBOT PROV, ZZBOT DEP',
                 'costo' => 12.0, 'exceso' => 2.0, 'exceso_factor' => 3,
             ]]]);
-
-        config(['shipping.district_enabled' => false]);
-
-        $this->chatbot('negocio/costo-envio', ['ciudad' => 'ZZBOT'])
-            ->assertJsonPath('resultados.0.costo', 0.0)
-            ->assertJsonPath('resultados.0.exceso', 0.0);
     }
 }
