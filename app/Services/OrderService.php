@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Jobs\FetchSincronizarOrdenesJob;
+use App\Models\Agency;
 use App\Models\Color;
 use App\Models\Coupon;
 use App\Models\District;
@@ -160,8 +161,8 @@ class OrderService
         $data['user_id'] = Auth::id();
         $data['status'] = 'VERIFICANDO';
 
-        // Mapear IDs de zona, distrito y sede
-        foreach (['zone_id' => Zone::class, 'district_id' => District::class, 'branch_id' => Sede::class,] as $key => $model) {
+        // Mapear IDs de zona, distrito, agencia y sede
+        foreach (['zone_id' => Zone::class, 'district_id' => District::class, 'agency_id' => Agency::class, 'branch_id' => Sede::class,] as $key => $model) {
             if (!empty($data[$key]) && $found = $this->api360Service->find_by_server_id($model, $data[$key])) {
                 $data[$key] = $found['data']->id;
             } else {
@@ -283,10 +284,11 @@ class OrderService
             $map = [
                 'zone_id' => Zone::class,
                 'district_id' => District::class,
+                'agency_id' => Agency::class,
                 'branch_id' => Sede::class,
             ];
 
-            // Mapear zone_id, district_id, branch_id
+            // Mapear zone_id, district_id, agency_id, branch_id
             foreach ($map as $key => $model) {
                 if (!empty($data[$key])) {
                     $found = $this->api360Service->find_by_server_id($model, $data[$key]);
