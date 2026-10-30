@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Agency;
 use App\Models\District;
 use App\Services\Api360Service;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -144,5 +145,32 @@ class Api360DistrictSyncTest extends TestCase
         // 5 prendas, factor 2 => floor(4/2) = 2 unidades => 20 + 16
         $this->assertSame(2, $district->excessUnitsFor(5));
         $this->assertSame(36.0, $district->shippingCostFor(5));
+    }
+
+    /** Las agencias vienen en el mismo GET store/districts, clave 'agencies'. */
+    public function test_it_syncs_agencies_from_the_districts_response(): void
+    {
+        Http::fake([
+            'https://sistema.360sys.com.pe/api/online-store/districts' => Http::response([
+                'status' => 200,
+                'data' => [
+                    'districts' => [$this->districtPayload()],
+                    'agencies' => [
+                        ['id' => 999901, 'name' => 'Shalom', 'description' => 'Paga en destino.', 'shipping_cost' => false, 'status' => true, 'order' => 1],
+                        ['id' => 999902, 'name' => 'Olva', 'description' => 'Info clara.', 'shipping_cost' => true, 'status' => true, 'order' => 2],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $result = app(Api360Service::class)->fetch_agencies('test-uuid');
+
+        $this->assertTrue($result['status'], json_encode($result));
+
+        $shalom = Agency::firstWhere('server_id', 999901);
+        $this->assertSame('Shalom', $shalom->name);
+        $this->assertFalse($shalom->chargesShipping());
+        $this->assertSame(1, $shalom->sort_order);
+        $this->assertTrue(Agency::firstWhere('server_id', 999902)->chargesShipping());
     }
 }

@@ -145,11 +145,13 @@ class DistrictController extends Controller
         $departments = $this->api360Service->fetch_departments($uuid);
         $provinces   = $this->api360Service->fetch_provinces($uuid);
         $districts   = $this->api360Service->fetch_districts($uuid);
+        $agencies    = $this->api360Service->fetch_agencies($uuid);
 
         return response()->json([
             'departments' => $departments,
             'provinces'   => $provinces,
             'data'   => $districts,
+            'agencies'    => $agencies,
         ]);
     }
 

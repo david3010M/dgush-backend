@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Jobs\FetchAgencyJob;
 use App\Jobs\FetchCategoryJob;
 use App\Jobs\FetchColorJob;
 use App\Jobs\FetchDepartmentJob;
@@ -11,6 +12,7 @@ use App\Jobs\FetchSedeJob;
 use App\Jobs\FetchSizeJob;
 use App\Jobs\FetchSubcategoryJob;
 use App\Jobs\FetchZoneJob;
+use App\Models\Agency;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Department;
@@ -47,6 +49,7 @@ class Api360Service
                 new FetchDepartmentJob($uuid),
                 new FetchProvincesJob($uuid),
                 new FetchDistrictJob($uuid),
+                new FetchAgencyJob($uuid),
 
             ])
                 ->name('Sincronización de Datos 360')
@@ -106,6 +109,18 @@ class Api360Service
             District::getfields360,
             $uuid,
             ['province_id' => Province::class]// Relación dinámica
+        );
+    }
+    /** Agencias de envío: vienen en el mismo GET store/districts, clave 'agencies'. */
+    public function fetch_agencies(?string $uuid = '')
+    {
+        return $this->fetchDataAndSync(
+            'districts',
+            'agencies',
+            Agency::class,
+            Agency::getfields360,
+            $uuid,
+            []// Relación dinámica
         );
     }
     public function fetch_sedes(?string $uuid = '')
