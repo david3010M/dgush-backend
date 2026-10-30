@@ -192,6 +192,26 @@ class ChatbotDeltaTest extends TestCase
             array_intersect_key($distrito, array_flip(['location_code', 'send_cost', 'available'])));
     }
 
+    public function test_geo_agencias_solo_activas_en_orden(): void
+    {
+        $agencia = ['description' => 'ZZBOT', 'created_at' => now()];
+        DB::table('agencies')->insert([
+            $agencia + ['name' => 'ZZBOT OLVA', 'server_id' => 999902, 'shipping_cost' => 1, 'status' => 1, 'sort_order' => 2],
+            $agencia + ['name' => 'ZZBOT SHALOM', 'server_id' => 999901, 'shipping_cost' => 0, 'status' => 1, 'sort_order' => 1],
+            $agencia + ['name' => 'ZZBOT INACTIVA', 'server_id' => 999903, 'shipping_cost' => 1, 'status' => 0, 'sort_order' => 0],
+        ]);
+
+        $agencias = collect($this->getJson('/api/chatbot/geo/agencias', ['X-API-Key' => self::KEY])
+            ->assertOk()
+            ->json('agencias'))
+            ->filter(fn (array $a) => str_starts_with($a['name'], 'ZZBOT'))
+            ->values();
+
+        $this->assertSame(['ZZBOT SHALOM', 'ZZBOT OLVA'], $agencias->pluck('name')->all());
+        $this->assertSame(['server_id' => 999901, 'shipping_cost' => 0, 'sort_order' => 1],
+            array_intersect_key($agencias[0], array_flip(['server_id', 'shipping_cost', 'sort_order'])));
+    }
+
     public function test_geo_zonas_devuelve_status_entero(): void
     {
         $this->getJson('/api/chatbot/geo/zonas', ['X-API-Key' => self::KEY])

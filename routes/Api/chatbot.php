@@ -75,5 +75,6 @@ Route::prefix('geo')->name('geo.')->controller(GeoController::class)->group(func
     Route::get('/provincias', 'provincias')->name('provincias');
     Route::get('/distritos', 'distritos')->name('distritos');
     Route::get('/zonas', 'zonas')->name('zonas');
+    Route::get('/agencias', 'agencias')->name('agencias');
     Route::get('/sedes', 'sedes')->name('sedes');
 });

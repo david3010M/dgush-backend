@@ -67,6 +67,21 @@ class GeoService extends ChatbotService
         return $this->cast($rows, self::IDS + ['price' => 'float', 'status' => 'int']);
     }
 
+    /**
+     * Agencias activas del modo ENVIO; server_id = agency_id de 360Sys.
+     * shipping_cost 1: se cobra send_cost + exceso del distrito. 0: envío en 0 (paga en destino).
+     */
+    public function agencias(): array
+    {
+        $rows = $this->select("SELECT id, server_id, name, description,
+                CASE WHEN COALESCE(shipping_cost, 1) = 1 THEN 1 ELSE 0 END AS shipping_cost,
+                sort_order
+            FROM agencies WHERE deleted_at IS NULL AND status = 1
+            ORDER BY sort_order, id");
+
+        return $this->cast($rows, self::IDS + ['shipping_cost' => 'int', 'sort_order' => 'int']);
+    }
+
     /** D8. Recojo sin costo; server_id = branch_id de 360Sys. */
     public function sedes(): array
     {

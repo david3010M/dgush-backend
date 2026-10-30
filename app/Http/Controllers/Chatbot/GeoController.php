@@ -31,6 +31,11 @@ class GeoController extends ChatbotController
         return $this->respond(['zonas' => $this->service->zonas()]);
     }
 
+    public function agencias(): JsonResponse
+    {
+        return $this->respond(['agencias' => $this->service->agencias()]);
+    }
+
     public function sedes(): JsonResponse
     {
         return $this->respond(['sedes' => $this->service->sedes()]);
