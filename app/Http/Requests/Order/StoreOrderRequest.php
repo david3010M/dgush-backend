@@ -44,6 +44,7 @@ class StoreOrderRequest extends StoreRequest
      *     @OA\Property(property="address", type="string", description="Dirección de entrega"),
      *     @OA\Property(property="zone_id", type="integer", nullable=true, description="ID de zona (requerido si mode=DELIVERY)"),
      *     @OA\Property(property="district_id", type="integer", nullable=true, description="ID de distrito (requerido si mode=ENVIO)"),
+     *     @OA\Property(property="agency_id", type="integer", nullable=true, description="server_id de la agencia (requerido si mode=ENVIO, ver GET /api/agency)"),
      *     @OA\Property(property="branch_id", type="integer", nullable=true, description="ID de sede (requerido si mode=RECOJO)"),
      *     @OA\Property(property="customer_dni", type="string", maxLength=8, description="DNI del cliente (máx. 8 caracteres)"),
      *     @OA\Property(property="customer_first_name", type="string", description="Nombres del cliente"),
@@ -103,6 +104,13 @@ class StoreOrderRequest extends StoreRequest
                 'nullable',
                 'integer',
                 Rule::exists('district', 'server_id'),
+            ],
+            // server_id de 360Sys, como district_id. Debe estar activa (GET /api/agency).
+            'agency_id' => [
+                'required_if:mode,ENVIO',
+                'nullable',
+                'integer',
+                Rule::exists('agencies', 'server_id')->where('status', true)->whereNull('deleted_at'),
             ],
             'branch_id' => [
                 'required_if:mode,RECOJO',
@@ -173,6 +181,9 @@ class StoreOrderRequest extends StoreRequest
             'district_id.required_if' => 'El distrito es obligatorio para el modo ENVIO.',
             'district_id.integer' => 'El distrito debe ser un valor numérico.',
             'district_id.exists' => 'El distrito seleccionado no es válido.',
+            'agency_id.required_if' => 'La agencia es obligatoria para el modo ENVIO.',
+            'agency_id.integer' => 'La agencia debe ser un valor numérico.',
+            'agency_id.exists' => 'La agencia seleccionada no es válida.',
             'branch_id.required_if' => 'La sede es obligatoria para el modo RECOJO.',
             'branch_id.integer' => 'La sede debe ser un valor numérico.',
             'branch_id.exists' => 'La sede seleccionada no es válida.',

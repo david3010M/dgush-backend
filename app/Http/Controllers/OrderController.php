@@ -6,6 +6,7 @@ use App\Http\Requests\Order\PayOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\Agency;
 use App\Mail\ConfirmOrder;
 use App\Mail\StatusOrder;
 use App\Models\Coupon;
@@ -313,6 +314,7 @@ class OrderController extends Controller
 
 
             $districtServer = null;
+            $agencyServer = null;
             $zoneServer = null;
             $branchServer = null;
 
@@ -324,6 +326,17 @@ class OrderController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => 'Distrito no encontrado.',
+                    ], 422);
+                }
+
+                // agency_id llega como server_id (igual que en calculate()).
+                $agency = Agency::firstWhere('server_id', $request->agency_id);
+                if ($agency) {
+                    $agencyServer = $agency->server_id;
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Agencia no encontrada.',
                     ], 422);
                 }
             }
@@ -360,6 +373,7 @@ class OrderController extends Controller
                 "address" => $request->address,
                 "zone_id" => $zoneServer,     // Requerido cuando el modo es DELIVERY
                 "district_id" => $districtServer, // Requerido cuando el modo es ENVIO
+                "agency_id" => $agencyServer,     // Requerido cuando el modo es ENVIO
                 "branch_id" => $branchServer,   // Requerido cuando el modo es RECOJO
                 "customer" => [
                     "dni" => $request->customer_dni,
@@ -470,6 +484,7 @@ class OrderController extends Controller
                 "address" => $request->address,
                 "zone_id" => $request->zone_id,     // Requerido cuando el modo es DELIVERY
                 "district_id" => $request->district_id, // Requerido cuando el modo es ENVIO
+                "agency_id" => $request->mode === 'ENVIO' ? $request->agency_id : null, // Requerido cuando el modo es ENVIO
                 "branch_id" => $request->branch_id,   // Requerido cuando el modo es RECOJO
                 "customer" => [
                     "dni" => $request->customer_dni,
